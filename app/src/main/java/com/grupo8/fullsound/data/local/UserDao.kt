@@ -2,7 +2,6 @@ package com.grupo8.fullsound.data.local
 
 import androidx.room.*
 import com.grupo8.fullsound.data.models.User
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface UserDao {
@@ -17,4 +16,19 @@ interface UserDao {
 
     @Query("SELECT * FROM users WHERE email = :email")
     suspend fun getUserByEmail(email: String): User?
+
+    @Update
+    suspend fun updateUser(user: User)
+
+    @Delete
+    suspend fun deleteUser(user: User)
+
+    @Query("DELETE FROM users WHERE id = :userId")
+    suspend fun deleteUserById(userId: String)
+
+    @Query("SELECT * FROM users")
+    suspend fun getAllUsers(): List<User>
+
+    @Query("DELETE FROM users")
+    suspend fun deleteAllUsers()
 }

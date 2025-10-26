@@ -18,6 +18,15 @@ class UserRepository(private val userDao: UserDao) {
     private val _registerResult = MutableLiveData<Resource<User>>()
     val registerResult: LiveData<Resource<User>> = _registerResult
 
+    private val _userResult = MutableLiveData<Resource<User>>()
+    val userResult: LiveData<Resource<User>> = _userResult
+
+    private val _usersResult = MutableLiveData<Resource<List<User>>>()
+    val usersResult: LiveData<Resource<List<User>>> = _usersResult
+
+    private val _deleteResult = MutableLiveData<Resource<String>>()
+    val deleteResult: LiveData<Resource<String>> = _deleteResult
+
     fun login(email: String, password: String) {
         CoroutineScope(Dispatchers.IO).launch {
             _loginResult.postValue(Resource.Loading())
@@ -57,6 +66,73 @@ class UserRepository(private val userDao: UserDao) {
                 _registerResult.postValue(Resource.Success(newUser))
             } catch (e: Exception) {
                 _registerResult.postValue(Resource.Error("Error al registrar usuario: ${e.message}"))
+            }
+        }
+    }
+
+    // READ
+    fun getUserById(userId: String) {
+        CoroutineScope(Dispatchers.IO).launch {
+            _userResult.postValue(Resource.Loading())
+            try {
+                val user = userDao.getUserById(userId)
+                if (user != null) {
+                    _userResult.postValue(Resource.Success(user))
+                } else {
+                    _userResult.postValue(Resource.Error("Usuario no encontrado"))
+                }
+            } catch (e: Exception) {
+                _userResult.postValue(Resource.Error("Error al obtener usuario: ${e.message}"))
+            }
+        }
+    }
+
+    fun getAllUsers() {
+        CoroutineScope(Dispatchers.IO).launch {
+            _usersResult.postValue(Resource.Loading())
+            try {
+                val users = userDao.getAllUsers()
+                _usersResult.postValue(Resource.Success(users))
+            } catch (e: Exception) {
+                _usersResult.postValue(Resource.Error("Error al obtener usuarios: ${e.message}"))
+            }
+        }
+    }
+
+    // UPDATE
+    fun updateUser(user: User) {
+        CoroutineScope(Dispatchers.IO).launch {
+            _userResult.postValue(Resource.Loading())
+            try {
+                userDao.updateUser(user)
+                _userResult.postValue(Resource.Success(user))
+            } catch (e: Exception) {
+                _userResult.postValue(Resource.Error("Error al actualizar usuario: ${e.message}"))
+            }
+        }
+    }
+
+    // DELETE
+    fun deleteUser(user: User) {
+        CoroutineScope(Dispatchers.IO).launch {
+            _deleteResult.postValue(Resource.Loading())
+            try {
+                userDao.deleteUser(user)
+                _deleteResult.postValue(Resource.Success("Usuario eliminado exitosamente"))
+            } catch (e: Exception) {
+                _deleteResult.postValue(Resource.Error("Error al eliminar usuario: ${e.message}"))
+            }
+        }
+    }
+
+    fun deleteUserById(userId: String) {
+        CoroutineScope(Dispatchers.IO).launch {
+            _deleteResult.postValue(Resource.Loading())
+            try {
+                userDao.deleteUserById(userId)
+                _deleteResult.postValue(Resource.Success("Usuario eliminado exitosamente"))
+            } catch (e: Exception) {
+                _deleteResult.postValue(Resource.Error("Error al eliminar usuario: ${e.message}"))
             }
         }
     }
