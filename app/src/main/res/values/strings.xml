@@ -1,0 +1,26 @@
+<resources>
+    <string name="app_name">FullSound</string>
+    <string name="app_logo">Logo de FullSound</string>
+
+    <!-- Login Fragment -->
+    <string name="email">Correo electrónico</string>
+    <string name="password">Contraseña</string>
+    <string name="login">Iniciar Sesión</string>
+    <string name="register_here">¿No tienes cuenta? Regístrate aquí</string>
+
+    <!-- Register Fragment -->
+    <string name="register">Registrarse</string>
+    <string name="name">Nombre completo</string>
+    <string name="confirm_password">Confirmar contraseña</string>
+
+    <!-- Navigation -->
+    <string name="beats">Beats</string>
+    <string name="cart">Carrito</string>
+    <string name="profile">Perfil</string>
+    <string name="logout">Cerrar Sesión</string>
+
+    <!-- Validaciones -->
+    <string name="invalid_email">Correo electrónico inválido</string>
+    <string name="invalid_password">La contraseña debe tener al menos 6 caracteres</string>
+    <string name="passwords_dont_match">Las contraseñas no coinciden</string>
+</resources>
