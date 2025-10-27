@@ -12,7 +12,7 @@ class BeatsViewModel(private val beatRepository: BeatRepository) : ViewModel() {
     val beatResult: LiveData<Resource<Beat>> = beatRepository.beatResult
     val deleteResult: LiveData<Resource<String>> = beatRepository.deleteResult
 
-    // CREATE
+    // CREATE ESTOY CANSADO JEFE
     fun insertBeat(beat: Beat) {
         beatRepository.insertBeat(beat)
     }
@@ -31,12 +31,17 @@ class BeatsViewModel(private val beatRepository: BeatRepository) : ViewModel() {
         beatRepository.updateBeat(beat)
     }
 
-    // DELETE
+    // DELETE ESTOY CANSADO
     fun deleteBeat(beat: Beat) {
         beatRepository.deleteBeat(beat)
     }
 
     fun deleteBeatById(beatId: Int) {
         beatRepository.deleteBeatById(beatId)
+    }
+
+    // INSERTAR BEATS ESTOY CANSADO JEFE
+    fun insertExampleBeats() {
+        beatRepository.insertExampleBeats()
     }
 }

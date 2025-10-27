@@ -111,4 +111,25 @@ class BeatRepository(private val beatDao: BeatDao) {
             }
         }
     }
+
+    // INSERTAR BEATS DE EJEMPLO
+    fun insertExampleBeats() {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                // Verificar si ya hay beats en la base de datos
+                val existingBeats = beatDao.getAllBeats()
+                if (existingBeats.isEmpty()) {
+                    // Insertar beats de ejemplo
+                    val exampleBeats = com.grupo8.fullsound.data.local.LocalBeatsProvider.getBeats()
+                    exampleBeats.forEach { beat ->
+                        beatDao.insertBeat(beat)
+                    }
+                    // Después de insertar, notificar que se carguen los beats
+                    getAllBeats()
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
 }

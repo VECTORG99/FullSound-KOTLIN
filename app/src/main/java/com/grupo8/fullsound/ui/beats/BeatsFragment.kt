@@ -81,6 +81,9 @@ class BeatsFragment : Fragment() {
         setupObservers()
         setupClickListeners()
 
+        // Insertar beats de ejemplo si no hay ninguno
+        viewModel.insertExampleBeats()
+
         // Cargar todos los beats al iniciar
         viewModel.getAllBeats()
     }
@@ -434,9 +437,12 @@ class BeatsFragment : Fragment() {
             when (result) {
                 is Resource.Loading -> {
                     // Mostrar cargando
+                    android.util.Log.d("BeatsFragment", "Cargando beats...")
                 }
                 is Resource.Success -> {
                     val beats = result.data ?: emptyList()
+                    android.util.Log.d("BeatsFragment", "Beats cargados: ${beats.size}")
+
                     // Actualizar el total de beats en el header
                     binding.txtTituloBeats.text = "Beats (${beats.size})"
                     // Actualizar el total en la sección de leer
@@ -444,18 +450,22 @@ class BeatsFragment : Fragment() {
 
                     // Actualizar el adaptador con los beats
                     beatsAdapter.submitList(beats)
+                    android.util.Log.d("BeatsFragment", "Lista enviada al adaptador")
 
                     // Mostrar/ocultar mensaje de "no hay beats"
                     if (beats.isEmpty()) {
                         binding.recyclerBeats.visibility = View.GONE
                         binding.txtNoBeats.visibility = View.VISIBLE
+                        android.util.Log.d("BeatsFragment", "No hay beats, mostrando mensaje")
                     } else {
                         binding.recyclerBeats.visibility = View.VISIBLE
                         binding.txtNoBeats.visibility = View.GONE
+                        android.util.Log.d("BeatsFragment", "Mostrando ${beats.size} beats en RecyclerView")
                     }
                 }
                 is Resource.Error -> {
                     // Mostrar error
+                    android.util.Log.e("BeatsFragment", "Error al cargar beats: ${result.message}")
                     showMessage(result.message ?: "Error al cargar beats")
                     binding.recyclerBeats.visibility = View.GONE
                     binding.txtNoBeats.visibility = View.VISIBLE
