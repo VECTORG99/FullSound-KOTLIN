@@ -300,8 +300,36 @@ class BeatsFragment : Fragment() {
         binding.txtTituloEliminar.text = beat.titulo
         binding.txtArtistaEliminar.text = "Artista: ${beat.artista}"
         binding.txtBpmEliminar.text = "BPM: ${beat.bpm}"
-        // Usar siempre el placeholder
-        binding.imgBeatEliminar.setImageResource(R.drawable.image)
+        // Cargar imagen desde drawable usando beat.imagenPath con fallback
+        val ctx = requireContext()
+        var imageResId = 0
+        try {
+            if (!beat.imagenPath.isNullOrEmpty()) {
+                val possibleFile = java.io.File(beat.imagenPath)
+                if (possibleFile.exists()) {
+                    val bmp = android.graphics.BitmapFactory.decodeFile(possibleFile.absolutePath)
+                    if (bmp != null) {
+                        binding.imgBeatEliminar.setImageBitmap(bmp)
+                    } else {
+                        imageResId = ctx.resources.getIdentifier(beat.imagenPath, "drawable", ctx.packageName)
+                    }
+                } else {
+                    imageResId = ctx.resources.getIdentifier(beat.imagenPath, "drawable", ctx.packageName)
+                }
+            }
+        } catch (e: Exception) {
+            imageResId = 0
+        }
+        if (imageResId == 0 && binding.imgBeatEliminar.drawable == null) {
+            val idx = ((beat.id % 5) + 5) % 5 + 1
+            val fallbackName = "img$idx"
+            imageResId = ctx.resources.getIdentifier(fallbackName, "drawable", ctx.packageName)
+        }
+        if (imageResId != 0 && binding.imgBeatEliminar.drawable == null) {
+            binding.imgBeatEliminar.setImageResource(imageResId)
+        } else if (binding.imgBeatEliminar.drawable == null) {
+            binding.imgBeatEliminar.setImageResource(R.drawable.image)
+        }
         // Mostrar con animación
         AnimationHelper.scaleUp(binding.cardBeatInfo)
     }
@@ -380,6 +408,38 @@ class BeatsFragment : Fragment() {
         binding.txtTituloActualizarActual.text = "Título: ${beat.titulo}"
         binding.txtArtistaActualizarActual.text = "Artista: ${beat.artista}"
         binding.txtBpmActualizarActual.text = "BPM: ${beat.bpm}"
+        // Cargar imagen para la vista de actualización si existe
+        val imgActualizarView = binding.root.findViewById<android.widget.ImageView>(R.id.img_beat_actualizar)
+        val ctx2 = requireContext()
+        var imageResId2 = 0
+        try {
+            if (!beat.imagenPath.isNullOrEmpty()) {
+                val possibleFile = java.io.File(beat.imagenPath)
+                if (possibleFile.exists()) {
+                    val bmp = android.graphics.BitmapFactory.decodeFile(possibleFile.absolutePath)
+                    if (bmp != null) {
+                        imgActualizarView.setImageBitmap(bmp)
+                    } else {
+                        imageResId2 = ctx2.resources.getIdentifier(beat.imagenPath, "drawable", ctx2.packageName)
+                    }
+                } else {
+                    imageResId2 = ctx2.resources.getIdentifier(beat.imagenPath, "drawable", ctx2.packageName)
+                }
+            }
+        } catch (_: Exception) {
+            imageResId2 = 0
+        }
+        if (imageResId2 == 0 && imgActualizarView.drawable == null) {
+            val idx2 = ((beat.id % 5) + 5) % 5 + 1
+            val fallbackName2 = "img$idx2"
+            imageResId2 = ctx2.resources.getIdentifier(fallbackName2, "drawable", ctx2.packageName)
+        }
+        if (imageResId2 != 0 && imgActualizarView.drawable == null) {
+            imgActualizarView.setImageResource(imageResId2)
+        } else if (imgActualizarView.drawable == null) {
+            imgActualizarView.setImageResource(R.drawable.image)
+        }
+
         AnimationHelper.scaleUp(binding.cardBeatActualizarInfo)
 
         // Mostrar campos de edición con valores actuales

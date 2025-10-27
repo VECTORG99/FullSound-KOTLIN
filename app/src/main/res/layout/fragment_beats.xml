@@ -540,6 +540,25 @@
                                         android:textColor="?attr/colorPrimary"
                                         android:textStyle="bold" />
 
+                                    <!-- Imagen del Beat (para actualizar) -->
+                                    <com.google.android.material.card.MaterialCardView
+                                        android:layout_width="150dp"
+                                        android:layout_height="150dp"
+                                        android:layout_gravity="center"
+                                        android:layout_marginBottom="12dp"
+                                        app:cardCornerRadius="8dp"
+                                        app:cardElevation="2dp">
+
+                                        <ImageView
+                                            android:id="@+id/img_beat_actualizar"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="match_parent"
+                                            android:contentDescription="@string/imagen_beat_desc"
+                                            android:scaleType="centerCrop"
+                                            android:src="@drawable/image" />
+
+                                    </com.google.android.material.card.MaterialCardView>
+
                                     <TextView
                                         android:id="@+id/txt_titulo_actualizar_actual"
                                         android:layout_width="match_parent"

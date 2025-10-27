@@ -7,13 +7,14 @@ import com.grupo8.fullsound.model.Beat
 object LocalBeatsProvider {
 
     fun getBeats(): List<Beat> {
+        val images = listOf("img1", "img2", "img3", "img4", "img5")
         return listOf(
             Beat(
                 id = 0,
                 titulo = "Samuel canchalla",
                 artista = "Ludwig van Beethoven",
                 bpm = 95,
-                imagenPath = "placeholder",
+                imagenPath = images[0 % images.size],
                 mp3Path = "beat1"
             ),
             Beat(
@@ -21,7 +22,7 @@ object LocalBeatsProvider {
                 titulo = "Luis salazar",
                 artista = "Wolfgang Amadeus Mozart",
                 bpm = 108,
-                imagenPath = "placeholder",
+                imagenPath = images[1 % images.size],
                 mp3Path = "beat2"
             ),
             Beat(
@@ -29,7 +30,7 @@ object LocalBeatsProvider {
                 titulo = "Ismael Rivas",
                 artista = "Johann Sebastian Bach",
                 bpm = 88,
-                imagenPath = "placeholder",
+                imagenPath = images[2 % images.size],
                 mp3Path = "beat3"
             ),
             Beat(
@@ -37,7 +38,7 @@ object LocalBeatsProvider {
                 titulo = "Diego Hernandez",
                 artista = "Frédéric Chopin",
                 bpm = 72,
-                imagenPath = "placeholder",
+                imagenPath = images[3 % images.size],
                 mp3Path = "beat4"
             ),
             Beat(
@@ -45,7 +46,7 @@ object LocalBeatsProvider {
                 titulo = "Axel Moraga",
                 artista = "Pyotr Ilyich Tchaikovsky",
                 bpm = 116,
-                imagenPath = "placeholder",
+                imagenPath = images[4 % images.size],
                 mp3Path = "beat5"
             ),
             Beat(
@@ -53,7 +54,7 @@ object LocalBeatsProvider {
                 titulo = "Diego hernandez remix",
                 artista = "Antonio Vivaldi",
                 bpm = 104,
-                imagenPath = "placeholder",
+                imagenPath = images[0 % images.size],
                 mp3Path = "beat6"
             ),
             Beat(
@@ -61,7 +62,7 @@ object LocalBeatsProvider {
                 titulo = "Maxi",
                 artista = "Franz Liszt",
                 bpm = 80,
-                imagenPath = "placeholder",
+                imagenPath = images[1 % images.size],
                 mp3Path = "beat7"
             ),
             Beat(
@@ -69,7 +70,7 @@ object LocalBeatsProvider {
                 titulo = "Diego Patricio Cares Gonzales",
                 artista = "Claude Debussy",
                 bpm = 92,
-                imagenPath = "placeholder",
+                imagenPath = images[2 % images.size],
                 mp3Path = "beat8"
             )
         )
@@ -95,4 +96,3 @@ object LocalBeatsProvider {
         return context.resources.getIdentifier(mp3Path, "raw", context.packageName)
     }
 }
-
