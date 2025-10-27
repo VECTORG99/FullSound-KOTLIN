@@ -14,7 +14,8 @@ object LocalBeatsProvider {
                 artista = "Ludwig van Beethoven",
                 bpm = 95,
                 imagenPath = "1",
-                mp3Path = "1"
+                mp3Path = "1",
+                precio = 9.99
             ),
             Beat(
                 id = 2,
@@ -22,7 +23,8 @@ object LocalBeatsProvider {
                 artista = "Wolfgang Amadeus Mozart",
                 bpm = 108,
                 imagenPath = "2",
-                mp3Path = "2"
+                mp3Path = "2",
+                precio = 12.99
             ),
             Beat(
                 id = 3,
@@ -30,7 +32,8 @@ object LocalBeatsProvider {
                 artista = "Johann Sebastian Bach",
                 bpm = 88,
                 imagenPath = "3",
-                mp3Path = "3"
+                mp3Path = "3",
+                precio = 11.99
             ),
             Beat(
                 id = 4,
@@ -38,7 +41,8 @@ object LocalBeatsProvider {
                 artista = "Frédéric Chopin",
                 bpm = 72,
                 imagenPath = "4",
-                mp3Path = "4"
+                mp3Path = "4",
+                precio = 14.99
             ),
             Beat(
                 id = 5,
@@ -46,7 +50,8 @@ object LocalBeatsProvider {
                 artista = "Pyotr Ilyich Tchaikovsky",
                 bpm = 116,
                 imagenPath = "6",
-                mp3Path = "5"
+                mp3Path = "5",
+                precio = 15.99
             ),
             Beat(
                 id = 6,
@@ -54,7 +59,8 @@ object LocalBeatsProvider {
                 artista = "Antonio Vivaldi",
                 bpm = 104,
                 imagenPath = "7",
-                mp3Path = "6"
+                mp3Path = "6",
+                precio = 10.99
             ),
             Beat(
                 id = 7,
@@ -62,7 +68,8 @@ object LocalBeatsProvider {
                 artista = "Franz Liszt",
                 bpm = 80,
                 imagenPath = "8",
-                mp3Path = "7"
+                mp3Path = "7",
+                precio = 13.99
             ),
             Beat(
                 id = 8,
@@ -70,7 +77,8 @@ object LocalBeatsProvider {
                 artista = "Claude Debussy",
                 bpm = 92,
                 imagenPath = "10",
-                mp3Path = "8"
+                mp3Path = "8",
+                precio = 11.99
             )
         )
     }

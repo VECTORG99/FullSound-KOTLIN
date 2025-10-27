@@ -18,6 +18,11 @@
             app:destination="@id/beatsFragment"
             app:popUpTo="@id/loginFragment"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_loginFragment_to_beatsListaFragment"
+            app:destination="@id/beatsListaFragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
     </fragment>
 
     <fragment
@@ -40,6 +45,39 @@
         tools:layout="@layout/fragment_beats" >
         <action
             android:id="@+id/action_beatsFragment_to_loginFragment"
+            app:destination="@id/loginFragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_beatsFragment_to_beatsListaFragment"
+            app:destination="@id/beatsListaFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/beatsListaFragment"
+        android:name="com.grupo8.fullsound.ui.beats.BeatsListaFragment"
+        android:label="fragment_beats_lista"
+        tools:layout="@layout/fragment_beats_lista" >
+        <action
+            android:id="@+id/action_beatsListaFragment_to_carritoFragment"
+            app:destination="@id/carritoFragment" />
+        <action
+            android:id="@+id/action_beatsListaFragment_to_loginFragment"
+            app:destination="@id/loginFragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/carritoFragment"
+        android:name="com.grupo8.fullsound.ui.carrito.CarritoFragment"
+        android:label="fragment_carrito"
+        tools:layout="@layout/fragment_carrito" >
+        <action
+            android:id="@+id/action_carritoFragment_to_beatsListaFragment"
+            app:destination="@id/beatsListaFragment" />
+        <action
+            android:id="@+id/action_carritoFragment_to_loginFragment"
             app:destination="@id/loginFragment"
             app:popUpTo="@id/loginFragment"
             app:popUpToInclusive="true" />

@@ -101,12 +101,14 @@ class BeatsFragment : Fragment() {
 
         // Botones de navegación
         binding.btnNavBeats.setOnClickListener {
-            // Ya estamos en Beats
+            // Navegar a la lista de beats para comprar
+            findNavController().navigate(R.id.action_beatsFragment_to_beatsListaFragment)
         }
 
         binding.btnNavCarrito.setOnClickListener {
-            // TODO: Navegar al carrito
-            showMessage("Navegando al carrito...")
+            // Navegar al carrito
+            findNavController().navigate(R.id.action_beatsFragment_to_beatsListaFragment)
+            showMessage("Navegando a beats disponibles...")
         }
 
         // Cards CRUD
@@ -115,7 +117,12 @@ class BeatsFragment : Fragment() {
         }
 
         binding.cardLeer.setOnClickListener {
+<<<<<<< Updated upstream
             toggleListaBeats()
+=======
+            // Leer beats - Navegar a la lista de beats
+            findNavController().navigate(R.id.action_beatsFragment_to_beatsListaFragment)
+>>>>>>> Stashed changes
         }
 
         binding.cardActualizar.setOnClickListener {

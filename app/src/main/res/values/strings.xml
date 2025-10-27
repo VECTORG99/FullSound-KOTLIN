@@ -82,4 +82,18 @@
     <string name="invalid_email">Correo electrónico inválido</string>
     <string name="invalid_password">La contraseña debe tener al menos 6 caracteres</string>
     <string name="passwords_dont_match">Las contraseñas no coinciden</string>
+
+    <!-- Carrito -->
+    <string name="carrito">Carrito</string>
+    <string name="carrito_compras">Carrito de Compras</string>
+    <string name="carrito_vacio">Tu carrito está vacío</string>
+    <string name="agrega_beats_carrito">Agrega beats para comenzar</string>
+    <string name="add_carrito">Agregar al Carrito</string>
+    <string name="comprar_ahora">Comprar Ahora</string>
+    <string name="total">Total:</string>
+    <string name="vaciar">Vaciar</string>
+    <string name="comprar">Comprar</string>
+    <string name="cerrar_sesion">Cerrar Sesión</string>
+    <string name="beats_disponibles">Beats Disponibles</string>
+    <string name="no_beats_disponibles">No hay beats disponibles</string>
 </resources>

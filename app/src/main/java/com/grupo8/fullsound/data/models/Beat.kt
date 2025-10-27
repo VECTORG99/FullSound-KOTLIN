@@ -11,6 +11,7 @@ data class Beat(
     val artista: String,
     val bpm: Int,
     val imagenPath: String, // Ruta local o URL de la imagen
-    val mp3Path: String    // Ruta local o URL del archivo mp3
+    val mp3Path: String,    // Ruta local o URL del archivo mp3
+    val precio: Double = 9.99 // Precio del beat
 )
 
