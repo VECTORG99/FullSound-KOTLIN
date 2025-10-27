@@ -17,6 +17,7 @@ import com.grupo8.fullsound.data.repositories.CarritoRepository
 import com.grupo8.fullsound.databinding.FragmentCarritoBinding
 import com.grupo8.fullsound.ui.beats.CarritoViewModelFactory
 import com.grupo8.fullsound.utils.UserSession
+import com.grupo8.fullsound.utils.AnimationHelper
 import kotlinx.coroutines.launch
 import java.util.Locale
 
@@ -49,6 +50,13 @@ class CarritoFragment : Fragment() {
         setupObservers()
         setupButtons()
         setupBottomNavigation()
+        animateEntrance()
+    }
+
+    private fun animateEntrance() {
+        // Animar elementos principales
+        AnimationHelper.fadeIn(binding.rvCarrito, 300)
+        AnimationHelper.scaleUp(binding.cardTotal, 250)
     }
 
     private fun setupRecyclerView() {
@@ -81,35 +89,33 @@ class CarritoFragment : Fragment() {
 
     private fun setupButtons() {
         binding.btnClearCarrito.setOnClickListener {
+            AnimationHelper.animateClick(it)
             confirmClearCarrito()
         }
 
         binding.btnCheckout.setOnClickListener {
+            AnimationHelper.animateClick(it)
             processCheckout()
         }
     }
 
     private fun setupBottomNavigation() {
-        binding.bottomNavigation.setOnItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.navigation_beats -> {
-                    findNavController().navigate(R.id.beatsListaFragment)
-                    true
-                }
-                R.id.navigation_carrito -> {
-                    // Ya estamos aquí
-                    true
-                }
-                R.id.navigation_logout -> {
-                    logout()
-                    true
-                }
-                else -> false
-            }
+        // Botón Logout
+        binding.btnLogout.setOnClickListener {
+            AnimationHelper.animateClick(it)
+            logout()
         }
 
-        // Marcar el item actual
-        binding.bottomNavigation.selectedItemId = R.id.navigation_carrito
+        // Botón Beats Lista
+        binding.btnNavBeatsLista.setOnClickListener {
+            AnimationHelper.animateClick(it)
+            findNavController().navigate(R.id.action_carritoFragment_to_beatsListaFragment)
+        }
+
+        // Botón Carrito (ya estamos aquí)
+        binding.btnNavCarrito.setOnClickListener {
+            // Ya estamos en el carrito
+        }
     }
 
     private fun confirmRemoveItem(item: com.grupo8.fullsound.data.models.CarritoItem) {
@@ -165,15 +171,15 @@ class CarritoFragment : Fragment() {
     }
 
     private fun showEmptyState() {
-        binding.rvCarrito.visibility = View.GONE
-        binding.layoutEmpty.visibility = View.VISIBLE
-        binding.cardTotal.visibility = View.GONE
+        AnimationHelper.fadeOut(binding.rvCarrito)
+        AnimationHelper.fadeOut(binding.cardTotal)
+        AnimationHelper.fadeIn(binding.layoutEmpty, 400)
     }
 
     private fun hideEmptyState() {
-        binding.rvCarrito.visibility = View.VISIBLE
-        binding.layoutEmpty.visibility = View.GONE
-        binding.cardTotal.visibility = View.VISIBLE
+        AnimationHelper.fadeOut(binding.layoutEmpty)
+        AnimationHelper.fadeIn(binding.rvCarrito, 400)
+        AnimationHelper.scaleUp(binding.cardTotal, 250)
     }
 
     private fun logout() {

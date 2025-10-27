@@ -124,11 +124,13 @@ class BeatRepository(private val beatDao: BeatDao) {
                     exampleBeats.forEach { beat ->
                         beatDao.insertBeat(beat)
                     }
-                    // Después de insertar, notificar que se carguen los beats
-                    getAllBeats()
                 }
+                // Cargar beats
+                val beats = beatDao.getAllBeats()
+                _beatsResult.postValue(Resource.Success(beats))
             } catch (e: Exception) {
                 e.printStackTrace()
+                _beatsResult.postValue(Resource.Error("Error al cargar beats: ${e.message}"))
             }
         }
     }

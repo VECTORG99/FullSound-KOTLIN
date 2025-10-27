@@ -68,7 +68,7 @@ sync_project.bat
 
 ### Documentos Disponibles
 
-1. **[CARRITO_COMPRAS_IMPLEMENTADO.md](Documentacion/CARRITO_COMPRAS_IMPLEMENTADO.md)**
+1. **[CARRITO_COMPRAS_IMPLEMENTADO.md](CARRITO_COMPRAS_IMPLEMENTADO.md)**
    - Resumen técnico completo
    - Características implementadas
    - Arquitectura del sistema
@@ -78,17 +78,17 @@ sync_project.bat
    - Cómo usar cada funcionalidad
    - Ejemplos de flujos completos
 
-3. **[INSTRUCCIONES_COMPILACION.md](Documentacion/INSTRUCCIONES_COMPILACION.md)**
+3. **[INSTRUCCIONES_COMPILACION.md](INSTRUCCIONES_COMPILACION.md)**
    - Cómo compilar el proyecto
    - Solución de problemas comunes
    - Checklist de verificación
 
-4. **[LISTA_ARCHIVOS_MODIFICADOS.md](Documentacion/LISTA_ARCHIVOS_MODIFICADOS.md)**
+4. **[LISTA_ARCHIVOS_MODIFICADOS.md](LISTA_ARCHIVOS_MODIFICADOS.md)**
    - Lista completa de archivos creados/modificados
    - Estructura del proyecto actualizada
    - Estadísticas de código
 
-5. **[RESUMEN_IMPLEMENTACION_CARRITO.md](Documentacion/RESUMEN_IMPLEMENTACION_CARRITO.md)**
+5. **[RESUMEN_IMPLEMENTACION_CARRITO.md](RESUMEN_IMPLEMENTACION_CARRITO.md)**
    - Resumen ejecutivo
    - Estado del proyecto
    - Próximos pasos sugeridos
@@ -211,7 +211,7 @@ FullSound/
 ### Error: ViewBinding no funciona
 **Solución**: Clean Project → Rebuild Project
 
-Ver más en: [INSTRUCCIONES_COMPILACION.md](Documentacion/INSTRUCCIONES_COMPILACION.md)
+Ver más en: [INSTRUCCIONES_COMPILACION.md](INSTRUCCIONES_COMPILACION.md)
 
 ---
 
@@ -230,7 +230,7 @@ Ver más en: [INSTRUCCIONES_COMPILACION.md](Documentacion/INSTRUCCIONES_COMPILAC
 
 Si encuentras algún problema:
 1. Revisa la documentación en `/Documentacion/`
-2. Verifica los archivos en [LISTA_ARCHIVOS_MODIFICADOS.md](Documentacion/LISTA_ARCHIVOS_MODIFICADOS.md)
+2. Verifica los archivos en [LISTA_ARCHIVOS_MODIFICADOS.md](LISTA_ARCHIVOS_MODIFICADOS.md)
 3. Ejecuta `sync_project.bat`
 
 ---

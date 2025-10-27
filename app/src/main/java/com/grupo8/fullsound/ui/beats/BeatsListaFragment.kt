@@ -21,6 +21,7 @@ import com.grupo8.fullsound.databinding.FragmentBeatsListaBinding
 import com.grupo8.fullsound.ui.carrito.CarritoViewModel
 import com.grupo8.fullsound.utils.Resource
 import com.grupo8.fullsound.utils.UserSession
+import com.grupo8.fullsound.utils.AnimationHelper
 import kotlinx.coroutines.launch
 
 class BeatsListaFragment : Fragment() {
@@ -54,12 +55,26 @@ class BeatsListaFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setupToolbar()
         setupRecyclerView()
         setupObservers()
         setupBottomNavigation()
+        animateEntrance()
 
         // Cargar beats (primero intentar de la BD, si no hay, cargar de LocalBeatsProvider)
         loadBeats()
+    }
+
+    private fun animateEntrance() {
+        AnimationHelper.fadeIn(binding.rvBeats, 300)
+    }
+
+    private fun setupToolbar() {
+        binding.btnBack.setOnClickListener {
+            AnimationHelper.animateClick(it)
+            // Navegar de regreso al CRUD de Beats (BeatsFragment)
+            findNavController().navigate(R.id.action_beatsListaFragment_to_beatsFragment)
+        }
     }
 
     private fun setupRecyclerView() {
@@ -133,26 +148,22 @@ class BeatsListaFragment : Fragment() {
     }
 
     private fun setupBottomNavigation() {
-        binding.bottomNavigation.setOnItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.navigation_beats -> {
-                    // Ya estamos aquí
-                    true
-                }
-                R.id.navigation_carrito -> {
-                    findNavController().navigate(R.id.carritoFragment)
-                    true
-                }
-                R.id.navigation_logout -> {
-                    logout()
-                    true
-                }
-                else -> false
-            }
+        // Botón Logout
+        binding.btnLogout.setOnClickListener {
+            AnimationHelper.animateClick(it)
+            logout()
         }
 
-        // Marcar el item actual
-        binding.bottomNavigation.selectedItemId = R.id.navigation_beats
+        // Botón Beats Lista (ya estamos aquí)
+        binding.btnNavBeatsLista.setOnClickListener {
+            // Ya estamos en la lista de beats
+        }
+
+        // Botón Carrito
+        binding.btnNavCarrito.setOnClickListener {
+            AnimationHelper.animateClick(it)
+            findNavController().navigate(R.id.action_beatsListaFragment_to_carritoFragment)
+        }
     }
 
     private fun logout() {

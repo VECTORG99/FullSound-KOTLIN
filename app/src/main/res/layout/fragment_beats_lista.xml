@@ -7,62 +7,132 @@
     android:background="@color/md_theme_background"
     android:orientation="vertical">
 
-    <!-- Header -->
-    <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimaryContainer"
-        android:elevation="4dp"
-        app:title="@string/beats_disponibles"
-        app:titleTextColor="?attr/colorOnPrimaryContainer" />
-
-    <!-- RecyclerView de Beats -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_beats"
+    <!-- Contenedor con botón de atrás y RecyclerView -->
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:clipToPadding="false"
-        android:padding="8dp"
-        tools:listitem="@layout/item_beat" />
+        android:layout_weight="1">
 
-    <!-- Mensaje vacío -->
-    <LinearLayout
-        android:id="@+id/layout_empty"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:padding="32dp"
-        android:visibility="gone">
+        <!-- RecyclerView de Beats -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_beats"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:padding="8dp"
+            android:paddingTop="72dp"
+            tools:listitem="@layout/item_beat" />
 
-        <com.google.android.material.imageview.ShapeableImageView
-            android:layout_width="120dp"
-            android:layout_height="120dp"
-            android:alpha="0.5"
-            android:src="@drawable/ic_album"
-            app:tint="?attr/colorOnSurfaceVariant" />
+        <!-- Mensaje vacío -->
+        <LinearLayout
+            android:id="@+id/layout_empty"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="32dp"
+            android:visibility="gone">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="@string/no_beats_disponibles"
-            android:textAppearance="?attr/textAppearanceTitleMedium"
-            android:textColor="?attr/colorOnSurfaceVariant" />
+            <com.google.android.material.imageview.ShapeableImageView
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:alpha="0.5"
+                android:src="@drawable/ic_album"
+                app:tint="?attr/colorOnSurfaceVariant" />
 
-    </LinearLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/no_beats_disponibles"
+                android:textAppearance="?attr/textAppearanceTitleMedium"
+                android:textColor="?attr/colorOnSurfaceVariant" />
 
-    <!-- Barra de Navegación Inferior -->
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottom_navigation"
+        </LinearLayout>
+
+        <!-- Botón de volver atrás flotante -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_back"
+            style="@style/Widget.Material3.Button.IconButton.Filled"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_gravity="top|start"
+            android:layout_margin="16dp"
+            android:contentDescription="@string/volver"
+            android:elevation="4dp"
+            app:backgroundTint="@color/md_theme_primaryContainer"
+            app:icon="@drawable/ic_arrow_back"
+            app:iconGravity="textStart"
+            app:iconPadding="0dp"
+            app:iconSize="24dp"
+            app:iconTint="@color/md_theme_onBackground" />
+
+    </FrameLayout>
+
+    <!-- Bottom Navigation Bar con Material 3 -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/bottom_nav_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/colorSurface"
-        app:labelVisibilityMode="labeled"
-        app:menu="@menu/bottom_nav_menu" />
+        app:cardBackgroundColor="?attr/colorSurfaceVariant"
+        app:cardCornerRadius="0dp"
+        app:cardElevation="8dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:paddingStart="16dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="16dp">
+
+            <!-- Botón Logout -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_logout"
+                style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:layout_marginEnd="16dp"
+                android:contentDescription="@string/logout"
+                app:icon="@drawable/ic_logout"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp"
+                app:iconSize="24dp"
+                app:iconTint="?attr/colorOnSecondaryContainer" />
+
+            <!-- Botón Beats Lista (activo) -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_nav_beats_lista"
+                style="@style/Widget.Material3.Button.IconButton.Filled"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:layout_marginEnd="16dp"
+                android:contentDescription="@string/beats_disponibles"
+                app:backgroundTint="?attr/colorPrimary"
+                app:icon="@drawable/ic_album"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp"
+                app:iconSize="24dp"
+                app:iconTint="?attr/colorOnPrimary" />
+
+            <!-- Botón Carrito -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_nav_carrito"
+                style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:contentDescription="@string/carrito"
+                app:icon="@drawable/ic_shopping_bag"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp"
+                app:iconSize="24dp"
+                app:iconTint="?attr/colorOnSecondaryContainer" />
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
 
 </LinearLayout>
 

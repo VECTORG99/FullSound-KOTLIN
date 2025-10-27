@@ -9,14 +9,6 @@
     tools:context=".ui.carrito.CarritoFragment">
 
     <!-- Header -->
-    <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimaryContainer"
-        android:elevation="4dp"
-        app:title="@string/carrito_compras"
-        app:titleTextColor="?attr/colorOnPrimaryContainer" />
 
     <!-- Contenido Principal -->
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -152,14 +144,70 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- Barra de Navegación Inferior -->
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottom_navigation"
+    <!-- Bottom Navigation Bar con Material 3 -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/bottom_nav_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/colorSurface"
-        app:labelVisibilityMode="labeled"
-        app:menu="@menu/bottom_nav_menu" />
+        app:cardBackgroundColor="?attr/colorSurfaceVariant"
+        app:cardCornerRadius="0dp"
+        app:cardElevation="8dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:paddingStart="16dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="16dp">
+
+            <!-- Botón Logout -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_logout"
+                style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:layout_marginEnd="16dp"
+                android:contentDescription="@string/logout"
+                app:icon="@drawable/ic_logout"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp"
+                app:iconSize="24dp"
+                app:iconTint="?attr/colorOnSecondaryContainer" />
+
+            <!-- Botón Beats Lista -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_nav_beats_lista"
+                style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:layout_marginEnd="16dp"
+                android:contentDescription="@string/beats_disponibles"
+                app:icon="@drawable/ic_album"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp"
+                app:iconSize="24dp"
+                app:iconTint="?attr/colorOnSecondaryContainer" />
+
+            <!-- Botón Carrito (activo) -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_nav_carrito"
+                style="@style/Widget.Material3.Button.IconButton.Filled"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:contentDescription="@string/carrito"
+                app:backgroundTint="?attr/colorPrimary"
+                app:icon="@drawable/ic_shopping_bag"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp"
+                app:iconSize="24dp"
+                app:iconTint="?attr/colorOnPrimary" />
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
 
 </LinearLayout>
 

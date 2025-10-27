@@ -433,34 +433,240 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal"
-                        android:padding="20dp">
+                        android:orientation="vertical">
 
-                        <com.google.android.material.imageview.ShapeableImageView
-                            android:layout_width="56dp"
-                            android:layout_height="56dp"
-                            android:background="?attr/colorTertiary"
-                            android:padding="12dp"
-                            android:src="@drawable/ic_album"
-                            app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Full"
-                            app:tint="?attr/colorOnTertiary" />
-
+                        <!-- Header del Card Actualizar -->
                         <LinearLayout
-                            android:layout_width="0dp"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="20dp"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:padding="20dp">
 
-                            <TextView
-                                android:id="@+id/btn_actualizar"
-                                android:layout_width="wrap_content"
+                            <com.google.android.material.imageview.ShapeableImageView
+                                android:layout_width="56dp"
+                                android:layout_height="56dp"
+                                android:background="?attr/colorTertiary"
+                                android:padding="12dp"
+                                android:src="@drawable/ic_album"
+                                app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Full"
+                                app:tint="?attr/colorOnTertiary" />
+
+                            <LinearLayout
+                                android:layout_width="0dp"
                                 android:layout_height="wrap_content"
-                                android:text="@string/actualizar_beat"
-                                android:textAppearance="?attr/textAppearanceTitleMedium"
-                                android:textColor="?attr/colorOnSurface"
-                                android:textStyle="bold" />
+                                android:layout_marginStart="20dp"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/btn_actualizar"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/actualizar_beat"
+                                    android:textAppearance="?attr/textAppearanceTitleMedium"
+                                    android:textColor="?attr/colorOnSurface"
+                                    android:textStyle="bold" />
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                        <!-- Formulario Actualizar Beat (Expansible) -->
+                        <LinearLayout
+                            android:id="@+id/form_actualizar_beat"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="20dp"
+                            android:paddingTop="0dp"
+                            android:visibility="gone">
+
+                            <!-- Campo ID para buscar -->
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:id="@+id/input_id_actualizar"
+                                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="16dp"
+                                android:hint="@string/id_beat_hint"
+                                app:boxStrokeColor="?attr/colorPrimary"
+                                app:hintTextColor="?attr/colorPrimary"
+                                app:endIconMode="custom"
+                                app:endIconDrawable="@android:drawable/ic_menu_search">
+
+                                <com.google.android.material.textfield.TextInputEditText
+                                    android:id="@+id/edit_id_actualizar"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:inputType="number"
+                                    android:maxLines="1" />
+
+                            </com.google.android.material.textfield.TextInputLayout>
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btn_buscar_actualizar"
+                                style="@style/Widget.Material3.Button.OutlinedButton"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="16dp"
+                                android:text="@string/buscar_beat"
+                                app:icon="@android:drawable/ic_menu_search"
+                                app:iconGravity="textStart" />
+
+                            <!-- Card de información del beat encontrado -->
+                            <com.google.android.material.card.MaterialCardView
+                                android:id="@+id/card_beat_actualizar_info"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="16dp"
+                                android:visibility="gone"
+                                app:cardBackgroundColor="?attr/colorSurface"
+                                app:cardCornerRadius="12dp"
+                                app:cardElevation="2dp">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:padding="16dp">
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginBottom="8dp"
+                                        android:text="@string/beat_encontrado"
+                                        android:textAppearance="?attr/textAppearanceTitleSmall"
+                                        android:textColor="?attr/colorPrimary"
+                                        android:textStyle="bold" />
+
+                                    <TextView
+                                        android:id="@+id/txt_titulo_actualizar_actual"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:textAppearance="?attr/textAppearanceBodyMedium"
+                                        android:textColor="?attr/colorOnSurface"
+                                        tools:text="Título: Beat Example" />
+
+                                    <TextView
+                                        android:id="@+id/txt_artista_actualizar_actual"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:textAppearance="?attr/textAppearanceBodyMedium"
+                                        android:textColor="?attr/colorOnSurface"
+                                        tools:text="Artista: Artist Name" />
+
+                                    <TextView
+                                        android:id="@+id/txt_bpm_actualizar_actual"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:textAppearance="?attr/textAppearanceBodyMedium"
+                                        android:textColor="?attr/colorOnSurface"
+                                        tools:text="BPM: 120" />
+
+                                </LinearLayout>
+
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <!-- Campos de edición -->
+                            <LinearLayout
+                                android:id="@+id/layout_campos_actualizar"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:visibility="gone">
+
+                                <!-- Campo Título -->
+                                <com.google.android.material.textfield.TextInputLayout
+                                    android:id="@+id/input_titulo_actualizar"
+                                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginBottom="16dp"
+                                    android:hint="@string/titulo_beat_hint"
+                                    app:boxStrokeColor="?attr/colorPrimary"
+                                    app:hintTextColor="?attr/colorPrimary">
+
+                                    <com.google.android.material.textfield.TextInputEditText
+                                        android:id="@+id/edit_titulo_actualizar"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:inputType="text"
+                                        android:maxLines="1" />
+
+                                </com.google.android.material.textfield.TextInputLayout>
+
+                                <!-- Campo Artista -->
+                                <com.google.android.material.textfield.TextInputLayout
+                                    android:id="@+id/input_artista_actualizar"
+                                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginBottom="16dp"
+                                    android:hint="@string/artista_hint"
+                                    app:boxStrokeColor="?attr/colorPrimary"
+                                    app:hintTextColor="?attr/colorPrimary">
+
+                                    <com.google.android.material.textfield.TextInputEditText
+                                        android:id="@+id/edit_artista_actualizar"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:inputType="text"
+                                        android:maxLines="1" />
+
+                                </com.google.android.material.textfield.TextInputLayout>
+
+                                <!-- Campo BPM -->
+                                <com.google.android.material.textfield.TextInputLayout
+                                    android:id="@+id/input_bpm_actualizar"
+                                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginBottom="24dp"
+                                    android:hint="@string/bpm_hint"
+                                    app:boxStrokeColor="?attr/colorPrimary"
+                                    app:hintTextColor="?attr/colorPrimary">
+
+                                    <com.google.android.material.textfield.TextInputEditText
+                                        android:id="@+id/edit_bpm_actualizar"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:inputType="number"
+                                        android:maxLines="1" />
+
+                                </com.google.android.material.textfield.TextInputLayout>
+
+                                <!-- Botones de Acción -->
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal"
+                                    android:gravity="center_vertical"
+                                    android:weightSum="2">
+
+                                    <com.google.android.material.button.MaterialButton
+                                        android:id="@+id/btn_cancelar_actualizar"
+                                        style="@style/Widget.Material3.Button.TextButton"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:layout_marginEnd="8dp"
+                                        android:text="@string/cancelar"
+                                        android:textColor="?attr/colorOnSurfaceVariant" />
+
+                                    <com.google.android.material.button.MaterialButton
+                                        android:id="@+id/btn_confirmar_actualizar"
+                                        style="@style/Widget.Material3.Button.ElevatedButton"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:layout_marginStart="8dp"
+                                        android:text="@string/actualizar"
+                                        app:icon="@android:drawable/ic_menu_save" />
+
+                                </LinearLayout>
+
+                            </LinearLayout>
 
                         </LinearLayout>
 
@@ -709,8 +915,6 @@
             android:paddingBottom="16dp">
 
             <!-- Botón Logout -->
-
-            <!-- Botón Beats (activo) -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_logout"
                 style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
@@ -724,13 +928,14 @@
                 app:iconSize="24dp"
                 app:iconTint="?attr/colorOnSecondaryContainer" />
 
+            <!-- Botón Beats Lista (activo) -->
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_nav_beats"
+                android:id="@+id/btn_nav_beats_lista"
                 style="@style/Widget.Material3.Button.IconButton.Filled"
                 android:layout_width="56dp"
                 android:layout_height="56dp"
                 android:layout_marginEnd="16dp"
-                android:contentDescription="@string/beats"
+                android:contentDescription="@string/beats_disponibles"
                 app:backgroundTint="?attr/colorPrimary"
                 app:icon="@drawable/ic_album"
                 app:iconGravity="textStart"
@@ -744,7 +949,7 @@
                 style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
                 android:layout_width="56dp"
                 android:layout_height="56dp"
-                android:contentDescription="@string/cart"
+                android:contentDescription="@string/carrito"
                 app:icon="@drawable/ic_shopping_bag"
                 app:iconGravity="textStart"
                 app:iconPadding="0dp"

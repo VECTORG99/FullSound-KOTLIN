@@ -17,6 +17,7 @@ import com.grupo8.fullsound.data.local.AppDatabase
 import com.grupo8.fullsound.data.repositories.UserRepository
 import com.grupo8.fullsound.databinding.FragmentRegisterBinding
 import com.grupo8.fullsound.utils.Resource
+import com.grupo8.fullsound.utils.AnimationHelper
 
 class RegisterFragment : Fragment() {
 
@@ -41,6 +42,20 @@ class RegisterFragment : Fragment() {
         startRgbTitleAnimation()
         setupObservers()
         setupListeners()
+        animateEntrance()
+    }
+
+    private fun animateEntrance() {
+        // Animar elementos en secuencia
+        val elementsToAnimate = listOf(
+            binding.txtTitulo,
+            binding.usernameInput,
+            binding.emailInput,
+            binding.passwordInput,
+            binding.registerButton,
+            binding.loginText
+        )
+        AnimationHelper.animateListSequentially(elementsToAnimate, 80, AnimationHelper.AnimationType.FADE)
     }
 
     private fun startRgbTitleAnimation() {
@@ -128,6 +143,7 @@ class RegisterFragment : Fragment() {
         })
 
         binding.registerButton.setOnClickListener {
+            AnimationHelper.animateClick(it)
             validateForm()
             if (viewModel.registerFormState.value?.isDataValid == true) {
                 val email = binding.emailEditText.text.toString()
@@ -138,6 +154,7 @@ class RegisterFragment : Fragment() {
         }
 
         binding.loginText.setOnClickListener {
+            AnimationHelper.animateClick(it)
             findNavController().navigate(R.id.action_registerFragment_to_loginFragment)
         }
     }

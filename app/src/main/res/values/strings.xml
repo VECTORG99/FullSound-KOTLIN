@@ -50,6 +50,10 @@
     <string name="beat_a_eliminar">Beat a Eliminar</string>
     <string name="eliminar">Eliminar</string>
 
+    <!-- Actualizar Beat -->
+    <string name="beat_encontrado">Beat Encontrado</string>
+    <string name="actualizar">Actualizar</string>
+
     <!-- Item Beat -->
     <string name="imagen_beat_desc">Imagen del beat</string>
     <string name="titulo_beat_default">Título del Beat</string>
@@ -65,6 +69,7 @@
     <string name="audio_path_default">/path/to/audio.mp3</string>
     <string name="total_beats">Total de Beats: 0</string>
     <string name="no_beats_disponibles">No hay beats disponibles</string>
+    <string name="volver">Volver</string>
 
     <!-- Register Fragment -->
     <string name="register">Registrarse</string>
@@ -95,5 +100,4 @@
     <string name="comprar">Comprar</string>
     <string name="cerrar_sesion">Cerrar Sesión</string>
     <string name="beats_disponibles">Beats Disponibles</string>
-    <string name="no_beats_disponibles">No hay beats disponibles</string>
 </resources>

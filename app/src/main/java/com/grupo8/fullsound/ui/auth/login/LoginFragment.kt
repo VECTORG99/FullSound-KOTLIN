@@ -20,6 +20,7 @@ import com.grupo8.fullsound.data.repositories.UserRepository
 import com.grupo8.fullsound.databinding.FragmentLoginBinding
 import com.grupo8.fullsound.utils.Resource
 import com.grupo8.fullsound.utils.UserSession
+import com.grupo8.fullsound.utils.AnimationHelper
 
 class LoginFragment : Fragment() {
 
@@ -44,6 +45,19 @@ class LoginFragment : Fragment() {
         startRgbTitleAnimation()
         setupObservers()
         setupListeners()
+        animateEntrance()
+    }
+
+    private fun animateEntrance() {
+        // Animar elementos en secuencia
+        val elementsToAnimate = listOf(
+            binding.txtTitulo,
+            binding.emailInput,
+            binding.passwordInput,
+            binding.loginButton,
+            binding.registerText
+        )
+        AnimationHelper.animateListSequentially(elementsToAnimate, 80, AnimationHelper.AnimationType.FADE)
     }
 
     private fun startRgbTitleAnimation() {
@@ -137,6 +151,7 @@ class LoginFragment : Fragment() {
         })
 
         binding.loginButton.setOnClickListener {
+            AnimationHelper.animateClick(it)
             validateForm()
             if (viewModel.loginFormState.value?.isDataValid == true) {
                 val email = binding.emailEditText.text.toString()
@@ -146,6 +161,7 @@ class LoginFragment : Fragment() {
         }
 
         binding.registerText.setOnClickListener {
+            AnimationHelper.animateClick(it)
             findNavController().navigate(R.id.action_loginFragment_to_registerFragment)
         }
 

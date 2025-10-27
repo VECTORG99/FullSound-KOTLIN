@@ -20,6 +20,7 @@ import com.grupo8.fullsound.data.repositories.BeatRepository
 import com.grupo8.fullsound.databinding.FragmentBeatsBinding
 import com.grupo8.fullsound.utils.Resource
 import com.grupo8.fullsound.utils.UserSession
+import com.grupo8.fullsound.utils.AnimationHelper
 import java.io.File
 import java.io.FileOutputStream
 
@@ -35,7 +36,16 @@ class BeatsFragment : Fragment() {
     }
 
     // Adaptador para la lista de beats
-    private val beatsAdapter = BeatsAdapter()
+    private val beatsAdapter = BeatsAdapter(
+        onAddToCarrito = { beat ->
+            // TODO: Implementar agregar al carrito
+            showMessage("Agregado al carrito: ${beat.titulo}")
+        },
+        onComprar = { beat ->
+            // TODO: Implementar compra directa
+            showMessage("Comprando: ${beat.titulo}")
+        }
+    )
 
     // URIs de archivos seleccionados
     private var selectedImageUri: Uri? = null
@@ -43,6 +53,9 @@ class BeatsFragment : Fragment() {
 
     // Beat seleccionado para eliminar
     private var beatToDelete: com.grupo8.fullsound.data.models.Beat? = null
+
+    // Beat seleccionado para actualizar
+    private var beatToUpdate: com.grupo8.fullsound.data.models.Beat? = null
 
     // Launcher para seleccionar imagen
     private val selectImageLauncher = registerForActivityResult(
@@ -81,11 +94,8 @@ class BeatsFragment : Fragment() {
         setupObservers()
         setupClickListeners()
 
-        // Insertar beats de ejemplo si no hay ninguno
+        // Insertar beats de ejemplo si no existen y cargar todos los beats
         viewModel.insertExampleBeats()
-
-        // Cargar todos los beats al iniciar
-        viewModel.getAllBeats()
     }
 
     private fun setupRecyclerView() {
@@ -103,15 +113,12 @@ class BeatsFragment : Fragment() {
         }
 
         // Botones de navegación
-        binding.btnNavBeats.setOnClickListener {
-            // Navegar a la lista de beats para comprar
-            findNavController().navigate(R.id.action_beatsFragment_to_beatsListaFragment)
+        binding.btnNavBeatsLista.setOnClickListener {
         }
 
         binding.btnNavCarrito.setOnClickListener {
             // Navegar al carrito
-            findNavController().navigate(R.id.action_beatsFragment_to_beatsListaFragment)
-            showMessage("Navegando a beats disponibles...")
+            findNavController().navigate(R.id.action_beatsFragment_to_carritoFragment)
         }
 
         // Cards CRUD
@@ -120,17 +127,11 @@ class BeatsFragment : Fragment() {
         }
 
         binding.cardLeer.setOnClickListener {
-<<<<<<< Updated upstream
             toggleListaBeats()
-=======
-            // Leer beats - Navegar a la lista de beats
-            findNavController().navigate(R.id.action_beatsFragment_to_beatsListaFragment)
->>>>>>> Stashed changes
         }
 
         binding.cardActualizar.setOnClickListener {
-            // TODO: Navegar a actualizar beat
-            showMessage("Actualizar beat")
+            toggleFormActualizar()
         }
 
         binding.cardEliminar.setOnClickListener {
@@ -167,32 +168,50 @@ class BeatsFragment : Fragment() {
         binding.btnConfirmarEliminar.setOnClickListener {
             confirmarEliminarBeat()
         }
-    }
 
-    private fun toggleFormCrear() {
-        if (binding.formCrearBeat.visibility == View.GONE) {
-            binding.formCrearBeat.visibility = View.VISIBLE
-        } else {
-            binding.formCrearBeat.visibility = View.GONE
+        // Botones del formulario de actualizar
+        binding.btnBuscarActualizar.setOnClickListener {
+            buscarBeatParaActualizar()
+        }
+
+        binding.btnCancelarActualizar.setOnClickListener {
+            hideFormActualizar()
+        }
+
+        binding.btnConfirmarActualizar.setOnClickListener {
+            confirmarActualizarBeat()
         }
     }
 
+    private fun toggleFormCrear() {
+        val isVisible = binding.formCrearBeat.visibility == View.VISIBLE
+        AnimationHelper.toggleVisibility(
+            binding.formCrearBeat,
+            !isVisible,
+            AnimationHelper.AnimationType.SLIDE
+        )
+    }
+
     private fun toggleListaBeats() {
-        if (binding.containerListaBeats.visibility == View.GONE) {
-            binding.containerListaBeats.visibility = View.VISIBLE
+        val isVisible = binding.containerListaBeats.visibility == View.VISIBLE
+        AnimationHelper.toggleVisibility(
+            binding.containerListaBeats,
+            !isVisible,
+            AnimationHelper.AnimationType.FADE
+        )
+        if (!isVisible) {
             // Recargar beats al abrir
             viewModel.getAllBeats()
-        } else {
-            binding.containerListaBeats.visibility = View.GONE
         }
     }
 
     private fun toggleFormEliminar() {
-        if (binding.formEliminarBeat.visibility == View.GONE) {
-            binding.formEliminarBeat.visibility = View.VISIBLE
-        } else {
-            binding.formEliminarBeat.visibility = View.GONE
-        }
+        val isVisible = binding.formEliminarBeat.visibility == View.VISIBLE
+        AnimationHelper.toggleVisibility(
+            binding.formEliminarBeat,
+            !isVisible,
+            AnimationHelper.AnimationType.SLIDE
+        )
     }
 
     private fun hideFormEliminar() {
@@ -228,12 +247,13 @@ class BeatsFragment : Fragment() {
 
     private fun mostrarBeatParaEliminar(beat: com.grupo8.fullsound.data.models.Beat) {
         beatToDelete = beat
-        binding.cardBeatInfo.visibility = View.VISIBLE
         binding.txtTituloEliminar.text = beat.titulo
         binding.txtArtistaEliminar.text = "Artista: ${beat.artista}"
         binding.txtBpmEliminar.text = "BPM: ${beat.bpm}"
         // Usar siempre el placeholder
         binding.imgBeatEliminar.setImageResource(R.drawable.image)
+        // Mostrar con animación
+        AnimationHelper.scaleUp(binding.cardBeatInfo)
     }
 
     private fun confirmarEliminarBeat() {
@@ -242,6 +262,120 @@ class BeatsFragment : Fragment() {
             viewModel.deleteBeat(beat)
             hideFormEliminar()
         } ?: showMessage("No hay beat seleccionado para eliminar")
+    }
+
+    // MÉTODOS PARA ACTUALIZAR BEAT
+    private fun toggleFormActualizar() {
+        val isVisible = binding.formActualizarBeat.visibility == View.VISIBLE
+        AnimationHelper.toggleVisibility(
+            binding.formActualizarBeat,
+            !isVisible,
+            AnimationHelper.AnimationType.SLIDE
+        )
+    }
+
+    private fun hideFormActualizar() {
+        binding.formActualizarBeat.visibility = View.GONE
+        limpiarFormularioActualizar()
+    }
+
+    private fun limpiarFormularioActualizar() {
+        binding.editIdActualizar.text?.clear()
+        binding.inputIdActualizar.error = null
+        binding.cardBeatActualizarInfo.visibility = View.GONE
+        binding.layoutCamposActualizar.visibility = View.GONE
+        binding.editTituloActualizar.text?.clear()
+        binding.editArtistaActualizar.text?.clear()
+        binding.editBpmActualizar.text?.clear()
+        beatToUpdate = null
+    }
+
+    private fun buscarBeatParaActualizar() {
+        val idText = binding.editIdActualizar.text.toString().trim()
+
+        if (idText.isEmpty()) {
+            binding.inputIdActualizar.error = "Ingresa el ID del beat"
+            return
+        }
+
+        val beatId = idText.toIntOrNull()
+        if (beatId == null || beatId <= 0) {
+            binding.inputIdActualizar.error = "Ingresa un ID válido"
+            return
+        }
+
+        binding.inputIdActualizar.error = null
+        // Buscar el beat por ID
+        viewModel.getBeatById(beatId)
+    }
+
+    private fun mostrarBeatParaActualizar(beat: com.grupo8.fullsound.data.models.Beat) {
+        beatToUpdate = beat
+
+        // Mostrar información actual
+        binding.txtTituloActualizarActual.text = "Título: ${beat.titulo}"
+        binding.txtArtistaActualizarActual.text = "Artista: ${beat.artista}"
+        binding.txtBpmActualizarActual.text = "BPM: ${beat.bpm}"
+        AnimationHelper.scaleUp(binding.cardBeatActualizarInfo)
+
+        // Mostrar campos de edición con valores actuales
+        binding.editTituloActualizar.setText(beat.titulo)
+        binding.editArtistaActualizar.setText(beat.artista)
+        binding.editBpmActualizar.setText(beat.bpm.toString())
+        AnimationHelper.fadeIn(binding.layoutCamposActualizar)
+    }
+
+    private fun confirmarActualizarBeat() {
+        val beat = beatToUpdate
+        if (beat == null) {
+            showMessage("No hay beat seleccionado para actualizar")
+            return
+        }
+
+        // Validar campos
+        val titulo = binding.editTituloActualizar.text.toString().trim()
+        val artista = binding.editArtistaActualizar.text.toString().trim()
+        val bpmText = binding.editBpmActualizar.text.toString().trim()
+
+        var isValid = true
+
+        if (titulo.isEmpty()) {
+            binding.inputTituloActualizar.error = "El título es requerido"
+            isValid = false
+        } else {
+            binding.inputTituloActualizar.error = null
+        }
+
+        if (artista.isEmpty()) {
+            binding.inputArtistaActualizar.error = "El artista es requerido"
+            isValid = false
+        } else {
+            binding.inputArtistaActualizar.error = null
+        }
+
+        val bpm = bpmText.toIntOrNull()
+        if (bpm == null || bpm <= 0) {
+            binding.inputBpmActualizar.error = "Ingresa un BPM válido"
+            isValid = false
+        } else {
+            binding.inputBpmActualizar.error = null
+        }
+
+        if (!isValid) {
+            return
+        }
+
+        // Crear beat actualizado
+        val beatActualizado = beat.copy(
+            titulo = titulo,
+            artista = artista,
+            bpm = bpm!!
+        )
+
+        // Actualizar en la base de datos
+        viewModel.updateBeat(beatActualizado)
+        hideFormActualizar()
+        showMessage("Beat actualizado exitosamente")
     }
 
     private fun hideFormCrear() {
@@ -437,12 +571,9 @@ class BeatsFragment : Fragment() {
             when (result) {
                 is Resource.Loading -> {
                     // Mostrar cargando
-                    android.util.Log.d("BeatsFragment", "Cargando beats...")
                 }
                 is Resource.Success -> {
                     val beats = result.data ?: emptyList()
-                    android.util.Log.d("BeatsFragment", "Beats cargados: ${beats.size}")
-
                     // Actualizar el total de beats en el header
                     binding.txtTituloBeats.text = "Beats (${beats.size})"
                     // Actualizar el total en la sección de leer
@@ -450,22 +581,18 @@ class BeatsFragment : Fragment() {
 
                     // Actualizar el adaptador con los beats
                     beatsAdapter.submitList(beats)
-                    android.util.Log.d("BeatsFragment", "Lista enviada al adaptador")
 
                     // Mostrar/ocultar mensaje de "no hay beats"
                     if (beats.isEmpty()) {
                         binding.recyclerBeats.visibility = View.GONE
                         binding.txtNoBeats.visibility = View.VISIBLE
-                        android.util.Log.d("BeatsFragment", "No hay beats, mostrando mensaje")
                     } else {
                         binding.recyclerBeats.visibility = View.VISIBLE
                         binding.txtNoBeats.visibility = View.GONE
-                        android.util.Log.d("BeatsFragment", "Mostrando ${beats.size} beats en RecyclerView")
                     }
                 }
                 is Resource.Error -> {
                     // Mostrar error
-                    android.util.Log.e("BeatsFragment", "Error al cargar beats: ${result.message}")
                     showMessage(result.message ?: "Error al cargar beats")
                     binding.recyclerBeats.visibility = View.GONE
                     binding.txtNoBeats.visibility = View.VISIBLE
@@ -481,7 +608,12 @@ class BeatsFragment : Fragment() {
                         // Si estamos buscando un beat para eliminar, mostrarlo
                         if (binding.formEliminarBeat.visibility == View.VISIBLE) {
                             mostrarBeatParaEliminar(beat)
-                        } else {
+                        }
+                        // Si estamos buscando un beat para actualizar, mostrarlo
+                        else if (binding.formActualizarBeat.visibility == View.VISIBLE) {
+                            mostrarBeatParaActualizar(beat)
+                        }
+                        else {
                             showMessage("Operación exitosa")
                             viewModel.getAllBeats()
                         }
@@ -493,6 +625,12 @@ class BeatsFragment : Fragment() {
                     if (binding.formEliminarBeat.visibility == View.VISIBLE) {
                         binding.cardBeatInfo.visibility = View.GONE
                         beatToDelete = null
+                    }
+                    // Si estamos buscando un beat para actualizar y no se encuentra
+                    else if (binding.formActualizarBeat.visibility == View.VISIBLE) {
+                        binding.cardBeatActualizarInfo.visibility = View.GONE
+                        binding.layoutCamposActualizar.visibility = View.GONE
+                        beatToUpdate = null
                     }
                 }
                 else -> {}

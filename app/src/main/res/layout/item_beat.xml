@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-<<<<<<< Updated upstream
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="16dp"
@@ -35,36 +34,10 @@
                 android:src="@drawable/image" />
 
         </com.google.android.material.card.MaterialCardView>
-=======
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    app:cardBackgroundColor="?attr/colorSurfaceVariant"
-    app:cardCornerRadius="16dp"
-    app:cardElevation="4dp">
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="16dp">
-
-        <!-- Imagen del Beat -->
-        <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/img_beat"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/ic_album"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Medium" />
->>>>>>> Stashed changes
 
         <!-- Título del Beat -->
         <TextView
             android:id="@+id/txt_titulo"
-<<<<<<< Updated upstream
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
@@ -198,97 +171,39 @@
 
         </LinearLayout>
 
-    </LinearLayout>
-
-</com.google.android.material.card.MaterialCardView>
-=======
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:layout_marginEnd="8dp"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:textAppearance="?attr/textAppearanceTitleMedium"
-            android:textColor="?attr/colorOnSurface"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/img_beat"
-            app:layout_constraintTop_toTopOf="@id/img_beat"
-            tools:text="Classical Dreams" />
-
-        <!-- Artista del Beat -->
-        <TextView
-            android:id="@+id/txt_artista"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:textAppearance="?attr/textAppearanceBodyMedium"
-            android:textColor="?attr/colorOnSurfaceVariant"
-            app:layout_constraintEnd_toEndOf="@id/txt_titulo"
-            app:layout_constraintStart_toStartOf="@id/txt_titulo"
-            app:layout_constraintTop_toBottomOf="@id/txt_titulo"
-            tools:text="Ludwig van Beethoven" />
-
-        <!-- BPM del Beat -->
-        <TextView
-            android:id="@+id/txt_bpm"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:textAppearance="?attr/textAppearanceBodySmall"
-            android:textColor="?attr/colorOnSurfaceVariant"
-            app:layout_constraintStart_toStartOf="@id/txt_titulo"
-            app:layout_constraintTop_toBottomOf="@id/txt_artista"
-            tools:text="95 BPM" />
-
-        <!-- Precio del Beat -->
-        <TextView
-            android:id="@+id/txt_precio"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?attr/textAppearanceTitleLarge"
-            android:textColor="?attr/colorPrimary"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@id/img_beat"
-            app:layout_constraintStart_toStartOf="@id/txt_titulo"
-            tools:text="$9.99" />
-
-        <!-- Botones de Acción -->
+        <!-- Botones de acción -->
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="16dp"
             android:orientation="horizontal"
-            android:gravity="end"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/img_beat">
+            android:gravity="center">
 
             <!-- Botón Agregar al Carrito -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_add_carrito"
-                style="@style/Widget.Material3.Button.TonalButton"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:layout_marginEnd="8dp"
                 android:text="@string/add_carrito"
-                app:icon="@drawable/ic_shopping_bag"
-                app:iconGravity="textStart" />
+                app:icon="@android:drawable/ic_input_add"
+                app:iconGravity="textStart"
+                style="@style/Widget.Material3.Button.OutlinedButton" />
 
-            <!-- Botón Comprar Ahora -->
+            <!-- Botón Comprar -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_comprar"
-                style="@style/Widget.Material3.Button"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="@string/comprar_ahora" />
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:text="@string/comprar"
+                app:icon="@android:drawable/ic_menu_send"
+                app:iconGravity="textStart" />
 
         </LinearLayout>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
 
 </com.google.android.material.card.MaterialCardView>
-
->>>>>>> Stashed changes
