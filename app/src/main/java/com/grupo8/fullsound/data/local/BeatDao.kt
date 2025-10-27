@@ -14,7 +14,7 @@ interface BeatDao {
     suspend fun insertBeat(beat: Beat)
 
     @Query("SELECT * FROM beats WHERE id = :beatId")
-    suspend fun getBeatById(beatId: String): Beat?
+    suspend fun getBeatById(beatId: Int): Beat?
 
     @Query("SELECT * FROM beats")
     suspend fun getAllBeats(): List<Beat>
@@ -26,7 +26,7 @@ interface BeatDao {
     suspend fun deleteBeat(beat: Beat)
 
     @Query("DELETE FROM beats WHERE id = :beatId")
-    suspend fun deleteBeatById(beatId: String)
+    suspend fun deleteBeatById(beatId: Int)
 
     @Query("DELETE FROM beats")
     suspend fun deleteAllBeats()

@@ -46,7 +46,7 @@ class BeatRepository(private val beatDao: BeatDao) {
         }
     }
 
-    fun getBeatById(beatId: String) {
+    fun getBeatById(beatId: Int) {
         CoroutineScope(Dispatchers.IO).launch {
             _beatResult.postValue(Resource.Loading())
             try {
@@ -88,7 +88,7 @@ class BeatRepository(private val beatDao: BeatDao) {
         }
     }
 
-    fun deleteBeatById(beatId: String) {
+    fun deleteBeatById(beatId: Int) {
         CoroutineScope(Dispatchers.IO).launch {
             _deleteResult.postValue(Resource.Loading())
             try {
@@ -112,4 +112,3 @@ class BeatRepository(private val beatDao: BeatDao) {
         }
     }
 }
-

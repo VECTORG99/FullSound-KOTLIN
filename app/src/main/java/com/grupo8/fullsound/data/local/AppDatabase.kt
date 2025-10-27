@@ -9,7 +9,7 @@ import com.grupo8.fullsound.data.models.Beat
 
 @Database(
     entities = [User::class, Beat::class],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -26,7 +26,9 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "fullsound_database"
-                ).build()
+                )
+                    .fallbackToDestructiveMigration() // Destruye y recrea la BD si cambia el esquema
+                    .build()
                 INSTANCE = instance
                 instance
             }

@@ -22,6 +22,19 @@
 
     <!-- Beats CRUD -->
     <string name="crear_beat">Crear Beat</string>
+    <string name="titulo_beat_hint">Título del Beat</string>
+    <string name="artista_hint">Artista</string>
+    <string name="bpm_hint">BPM</string>
+    <string name="imagen_path_hint">Ruta de Imagen</string>
+    <string name="mp3_path_hint">Ruta de Audio</string>
+    <string name="cancelar">Cancelar</string>
+    <string name="guardar_beat">Guardar Beat</string>
+    <string name="imagen_beat">Imagen del Beat</string>
+    <string name="seleccionar_imagen">Seleccionar Imagen</string>
+    <string name="no_imagen_seleccionada">No se ha seleccionado ninguna imagen</string>
+    <string name="audio_beat">Audio del Beat</string>
+    <string name="seleccionar_audio">Seleccionar Audio</string>
+    <string name="no_audio_seleccionado">No se ha seleccionado ningún audio</string>
     <string name="leer_beats">Leer Beats</string>
     <string name="actualizar_beat">Actualizar Beat</string>
     <string name="eliminar_beat">Eliminar Beat</string>

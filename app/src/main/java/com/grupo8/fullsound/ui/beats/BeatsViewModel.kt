@@ -22,7 +22,7 @@ class BeatsViewModel(private val beatRepository: BeatRepository) : ViewModel() {
         beatRepository.getAllBeats()
     }
 
-    fun getBeatById(beatId: String) {
+    fun getBeatById(beatId: Int) {
         beatRepository.getBeatById(beatId)
     }
 
@@ -36,8 +36,7 @@ class BeatsViewModel(private val beatRepository: BeatRepository) : ViewModel() {
         beatRepository.deleteBeat(beat)
     }
 
-    fun deleteBeatById(beatId: String) {
+    fun deleteBeatById(beatId: Int) {
         beatRepository.deleteBeatById(beatId)
     }
 }
-

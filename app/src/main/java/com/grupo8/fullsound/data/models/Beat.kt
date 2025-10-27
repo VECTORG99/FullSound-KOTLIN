@@ -5,17 +5,12 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "beats")
 data class Beat(
-    @PrimaryKey val id: String,
-    val title: String,
-    val description: String,
-    val price: Double,
+    @PrimaryKey(autoGenerate = true)
+    val id: Int = 0,
+    val titulo: String,
+    val artista: String,
     val bpm: Int,
-    val genre: String,
-    val imageUrl: String? = null,
-    val audioUrl: String? = null,
-    val isActive: Boolean = true
+    val imagenPath: String, // Ruta local o URL de la imagen
+    val mp3Path: String    // Ruta local o URL del archivo mp3
 )
 
-data class BeatResponse(
-    val beats: List<Beat>
-)
