@@ -1,13 +1,11 @@
-package com.grupo8.fullsound.ui.auth
+package com.grupo8.fullsound.ui.auth.login
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.grupo8.fullsound.data.repositories.UserRepository
 import com.grupo8.fullsound.data.models.User
 import com.grupo8.fullsound.utils.Resource
-import kotlinx.coroutines.launch
 
 class LoginViewModel(private val userRepository: UserRepository) : ViewModel() {
 
@@ -16,23 +14,25 @@ class LoginViewModel(private val userRepository: UserRepository) : ViewModel() {
 
     val loginResult: LiveData<Resource<User>> = userRepository.loginResult
 
-    fun login(email: String, password: String) {
-        userRepository.login(email, password)
+    fun login(emailOrUsername: String, password: String) {
+        userRepository.login(emailOrUsername, password)
     }
 
-    fun validateForm(email: String, password: String) {
-        val emailValid = isValidEmail(email)
+    fun validateForm(emailOrUsername: String, password: String) {
+        val emailOrUsernameValid = isValidEmailOrUsername(emailOrUsername)
         val passwordValid = isPasswordValid(password)
 
         _loginFormState.value = LoginFormState(
-            emailError = if (!emailValid) "Correo electrónico inválido" else null,
+            emailError = if (!emailOrUsernameValid) "Email o usuario inválido" else null,
             passwordError = if (!passwordValid) "La contraseña debe tener al menos 6 caracteres" else null,
-            isDataValid = emailValid && passwordValid
+            isDataValid = emailOrUsernameValid && passwordValid
         )
     }
 
-    private fun isValidEmail(email: String): Boolean {
-        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+    private fun isValidEmailOrUsername(emailOrUsername: String): Boolean {
+        // Válido si es un email válido O si tiene al menos 3 caracteres (username)
+        return android.util.Patterns.EMAIL_ADDRESS.matcher(emailOrUsername).matches()
+            || emailOrUsername.length >= 3
     }
 
     private fun isPasswordValid(password: String): Boolean {

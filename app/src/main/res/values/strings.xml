@@ -7,6 +7,20 @@
     <string name="password">Contraseña</string>
     <string name="login">Iniciar Sesión</string>
     <string name="register_here">¿No tienes cuenta? Regístrate aquí</string>
+    <string name="olvide_contrasena">Olvide mi contraseña</string>
+    <string name="iniciar_sesion">Iniciar Sesión</string>
+    <string name="crear_cuenta">Crear Cuenta</string>
+    <string name="email_hint">Email</string>
+    <string name="email_or_username_hint">Email o Usuario</string>
+    <string name="password_hint">Contraseña</string>
+    <string name="titulo_fullsound">FullSound</string>
+    <string name="usuario_hint">Usuario</string>
+
+    <!-- Beats CRUD -->
+    <string name="crear_beat">Crear Beat</string>
+    <string name="leer_beats">Leer Beats</string>
+    <string name="actualizar_beat">Actualizar Beat</string>
+    <string name="eliminar_beat">Eliminar Beat</string>
 
     <!-- Register Fragment -->
     <string name="register">Registrarse</string>
@@ -18,6 +32,7 @@
     <string name="cart">Carrito</string>
     <string name="profile">Perfil</string>
     <string name="logout">Cerrar Sesión</string>
+    <string name="ajustes">Ajustes</string>
 
     <!-- Validaciones -->
     <string name="invalid_email">Correo electrónico inválido</string>

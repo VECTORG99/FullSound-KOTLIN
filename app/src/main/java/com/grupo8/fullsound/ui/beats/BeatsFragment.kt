@@ -35,9 +35,30 @@ class BeatsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupObservers()
+        setupClickListeners()
 
         // Cargar todos los beats al iniciar
         viewModel.getAllBeats()
+    }
+
+    private fun setupClickListeners() {
+        // TODO: Implementar listeners para los botones CRUD
+        binding.btnCrear.setOnClickListener {
+            // Crear beat
+        }
+
+        binding.btnLeer.setOnClickListener {
+            // Leer beats
+            viewModel.getAllBeats()
+        }
+
+        binding.btnActualizar.setOnClickListener {
+            // Actualizar beat
+        }
+
+        binding.btnEliminar.setOnClickListener {
+            // Eliminar beat
+        }
     }
 
     private fun setupObservers() {
@@ -50,13 +71,12 @@ class BeatsFragment : Fragment() {
                 is Resource.Success -> {
                     val beats = result.data
                     // Actualizar UI con la lista de beats
-                    binding.beatsTitle.text = "Total de Beats: ${beats?.size ?: 0}"
+                    binding.txtTituloBeats.text = "Total de Beats: ${beats?.size ?: 0}"
                 }
                 is Resource.Error -> {
                     // Mostrar error
                     showMessage(result.message ?: "Error al cargar beats")
                 }
-                else -> {}
             }
         }
 
@@ -65,6 +85,7 @@ class BeatsFragment : Fragment() {
             when (result) {
                 is Resource.Success -> {
                     showMessage("Operación exitosa")
+                    viewModel.getAllBeats()
                 }
                 is Resource.Error -> {
                     showMessage(result.message ?: "Error en operación")

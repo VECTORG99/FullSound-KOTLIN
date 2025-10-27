@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/loginFragment"
-        android:name="com.grupo8.fullsound.ui.auth.LoginFragment"
+        android:name="com.grupo8.fullsound.ui.auth.login.LoginFragment"
         android:label="fragment_login"
         tools:layout="@layout/fragment_login" >
         <action
@@ -20,9 +20,13 @@
 
     <fragment
         android:id="@+id/registerFragment"
-        android:name="com.grupo8.fullsound.ui.auth.RegisterFragment"
+        android:name="com.grupo8.fullsound.ui.auth.register.RegisterFragment"
         android:label="fragment_register"
-        tools:layout="@layout/fragment_register" />
+        tools:layout="@layout/fragment_register" >
+        <action
+            android:id="@+id/action_registerFragment_to_beatsFragment"
+            app:destination="@id/beatsFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/beatsFragment"

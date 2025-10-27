@@ -27,11 +27,11 @@ class UserRepository(private val userDao: UserDao) {
     private val _deleteResult = MutableLiveData<Resource<String>>()
     val deleteResult: LiveData<Resource<String>> = _deleteResult
 
-    fun login(email: String, password: String) {
+    fun login(emailOrUsername: String, password: String) {
         CoroutineScope(Dispatchers.IO).launch {
             _loginResult.postValue(Resource.Loading())
             try {
-                val user = userDao.getUser(email, password)
+                val user = userDao.getUserByEmailOrUsername(emailOrUsername, password)
                 if (user != null) {
                     _loginResult.postValue(Resource.Success(user))
                 } else {
@@ -43,14 +43,21 @@ class UserRepository(private val userDao: UserDao) {
         }
     }
 
-    fun register(email: String, password: String, name: String) {
+    fun register(email: String, username: String, password: String, name: String) {
         CoroutineScope(Dispatchers.IO).launch {
             _registerResult.postValue(Resource.Loading())
             try {
-                // Verificar si el usuario ya existe
-                val existingUser = userDao.getUserByEmail(email)
-                if (existingUser != null) {
-                    _registerResult.postValue(Resource.Error("El usuario ya existe"))
+                // Verificar si el email ya existe
+                val existingEmail = userDao.getUserByEmail(email)
+                if (existingEmail != null) {
+                    _registerResult.postValue(Resource.Error("El email ya está registrado"))
+                    return@launch
+                }
+
+                // Verificar si el username ya existe
+                val existingUsername = userDao.getUserByUsername(username)
+                if (existingUsername != null) {
+                    _registerResult.postValue(Resource.Error("El nombre de usuario ya está en uso"))
                     return@launch
                 }
 
@@ -58,6 +65,7 @@ class UserRepository(private val userDao: UserDao) {
                 val newUser = User(
                     id = UUID.randomUUID().toString(),
                     email = email,
+                    username = username,
                     password = password,
                     name = name,
                     createdAt = System.currentTimeMillis()

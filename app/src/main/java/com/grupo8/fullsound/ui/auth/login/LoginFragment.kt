@@ -1,9 +1,13 @@
-package com.grupo8.fullsound.ui.auth
+package com.grupo8.fullsound.ui.auth.login
 
+import android.animation.ArgbEvaluator
+import android.animation.ValueAnimator
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -15,6 +19,7 @@ import com.grupo8.fullsound.data.local.AppDatabase
 import com.grupo8.fullsound.data.repositories.UserRepository
 import com.grupo8.fullsound.databinding.FragmentLoginBinding
 import com.grupo8.fullsound.utils.Resource
+import com.grupo8.fullsound.utils.UserSession
 
 class LoginFragment : Fragment() {
 
@@ -23,7 +28,7 @@ class LoginFragment : Fragment() {
     private val viewModel: LoginViewModel by viewModels {
         val database = AppDatabase.getInstance(requireContext())
         val userRepository = UserRepository(database.userDao())
-        AuthViewModelFactory(userRepository)
+        LoginViewModelFactory(userRepository)
     }
 
     override fun onCreateView(
@@ -36,8 +41,37 @@ class LoginFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        startRgbTitleAnimation()
         setupObservers()
         setupListeners()
+    }
+
+    private fun startRgbTitleAnimation() {
+        val textView: TextView = binding.txtTitulo
+        val colors = intArrayOf(
+            Color.RED,
+            Color.MAGENTA,
+            Color.BLUE,
+            Color.CYAN,
+            Color.GREEN,
+            Color.YELLOW,
+            Color.RED
+        )
+        val animator = ValueAnimator.ofFloat(0f, (colors.size - 1).toFloat())
+        animator.duration = 4000L
+        animator.repeatCount = ValueAnimator.INFINITE
+        animator.addUpdateListener { animation ->
+            val position = animation.animatedValue as Float
+            val index = position.toInt()
+            val fraction = position - index
+            val color = ArgbEvaluator().evaluate(
+                fraction,
+                colors[index],
+                colors[(index + 1) % colors.size]
+            ) as Int
+            textView.setTextColor(color)
+        }
+        animator.start()
     }
 
     private fun setupObservers() {
@@ -56,6 +90,18 @@ class LoginFragment : Fragment() {
                 }
                 is Resource.Success -> {
                     binding.progressBar.visibility = View.GONE
+
+                    // Guardar sesión del usuario
+                    val user = result.data
+                    if (user != null) {
+                        val userSession = UserSession(requireContext())
+                        userSession.saveUserSession(
+                            userId = user.id.hashCode(),
+                            email = user.email,
+                            username = user.username
+                        )
+                    }
+
                     showMessage("Inicio de sesión exitoso")
                     // Navegar a la pantalla principal
                     findNavController().navigate(R.id.action_loginFragment_to_beatsFragment)
@@ -113,7 +159,7 @@ class LoginFragment : Fragment() {
     }
 }
 
-class AuthViewModelFactory(private val userRepository: UserRepository) : ViewModelProvider.Factory {
+class LoginViewModelFactory(private val userRepository: UserRepository) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(LoginViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
