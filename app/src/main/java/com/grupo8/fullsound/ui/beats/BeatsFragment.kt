@@ -11,8 +11,6 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.grupo8.fullsound.R
 import com.grupo8.fullsound.data.local.AppDatabase
@@ -95,8 +93,52 @@ class BeatsFragment : Fragment() {
         setupObservers()
         setupClickListeners()
 
+        // Configurar la UI según el rol (admin vs usuario común)
+        configureUIBasedOnUserRole()
+
         // Insertar beats de ejemplo si no existen y cargar todos los beats
         viewModel.insertExampleBeats()
+    }
+
+    private fun configureUIBasedOnUserRole() {
+        val userSession = UserSession(requireContext())
+
+        // Si no hay sesión, forzar al login
+        if (!userSession.isLoggedIn()) {
+            findNavController().navigate(R.id.loginFragment)
+            return
+        }
+
+        val isAdmin = userSession.isAdmin()
+
+        if (!isAdmin) {
+            // Usuarios no-admin no deben ver opciones de actualizar/eliminar
+            binding.cardActualizar.visibility = View.GONE
+            binding.cardEliminar.visibility = View.GONE
+
+            // Ajustar textos para usuarios finales (no-admin)
+            binding.txtTituloBeats.text = "Catálogo de beats"
+            // El header secundario no tiene id; mantener su texto en XML. Ajustar labels de cards.
+            binding.btnCrear.text = "Subir beat"
+            binding.btnLeer.text = "Ver catálogo"
+
+            // Mostrar el catálogo por defecto
+            binding.containerListaBeats.visibility = View.VISIBLE
+            viewModel.getAllBeats()
+
+            // Opcional: ocultar el mensaje de total que aplica para admin CRUD si existe
+            // (Se mantiene el cardCrear para que puedan subir sus beats)
+        } else {
+            // Admin: restaurar textos por defecto y mostrar todo
+            binding.txtTituloBeats.text = getString(R.string.beats)
+            binding.btnCrear.text = getString(R.string.crear_beat)
+            binding.btnLeer.text = getString(R.string.leer_beats)
+
+            binding.cardActualizar.visibility = View.VISIBLE
+            binding.cardEliminar.visibility = View.VISIBLE
+            // Cargar beats para administración
+            viewModel.getAllBeats()
+        }
     }
 
     private fun setupRecyclerView() {
@@ -228,6 +270,13 @@ class BeatsFragment : Fragment() {
     }
 
     private fun buscarBeatParaEliminar() {
+        // Verificar permisos (solo admin)
+        val userSession = UserSession(requireContext())
+        if (!userSession.isAdmin()) {
+            showMessage("No tienes permiso para eliminar beats")
+            return
+        }
+
         val idText = binding.editIdEliminar.text.toString().trim()
 
         if (idText.isEmpty()) {
@@ -258,6 +307,13 @@ class BeatsFragment : Fragment() {
     }
 
     private fun confirmarEliminarBeat() {
+        // Verificar permisos (solo admin)
+        val userSession = UserSession(requireContext())
+        if (!userSession.isAdmin()) {
+            showMessage("No tienes permiso para eliminar beats")
+            return
+        }
+
         beatToDelete?.let { beat ->
             // Eliminar el beat
             viewModel.deleteBeat(beat)
@@ -292,6 +348,13 @@ class BeatsFragment : Fragment() {
     }
 
     private fun buscarBeatParaActualizar() {
+        // Verificar permisos (solo admin)
+        val userSession = UserSession(requireContext())
+        if (!userSession.isAdmin()) {
+            showMessage("No tienes permiso para actualizar beats")
+            return
+        }
+
         val idText = binding.editIdActualizar.text.toString().trim()
 
         if (idText.isEmpty()) {
@@ -327,6 +390,13 @@ class BeatsFragment : Fragment() {
     }
 
     private fun confirmarActualizarBeat() {
+        // Verificar permisos (solo admin)
+        val userSession = UserSession(requireContext())
+        if (!userSession.isAdmin()) {
+            showMessage("No tienes permiso para actualizar beats")
+            return
+        }
+
         val beat = beatToUpdate
         if (beat == null) {
             showMessage("No hay beat seleccionado para actualizar")
@@ -576,7 +646,13 @@ class BeatsFragment : Fragment() {
                 is Resource.Success -> {
                     val beats = result.data ?: emptyList()
                     // Actualizar el total de beats en el header
-                    binding.txtTituloBeats.text = "Beats (${beats.size})"
+                    val userSession = UserSession(requireContext())
+                    val isAdmin = userSession.isAdmin()
+                    if (isAdmin) {
+                        binding.txtTituloBeats.text = "Beats (${beats.size})"
+                    } else {
+                        binding.txtTituloBeats.text = "Catálogo de beats (${beats.size})"
+                    }
                     // Actualizar el total en la sección de leer
                     binding.txtTotalBeats.text = "Total de Beats: ${beats.size}"
 
@@ -663,4 +739,3 @@ class BeatsFragment : Fragment() {
         _binding = null
     }
 }
-

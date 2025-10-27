@@ -46,6 +46,12 @@ class UserSession(context: Context) {
         return prefs.getBoolean(KEY_IS_LOGGED_IN, false)
     }
 
+    // Indica si el usuario es admin según el dominio del email
+    fun isAdmin(): Boolean {
+        val email = getUserEmail()
+        return email?.endsWith("@admin.cl", ignoreCase = true) == true
+    }
+
     // Cerrar sesión
     fun logout() {
         prefs.edit().clear().apply()
@@ -56,4 +62,3 @@ class UserSession(context: Context) {
         logout()
     }
 }
-
