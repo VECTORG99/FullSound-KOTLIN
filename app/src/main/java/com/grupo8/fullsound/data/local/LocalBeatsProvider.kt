@@ -9,76 +9,68 @@ object LocalBeatsProvider {
     fun getBeats(): List<Beat> {
         return listOf(
             Beat(
-                id = 1,
-                titulo = "Classical Dreams",
+                id = 0,
+                titulo = "Samuel canchalla",
                 artista = "Ludwig van Beethoven",
                 bpm = 95,
-                imagenPath = "1",
-                mp3Path = "1",
-                precio = 9.99
+                imagenPath = "placeholder",
+                mp3Path = "beat1"
             ),
             Beat(
-                id = 2,
-                titulo = "Symphony Vibes",
+                id = 0,
+                titulo = "Luis salazar",
                 artista = "Wolfgang Amadeus Mozart",
                 bpm = 108,
-                imagenPath = "2",
-                mp3Path = "2",
-                precio = 12.99
+                imagenPath = "placeholder",
+                mp3Path = "beat2"
             ),
             Beat(
-                id = 3,
-                titulo = "Baroque Rhythm",
+                id = 0,
+                titulo = "Ismael Rivas",
                 artista = "Johann Sebastian Bach",
                 bpm = 88,
-                imagenPath = "3",
-                mp3Path = "3",
-                precio = 11.99
+                imagenPath = "placeholder",
+                mp3Path = "beat3"
             ),
             Beat(
-                id = 4,
-                titulo = "Romantic Flow",
+                id = 0,
+                titulo = "Diego Hernandez",
                 artista = "Frédéric Chopin",
                 bpm = 72,
-                imagenPath = "4",
-                mp3Path = "4",
-                precio = 14.99
+                imagenPath = "placeholder",
+                mp3Path = "beat4"
             ),
             Beat(
-                id = 5,
-                titulo = "Orchestral Beat",
+                id = 0,
+                titulo = "Axel Moraga",
                 artista = "Pyotr Ilyich Tchaikovsky",
                 bpm = 116,
-                imagenPath = "6",
-                mp3Path = "5",
-                precio = 15.99
+                imagenPath = "placeholder",
+                mp3Path = "beat5"
             ),
             Beat(
-                id = 6,
-                titulo = "Concerto Groove",
+                id = 0,
+                titulo = "Diego hernandez remix",
                 artista = "Antonio Vivaldi",
                 bpm = 104,
-                imagenPath = "7",
-                mp3Path = "6",
-                precio = 10.99
+                imagenPath = "placeholder",
+                mp3Path = "beat6"
             ),
             Beat(
-                id = 7,
-                titulo = "Piano Essence",
+                id = 0,
+                titulo = "Maxi",
                 artista = "Franz Liszt",
                 bpm = 80,
-                imagenPath = "8",
-                mp3Path = "7",
-                precio = 13.99
+                imagenPath = "placeholder",
+                mp3Path = "beat7"
             ),
             Beat(
-                id = 8,
-                titulo = "Classical Fusion",
+                id = 0,
+                titulo = "Diego Patricio Cares Gonzales",
                 artista = "Claude Debussy",
                 bpm = 92,
-                imagenPath = "10",
-                mp3Path = "8",
-                precio = 11.99
+                imagenPath = "placeholder",
+                mp3Path = "beat8"
             )
         )
     }
@@ -99,8 +91,8 @@ object LocalBeatsProvider {
 
         // Obtener recursos de audio
     fun getAudioResourceId(context: android.content.Context, mp3Path: String): Int {
-        val resourceName = mp3Path
-        return context.resources.getIdentifier(resourceName, "raw", context.packageName)
+        // El mp3Path ya viene sin la extensión (beat1, beat2, etc.)
+        return context.resources.getIdentifier(mp3Path, "raw", context.packageName)
     }
 }
 
