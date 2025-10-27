@@ -6,7 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import com.grupo8.fullsound.data.models.CarritoItem
+import com.grupo8.fullsound.model.CarritoItem
 import kotlinx.coroutines.flow.Flow
 
 @Dao

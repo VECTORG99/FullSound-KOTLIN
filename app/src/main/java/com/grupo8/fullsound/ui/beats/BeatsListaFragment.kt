@@ -15,10 +15,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.grupo8.fullsound.R
 import com.grupo8.fullsound.data.local.AppDatabase
 import com.grupo8.fullsound.data.local.LocalBeatsProvider
-import com.grupo8.fullsound.data.repositories.BeatRepository
-import com.grupo8.fullsound.data.repositories.CarritoRepository
+import com.grupo8.fullsound.repository.BeatRepository
+import com.grupo8.fullsound.repository.CarritoRepository
+import com.grupo8.fullsound.viewmodel.BeatsViewModel
+import com.grupo8.fullsound.viewmodel.CarritoViewModel
 import com.grupo8.fullsound.databinding.FragmentBeatsListaBinding
-import com.grupo8.fullsound.ui.carrito.CarritoViewModel
 import com.grupo8.fullsound.utils.Resource
 import com.grupo8.fullsound.utils.UserSession
 import com.grupo8.fullsound.utils.AnimationHelper
@@ -81,12 +82,10 @@ class BeatsListaFragment : Fragment() {
         beatsAdapter = BeatsAdapter(
             onAddToCarrito = { beat ->
                 carritoViewModel.addBeatToCarrito(beat)
-                showMessage("${beat.titulo} agregado al carrito")
             },
             onComprar = { beat ->
                 // Agregar al carrito y navegar
                 carritoViewModel.addBeatToCarrito(beat)
-                showMessage("Procesando compra de ${beat.titulo}")
                 // Aquí podrías navegar al carrito o a una pantalla de checkout
             }
         )
@@ -98,6 +97,18 @@ class BeatsListaFragment : Fragment() {
     }
 
     private fun setupObservers() {
+        // Observar resultado de agregar al carrito
+        carritoViewModel.addToCarritoResult.observe(viewLifecycleOwner) { result ->
+            when (result) {
+                is com.grupo8.fullsound.viewmodel.AddToCarritoResult.Success -> {
+                    showMessage("${result.beatTitle} agregado al carrito")
+                }
+                is com.grupo8.fullsound.viewmodel.AddToCarritoResult.AlreadyExists -> {
+                    showMessage("${result.beatTitle} ya está en el carrito. Solo puedes comprar 1 unidad por beat.")
+                }
+            }
+        }
+
         beatsViewModel.beatsResult.observe(viewLifecycleOwner) { result ->
             when (result) {
                 is Resource.Loading -> {
@@ -192,11 +203,12 @@ class BeatsListaFragment : Fragment() {
     }
 }
 
-class CarritoViewModelFactory(private val carritoRepository: CarritoRepository) : ViewModelProvider.Factory {
+
+class CarritoViewModelFactory(private val carritoRepository: com.grupo8.fullsound.repository.CarritoRepository) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(CarritoViewModel::class.java)) {
+        if (modelClass.isAssignableFrom(com.grupo8.fullsound.viewmodel.CarritoViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return CarritoViewModel(carritoRepository) as T
+            return com.grupo8.fullsound.viewmodel.CarritoViewModel(carritoRepository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

@@ -1,10 +1,10 @@
-package com.grupo8.fullsound.ui.auth.login
+package com.grupo8.fullsound.viewmodel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.grupo8.fullsound.data.repositories.UserRepository
-import com.grupo8.fullsound.data.models.User
+import com.grupo8.fullsound.repository.UserRepository
+import com.grupo8.fullsound.model.User
 import com.grupo8.fullsound.utils.Resource
 
 class LoginViewModel(private val userRepository: UserRepository) : ViewModel() {
@@ -45,3 +45,4 @@ data class LoginFormState(
     val passwordError: String? = null,
     val isDataValid: Boolean = false
 )
+

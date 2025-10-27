@@ -14,7 +14,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.grupo8.fullsound.R
 import com.grupo8.fullsound.data.local.AppDatabase
-import com.grupo8.fullsound.data.repositories.UserRepository
+import com.grupo8.fullsound.repository.UserRepository
+import com.grupo8.fullsound.viewmodel.RegisterViewModel
 import com.grupo8.fullsound.databinding.FragmentRegisterBinding
 import com.grupo8.fullsound.utils.Resource
 import com.grupo8.fullsound.utils.AnimationHelper
@@ -176,11 +177,11 @@ class RegisterFragment : Fragment() {
     }
 }
 
-class RegisterViewModelFactory(private val userRepository: UserRepository) : ViewModelProvider.Factory {
+class RegisterViewModelFactory(private val userRepository: com.grupo8.fullsound.repository.UserRepository) : ViewModelProvider.Factory {
     override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(RegisterViewModel::class.java)) {
+        if (modelClass.isAssignableFrom(com.grupo8.fullsound.viewmodel.RegisterViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return RegisterViewModel(userRepository) as T
+            return com.grupo8.fullsound.viewmodel.RegisterViewModel(userRepository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

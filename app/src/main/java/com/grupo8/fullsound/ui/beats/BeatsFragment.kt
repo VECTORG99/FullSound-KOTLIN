@@ -16,7 +16,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.grupo8.fullsound.R
 import com.grupo8.fullsound.data.local.AppDatabase
-import com.grupo8.fullsound.data.repositories.BeatRepository
+import com.grupo8.fullsound.repository.BeatRepository
+import com.grupo8.fullsound.viewmodel.BeatsViewModel
 import com.grupo8.fullsound.databinding.FragmentBeatsBinding
 import com.grupo8.fullsound.utils.Resource
 import com.grupo8.fullsound.utils.UserSession
@@ -52,10 +53,10 @@ class BeatsFragment : Fragment() {
     private var selectedAudioUri: Uri? = null
 
     // Beat seleccionado para eliminar
-    private var beatToDelete: com.grupo8.fullsound.data.models.Beat? = null
+    private var beatToDelete: com.grupo8.fullsound.model.Beat? = null
 
     // Beat seleccionado para actualizar
-    private var beatToUpdate: com.grupo8.fullsound.data.models.Beat? = null
+    private var beatToUpdate: com.grupo8.fullsound.model.Beat? = null
 
     // Launcher para seleccionar imagen
     private val selectImageLauncher = registerForActivityResult(
@@ -245,7 +246,7 @@ class BeatsFragment : Fragment() {
         viewModel.getBeatById(beatId)
     }
 
-    private fun mostrarBeatParaEliminar(beat: com.grupo8.fullsound.data.models.Beat) {
+    private fun mostrarBeatParaEliminar(beat: com.grupo8.fullsound.model.Beat) {
         beatToDelete = beat
         binding.txtTituloEliminar.text = beat.titulo
         binding.txtArtistaEliminar.text = "Artista: ${beat.artista}"
@@ -309,7 +310,7 @@ class BeatsFragment : Fragment() {
         viewModel.getBeatById(beatId)
     }
 
-    private fun mostrarBeatParaActualizar(beat: com.grupo8.fullsound.data.models.Beat) {
+    private fun mostrarBeatParaActualizar(beat: com.grupo8.fullsound.model.Beat) {
         beatToUpdate = beat
 
         // Mostrar información actual
@@ -499,7 +500,7 @@ class BeatsFragment : Fragment() {
             val audioPath = copyFileToInternalStorage(selectedAudioUri!!, "audio_${System.currentTimeMillis()}.mp3", "audio")
 
             // Crear el beat
-            val nuevoBeat = com.grupo8.fullsound.data.models.Beat(
+            val nuevoBeat = com.grupo8.fullsound.model.Beat(
                 titulo = titulo,
                 artista = artista,
                 bpm = bpm,
@@ -663,12 +664,3 @@ class BeatsFragment : Fragment() {
     }
 }
 
-class BeatsViewModelFactory(private val beatRepository: BeatRepository) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(BeatsViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return BeatsViewModel(beatRepository) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
-    }
-}

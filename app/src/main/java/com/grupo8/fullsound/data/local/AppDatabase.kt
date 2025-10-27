@@ -4,9 +4,9 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import android.content.Context
-import com.grupo8.fullsound.data.models.User
-import com.grupo8.fullsound.data.models.Beat
-import com.grupo8.fullsound.data.models.CarritoItem
+import com.grupo8.fullsound.model.User
+import com.grupo8.fullsound.model.Beat
+import com.grupo8.fullsound.model.CarritoItem
 
 @Database(
     entities = [User::class, Beat::class, CarritoItem::class],

@@ -1,3 +1,5 @@
+documentacion generada por IA
+
 # 🎵 FullSound - Sistema de Carrito de Compras
 
 ## ✅ IMPLEMENTACIÓN COMPLETADA
@@ -256,4 +258,3 @@ Todas las funcionalidades solicitadas han sido implementadas:
 **Fecha**: 27 de Octubre 2025  
 **Versión**: 1.0  
 **Estado**: ✅ COMPLETO
-

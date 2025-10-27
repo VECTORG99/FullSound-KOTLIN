@@ -1,6 +1,6 @@
 package com.grupo8.fullsound.data.local
 
-import com.grupo8.fullsound.data.models.Beat
+import com.grupo8.fullsound.model.Beat
 
  //Proveedor de beats locales para la app
  // Contiene 8 beats de ejemplo con imágenes y archivos mp3

@@ -1,9 +1,9 @@
-package com.grupo8.fullsound.data.repositories
+package com.grupo8.fullsound.repository
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.grupo8.fullsound.data.local.UserDao
-import com.grupo8.fullsound.data.models.User
+import com.grupo8.fullsound.model.User
 import com.grupo8.fullsound.utils.Resource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -145,3 +145,4 @@ class UserRepository(private val userDao: UserDao) {
         }
     }
 }
+

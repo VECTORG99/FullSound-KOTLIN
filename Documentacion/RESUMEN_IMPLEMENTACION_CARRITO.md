@@ -1,3 +1,5 @@
+documentacion generada por IA
+
 # ✅ IMPLEMENTACIÓN COMPLETADA - Sistema de Carrito de Compras
 
 ## 🎯 Objetivo Cumplido
@@ -227,4 +229,3 @@ Todos los requisitos han sido cumplidos:
 **Versión BD**: 3  
 **Estado**: ✅ COMPLETADO  
 **Compilación**: Pendiente de ejecutar por el usuario
-

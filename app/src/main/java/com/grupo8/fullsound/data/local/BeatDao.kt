@@ -6,7 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import com.grupo8.fullsound.data.models.Beat
+import com.grupo8.fullsound.model.Beat
 
 @Dao
 interface BeatDao {

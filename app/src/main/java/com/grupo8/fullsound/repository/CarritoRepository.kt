@@ -1,47 +1,38 @@
-package com.grupo8.fullsound.data.repositories
+package com.grupo8.fullsound.repository
 
 import com.grupo8.fullsound.data.local.CarritoDao
-import com.grupo8.fullsound.data.models.Beat
-import com.grupo8.fullsound.data.models.CarritoItem
+import com.grupo8.fullsound.model.Beat
+import com.grupo8.fullsound.model.CarritoItem
 import kotlinx.coroutines.flow.Flow
 
 class CarritoRepository(private val carritoDao: CarritoDao) {
 
     val carritoItems: Flow<List<CarritoItem>> = carritoDao.getAllItems()
 
-    suspend fun addBeatToCarrito(beat: Beat) {
+    suspend fun addBeatToCarrito(beat: Beat): Boolean {
         // Verificar si el beat ya está en el carrito
         val existingItem = carritoDao.getItemByBeatId(beat.id)
 
         if (existingItem != null) {
-            // Si ya existe, incrementar cantidad
-            val updatedItem = existingItem.copy(cantidad = existingItem.cantidad + 1)
-            carritoDao.updateItem(updatedItem)
+            // Si ya existe, retornar false (no se permite duplicados)
+            return false
         } else {
-            // Si no existe, crear nuevo item
+            // Si no existe, crear nuevo item con cantidad fija de 1
             val newItem = CarritoItem(
                 beatId = beat.id,
                 titulo = beat.titulo,
                 artista = beat.artista,
                 precio = beat.precio,
                 imagenPath = beat.imagenPath,
-                cantidad = 1
+                cantidad = 1  // Siempre 1, no se permite más
             )
             carritoDao.insertItem(newItem)
+            return true
         }
     }
 
     suspend fun removeItemFromCarrito(item: CarritoItem) {
         carritoDao.deleteItem(item)
-    }
-
-    suspend fun updateItemQuantity(item: CarritoItem, newQuantity: Int) {
-        if (newQuantity > 0) {
-            val updatedItem = item.copy(cantidad = newQuantity)
-            carritoDao.updateItem(updatedItem)
-        } else {
-            carritoDao.deleteItem(item)
-        }
     }
 
     suspend fun clearCarrito() {

@@ -1,3 +1,5 @@
+documentacion generada por IA
+
 # Sistema de Carrito de Compras - FullSound
 
 ## Resumen de la Implementación
@@ -148,4 +150,3 @@ LoginFragment
 **Fecha de implementación**: 27 de Octubre 2025
 **Versión de la base de datos**: 3
 **Estado**: ✅ Implementado y funcional
-

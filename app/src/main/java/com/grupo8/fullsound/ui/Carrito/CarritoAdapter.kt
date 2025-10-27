@@ -6,14 +6,13 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.grupo8.fullsound.data.models.CarritoItem
+import com.grupo8.fullsound.model.CarritoItem
 import com.grupo8.fullsound.databinding.ItemCarritoBinding
 import java.io.File
 import java.util.Locale
 
 class CarritoAdapter(
-    private val onRemove: (CarritoItem) -> Unit,
-    private val onQuantityChange: (CarritoItem, Int) -> Unit
+    private val onRemove: (CarritoItem) -> Unit
 ) : ListAdapter<CarritoItem, CarritoAdapter.CarritoViewHolder>(CarritoDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CarritoViewHolder {
@@ -36,28 +35,17 @@ class CarritoAdapter(
         fun bind(item: CarritoItem) {
             binding.txtTituloCarrito.text = item.titulo
             binding.txtArtistaCarrito.text = item.artista
-            binding.txtPrecioUnitario.text = String.format(Locale.US, "$%.2f c/u", item.precio)
-            binding.txtCantidad.text = item.cantidad.toString()
+            binding.txtPrecioUnitario.text = String.format(Locale.US, "$%.2f", item.precio)
 
-            val totalItem = item.precio * item.cantidad
-            binding.txtPrecioTotalItem.text = String.format(Locale.US, "$%.2f", totalItem)
+            // Mostrar precio total (siempre será el precio unitario ya que cantidad = 1)
+            binding.txtPrecioTotalItem.text = String.format(Locale.US, "$%.2f", item.precio)
 
             // Cargar imagen
             loadImage(item.imagenPath)
 
-            // Listeners
+            // Listener solo para eliminar
             binding.btnRemove.setOnClickListener {
                 onRemove(item)
-            }
-
-            binding.btnDecrease.setOnClickListener {
-                val newQuantity = item.cantidad - 1
-                onQuantityChange(item, newQuantity)
-            }
-
-            binding.btnIncrease.setOnClickListener {
-                val newQuantity = item.cantidad + 1
-                onQuantityChange(item, newQuantity)
             }
         }
 

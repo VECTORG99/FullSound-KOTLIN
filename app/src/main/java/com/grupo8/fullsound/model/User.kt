@@ -1,4 +1,4 @@
-package com.grupo8.fullsound.data.models
+package com.grupo8.fullsound.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -26,3 +26,4 @@ data class RegisterRequest(
     val password: String,
     val name: String
 )
+

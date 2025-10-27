@@ -1,3 +1,5 @@
+documentacion generada por IA
+
 # Sistema de Autenticación - FullSound
 
 ## ✅ Estructura MVVM Implementada
@@ -223,4 +225,3 @@ Para probar el flujo completo:
 6. Probar login con email
 7. Probar login con username
 8. Probar credenciales incorrectas
-

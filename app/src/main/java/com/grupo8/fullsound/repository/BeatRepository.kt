@@ -1,9 +1,9 @@
-package com.grupo8.fullsound.data.repositories
+package com.grupo8.fullsound.repository
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.grupo8.fullsound.data.local.BeatDao
-import com.grupo8.fullsound.data.models.Beat
+import com.grupo8.fullsound.model.Beat
 import com.grupo8.fullsound.utils.Resource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -135,3 +135,4 @@ class BeatRepository(private val beatDao: BeatDao) {
         }
     }
 }
+

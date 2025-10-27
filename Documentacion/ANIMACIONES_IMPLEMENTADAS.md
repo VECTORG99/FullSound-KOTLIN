@@ -1,3 +1,5 @@
+documentacion generada por IA
+
 # Animaciones Implementadas en FullSound
 
 ## 📋 Resumen
@@ -206,4 +208,3 @@ AnimationHelper.animateListSequentially(
 **Fecha de implementación:** 2025-10-27
 **Versión:** 1.0
 **Estado:** ✅ Completado y funcional
-

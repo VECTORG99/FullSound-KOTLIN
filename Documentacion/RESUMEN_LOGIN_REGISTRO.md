@@ -1,3 +1,5 @@
+documentacion generada por IA
+
 # ✅ SISTEMA DE LOGIN Y REGISTRO - COMPLETAMENTE FUNCIONAL
 
 ## 🎉 Estado Final
@@ -279,4 +281,3 @@ Puedes:
 - ✅ La navegación funciona correctamente
 
 **¡Todo está listo para usar!**
-

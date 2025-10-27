@@ -1,9 +1,9 @@
-package com.grupo8.fullsound.ui.beats
+package com.grupo8.fullsound.viewmodel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
-import com.grupo8.fullsound.data.models.Beat
-import com.grupo8.fullsound.data.repositories.BeatRepository
+import com.grupo8.fullsound.model.Beat
+import com.grupo8.fullsound.repository.BeatRepository
 import com.grupo8.fullsound.utils.Resource
 
 class BeatsViewModel(private val beatRepository: BeatRepository) : ViewModel() {
@@ -45,3 +45,4 @@ class BeatsViewModel(private val beatRepository: BeatRepository) : ViewModel() {
         beatRepository.insertExampleBeats()
     }
 }
+

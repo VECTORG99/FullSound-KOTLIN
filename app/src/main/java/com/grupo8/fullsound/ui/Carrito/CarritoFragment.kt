@@ -13,7 +13,8 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.grupo8.fullsound.R
 import com.grupo8.fullsound.data.local.AppDatabase
-import com.grupo8.fullsound.data.repositories.CarritoRepository
+import com.grupo8.fullsound.repository.CarritoRepository
+import com.grupo8.fullsound.viewmodel.CarritoViewModel
 import com.grupo8.fullsound.databinding.FragmentCarritoBinding
 import com.grupo8.fullsound.ui.beats.CarritoViewModelFactory
 import com.grupo8.fullsound.utils.UserSession
@@ -63,9 +64,6 @@ class CarritoFragment : Fragment() {
         carritoAdapter = CarritoAdapter(
             onRemove = { item ->
                 confirmRemoveItem(item)
-            },
-            onQuantityChange = { item, newQuantity ->
-                carritoViewModel.updateItemQuantity(item, newQuantity)
             }
         )
 
@@ -118,7 +116,7 @@ class CarritoFragment : Fragment() {
         }
     }
 
-    private fun confirmRemoveItem(item: com.grupo8.fullsound.data.models.CarritoItem) {
+    private fun confirmRemoveItem(item: com.grupo8.fullsound.model.CarritoItem) {
         AlertDialog.Builder(requireContext())
             .setTitle("Eliminar del carrito")
             .setMessage("¿Deseas eliminar '${item.titulo}' del carrito?")

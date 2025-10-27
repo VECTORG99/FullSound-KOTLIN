@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.grupo8.fullsound.data.models.Beat
+import com.grupo8.fullsound.model.Beat
 import com.grupo8.fullsound.databinding.ItemBeatBinding
 import java.io.File
 

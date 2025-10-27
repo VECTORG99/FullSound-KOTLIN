@@ -16,7 +16,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.grupo8.fullsound.R
 import com.grupo8.fullsound.data.local.AppDatabase
-import com.grupo8.fullsound.data.repositories.UserRepository
+import com.grupo8.fullsound.repository.UserRepository
+import com.grupo8.fullsound.viewmodel.LoginViewModel
 import com.grupo8.fullsound.databinding.FragmentLoginBinding
 import com.grupo8.fullsound.utils.Resource
 import com.grupo8.fullsound.utils.UserSession
@@ -191,11 +192,11 @@ class LoginFragment : Fragment() {
     }
 }
 
-class LoginViewModelFactory(private val userRepository: UserRepository) : ViewModelProvider.Factory {
+class LoginViewModelFactory(private val userRepository: com.grupo8.fullsound.repository.UserRepository) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(LoginViewModel::class.java)) {
+        if (modelClass.isAssignableFrom(com.grupo8.fullsound.viewmodel.LoginViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return LoginViewModel(userRepository) as T
+            return com.grupo8.fullsound.viewmodel.LoginViewModel(userRepository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

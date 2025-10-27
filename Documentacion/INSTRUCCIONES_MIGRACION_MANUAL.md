@@ -1,3 +1,5 @@
+documentacion generada por IA
+
 # INSTRUCCIONES PARA COMPLETAR LA MIGRACIÓN MVVM
 
 ## ⚠️ ESTADO ACTUAL
@@ -258,4 +260,3 @@ Después del rebuild, no deberían existir errores de:
 - Los layouts XML ya están actualizados
 - nav_graph.xml ya tiene las referencias correctas
 - Solo falta la reorganización física de archivos
-
