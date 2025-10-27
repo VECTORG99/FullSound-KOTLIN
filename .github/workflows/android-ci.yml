@@ -11,46 +11,64 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Set up JDK 17
-      uses: actions/setup-java@v4
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-        cache: gradle
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
 
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
 
-    - name: Build with Gradle
-      run: ./gradlew build
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
 
-    - name: Run unit tests
-      run: ./gradlew test
+      - name: Show Gradle version
+        run: ./gradlew --version
 
-    - name: Run instrumented tests
-      uses: reactivecircus/android-emulator-runner@v2
-      with:
-        api-level: 29
-        target: default
-        arch: x86_64
-        script: ./gradlew connectedCheck
+      - name: Assemble Debug
+        run: ./gradlew :app:assembleDebug --stacktrace --no-daemon
 
-    - name: Upload build reports
-      if: failure()
-      uses: actions/upload-artifact@v4
-      with:
-        name: build-reports
-        path: |
-          app/build/reports/
-          app/build/test-results/
+      - name: Run unit tests (Debug)
+        run: ./gradlew :app:testDebugUnitTest --stacktrace --no-daemon
 
-    - name: Upload APK
-      if: success()
-      uses: actions/upload-artifact@v4
-      with:
-        name: app-debug
-        path: app/build/outputs/apk/debug/app-debug.apk
+      - name: Detect instrumented tests presence
+        id: detect_tests
+        shell: bash
+        run: |
+          if compgen -G "app/src/androidTest/**/*.kt" > /dev/null; then
+            echo "found=true" >> $GITHUB_OUTPUT
+          elif compgen -G "app/src/androidTest/**/*.java" > /dev/null; then
+            echo "found=true" >> $GITHUB_OUTPUT
+          else
+            echo "found=false" >> $GITHUB_OUTPUT
+          fi
 
+      - name: Run instrumented tests (connectedCheck)
+        if: steps.detect_tests.outputs.found == 'true'
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 29
+          target: default
+          arch: x86_64
+          disable-animations: true
+          script: ./gradlew :app:connectedDebugAndroidTest --stacktrace --no-daemon
+
+      - name: Upload APK (debug)
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-debug
+          path: app/build/outputs/apk/debug/app-debug.apk
+
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reports
+          path: |
+            app/build/reports/
+            app/build/test-results/
