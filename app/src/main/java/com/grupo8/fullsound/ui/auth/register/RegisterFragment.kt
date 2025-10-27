@@ -112,23 +112,30 @@ class RegisterFragment : Fragment() {
     }
 
     private fun setupListeners() {
-        binding.emailEditText.setOnFocusChangeListener { _, hasFocus ->
-            if (!hasFocus) {
+        // Validación en tiempo real mientras el usuario escribe
+        binding.emailEditText.addTextChangedListener(object : android.text.TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: android.text.Editable?) {
                 validateForm()
             }
-        }
+        })
 
-        binding.usernameEditText.setOnFocusChangeListener { _, hasFocus ->
-            if (!hasFocus) {
+        binding.usernameEditText.addTextChangedListener(object : android.text.TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: android.text.Editable?) {
                 validateForm()
             }
-        }
+        })
 
-        binding.passwordEditText.setOnFocusChangeListener { _, hasFocus ->
-            if (!hasFocus) {
+        binding.passwordEditText.addTextChangedListener(object : android.text.TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: android.text.Editable?) {
                 validateForm()
             }
-        }
+        })
 
         binding.registerButton.setOnClickListener {
             validateForm()

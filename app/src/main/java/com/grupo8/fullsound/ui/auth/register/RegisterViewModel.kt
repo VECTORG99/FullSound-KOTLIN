@@ -24,23 +24,28 @@ class RegisterViewModel(private val userRepository: UserRepository) : ViewModel(
         val passwordValid = isPasswordValid(password)
 
         _registerFormState.value = RegisterFormState(
-            emailError = if (!emailValid) "Correo electrónico inválido" else null,
-            usernameError = if (!usernameValid) "El usuario debe tener al menos 3 caracteres" else null,
-            passwordError = if (!passwordValid) "La contraseña debe tener al menos 6 caracteres" else null,
+            emailError = if (!emailValid) "Email inválido. Debe tener un dominio (ej: @gmail.com)" else null,
+            usernameError = if (!usernameValid) "El usuario no puede estar vacío" else null,
+            passwordError = if (!passwordValid) "La contraseña debe tener al menos 5 caracteres" else null,
             isDataValid = emailValid && usernameValid && passwordValid
         )
     }
 
     private fun isValidEmail(email: String): Boolean {
+        // Verifica email
         return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+            && email.contains("@")
+            && email.substringAfter("@").contains(".")
     }
 
     private fun isValidUsername(username: String): Boolean {
-        return username.length >= 3 && username.matches(Regex("^[a-zA-Z0-9_]+$"))
+        // Verifica que no esté vacío
+        return username.isNotBlank()
     }
 
     private fun isPasswordValid(password: String): Boolean {
-        return password.length >= 6
+        // Mínimo 5 caracteres en contraseña
+        return password.length >= 5
     }
 }
 

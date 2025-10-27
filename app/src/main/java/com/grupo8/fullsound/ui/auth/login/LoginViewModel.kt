@@ -24,19 +24,19 @@ class LoginViewModel(private val userRepository: UserRepository) : ViewModel() {
 
         _loginFormState.value = LoginFormState(
             emailError = if (!emailOrUsernameValid) "Email o usuario inválido" else null,
-            passwordError = if (!passwordValid) "La contraseña debe tener al menos 6 caracteres" else null,
+            passwordError = if (!passwordValid) "La contraseña debe tener al menos 5 caracteres" else null,
             isDataValid = emailOrUsernameValid && passwordValid
         )
     }
 
     private fun isValidEmailOrUsername(emailOrUsername: String): Boolean {
-        // Válido si es un email válido O si tiene al menos 3 caracteres (username)
+        // Válido si es un email válido O si no está vacío (username)
         return android.util.Patterns.EMAIL_ADDRESS.matcher(emailOrUsername).matches()
-            || emailOrUsername.length >= 3
+            || emailOrUsername.isNotBlank()
     }
 
     private fun isPasswordValid(password: String): Boolean {
-        return password.length >= 6
+        return password.length >= 5
     }
 }
 

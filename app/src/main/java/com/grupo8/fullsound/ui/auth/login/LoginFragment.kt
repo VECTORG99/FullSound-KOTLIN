@@ -117,17 +117,22 @@ class LoginFragment : Fragment() {
     }
 
     private fun setupListeners() {
-        binding.emailEditText.setOnFocusChangeListener { _, hasFocus ->
-            if (!hasFocus) {
+        // Validación en tiempo real mientras el usuario escribe
+        binding.emailEditText.addTextChangedListener(object : android.text.TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: android.text.Editable?) {
                 validateForm()
             }
-        }
+        })
 
-        binding.passwordEditText.setOnFocusChangeListener { _, hasFocus ->
-            if (!hasFocus) {
+        binding.passwordEditText.addTextChangedListener(object : android.text.TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: android.text.Editable?) {
                 validateForm()
             }
-        }
+        })
 
         binding.loginButton.setOnClickListener {
             validateForm()
@@ -140,6 +145,15 @@ class LoginFragment : Fragment() {
 
         binding.registerText.setOnClickListener {
             findNavController().navigate(R.id.action_loginFragment_to_registerFragment)
+        }
+
+        binding.txtOlvideContrasena.setOnClickListener {
+            val email = binding.emailEditText.text.toString()
+            if (email.isBlank()) {
+                showMessage("Ingrese email en campo")
+            } else {
+                showMessage("Correo enviado a tu usuario")
+            }
         }
     }
 
