@@ -13,3 +13,9 @@
 .externalNativeBuild
 .cxx
 local.properties
+INSTRUCCIONES_IA.md
+
+# Test reports
+app/build/reports/
+app/build/test-results/
+*.log
