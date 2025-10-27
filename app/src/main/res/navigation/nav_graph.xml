@@ -15,7 +15,9 @@
             app:destination="@id/registerFragment" />
         <action
             android:id="@+id/action_loginFragment_to_beatsFragment"
-            app:destination="@id/beatsFragment" />
+            app:destination="@id/beatsFragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
     </fragment>
 
     <fragment
@@ -26,12 +28,21 @@
         <action
             android:id="@+id/action_registerFragment_to_beatsFragment"
             app:destination="@id/beatsFragment" />
+        <action
+            android:id="@+id/action_registerFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
     </fragment>
 
     <fragment
         android:id="@+id/beatsFragment"
         android:name="com.grupo8.fullsound.ui.beats.BeatsFragment"
         android:label="fragment_beats"
-        tools:layout="@layout/fragment_beats" />
+        tools:layout="@layout/fragment_beats" >
+        <action
+            android:id="@+id/action_beatsFragment_to_loginFragment"
+            app:destination="@id/loginFragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
 
 </navigation>

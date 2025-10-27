@@ -11,23 +11,6 @@
             </PendingDiffInfo>
           </value>
         </entry>
-        <entry key="$PROJECT_DIR$/app/src/main/java/com/grupo8/fullsound/data/local/BeatDao.kt">
-          <value>
-            <PendingDiffInfo>
-              <option name="filePath" value="$PROJECT_DIR$/app/src/main/java/com/grupo8/fullsound/data/local/BeatDao.kt" />
-              <option name="originalContent" value="package com.grupo8.fullsound.data.local&#10;&#10;import androidx.room.Dao&#10;import androidx.room.Insert&#10;import androidx.room.OnConflictStrategy&#10;import androidx.room.Query&#10;import com.grupo8.fullsound.data.models.Beat&#10;&#10;@Dao&#10;interface BeatDao {&#10;    @Insert(onConflict = OnConflictStrategy.REPLACE)&#10;    suspend fun insertBeat(beat: Beat)&#10;&#10;    @Query(&quot;SELECT * FROM beats WHERE id = :beatId&quot;)&#10;    suspend fun getBeatById(beatId: String): Beat?&#10;&#10;    @Query(&quot;SELECT * FROM beats&quot;)&#10;    suspend fun getAllBeats(): List&lt;Beat&gt;&#10;}" />
-              <option name="updatedContent" value="package com.grupo8.fullsound.data.local&#10;&#10;import androidx.room.Dao&#10;import androidx.room.Delete&#10;import androidx.room.Insert&#10;import androidx.room.OnConflictStrategy&#10;import androidx.room.Query&#10;import androidx.room.Update&#10;import com.grupo8.fullsound.data.models.Beat&#10;&#10;@Dao&#10;interface BeatDao {&#10;    @Insert(onConflict = OnConflictStrategy.REPLACE)&#10;    suspend fun insertBeat(beat: Beat)&#10;&#10;    @Query(&quot;SELECT * FROM beats WHERE id = :beatId&quot;)&#10;    suspend fun getBeatById(beatId: String): Beat?&#10;&#10;    @Query(&quot;SELECT * FROM beats&quot;)&#10;    suspend fun getAllBeats(): List&lt;Beat&gt;&#10;&#10;    @Update&#10;    suspend fun updateBeat(beat: Beat)&#10;&#10;    @Delete&#10;    suspend fun deleteBeat(beat: Beat)&#10;&#10;    @Query(&quot;DELETE FROM beats WHERE id = :beatId&quot;)&#10;    suspend fun deleteBeatById(beatId: String)&#10;&#10;    @Query(&quot;DELETE FROM beats&quot;)&#10;    suspend fun deleteAllBeats()&#10;}" />
-            </PendingDiffInfo>
-          </value>
-        </entry>
-        <entry key="$PROJECT_DIR$/app/src/main/java/com/grupo8/fullsound/ui/beats/BeatsViewModel.kt">
-          <value>
-            <PendingDiffInfo>
-              <option name="filePath" value="$PROJECT_DIR$/app/src/main/java/com/grupo8/fullsound/ui/beats/BeatsViewModel.kt" />
-              <option name="updatedContent" value="package com.grupo8.fullsound.ui.beats&#10;&#10;import androidx.lifecycle.LiveData&#10;import androidx.lifecycle.ViewModel&#10;import com.grupo8.fullsound.data.models.Beat&#10;import com.grupo8.fullsound.data.repositories.BeatRepository&#10;import com.grupo8.fullsound.utils.Resource&#10;&#10;class BeatsViewModel(private val beatRepository: BeatRepository) : ViewModel() {&#10;&#10;    val beatsResult: LiveData&lt;Resource&lt;List&lt;Beat&gt;&gt;&gt; = beatRepository.beatsResult&#10;    val beatResult: LiveData&lt;Resource&lt;Beat&gt;&gt; = beatRepository.beatResult&#10;    val deleteResult: LiveData&lt;Resource&lt;String&gt;&gt; = beatRepository.deleteResult&#10;&#10;    // CREATE&#10;    fun insertBeat(beat: Beat) {&#10;        beatRepository.insertBeat(beat)&#10;    }&#10;&#10;    // READ&#10;    fun getAllBeats() {&#10;        beatRepository.getAllBeats()&#10;    }&#10;&#10;    fun getBeatById(beatId: String) {&#10;        beatRepository.getBeatById(beatId)&#10;    }&#10;&#10;    // UPDATE&#10;    fun updateBeat(beat: Beat) {&#10;        beatRepository.updateBeat(beat)&#10;    }&#10;&#10;    // DELETE&#10;    fun deleteBeat(beat: Beat) {&#10;        beatRepository.deleteBeat(beat)&#10;    }&#10;&#10;    fun deleteBeatById(beatId: String) {&#10;        beatRepository.deleteBeatById(beatId)&#10;    }&#10;}&#10;" />
-            </PendingDiffInfo>
-          </value>
-        </entry>
       </map>
     </option>
   </component>

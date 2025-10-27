@@ -7,6 +7,7 @@
     <string name="password">Contraseña</string>
     <string name="login">Iniciar Sesión</string>
     <string name="register_here">¿No tienes cuenta? Regístrate aquí</string>
+    <string name="login_here">¿Ya tienes cuenta? Inicia sesión aquí</string>
     <string name="olvide_contrasena">Olvide mi contraseña</string>
     <string name="iniciar_sesion">Iniciar Sesión</string>
     <string name="crear_cuenta">Crear Cuenta</string>
@@ -14,6 +15,9 @@
     <string name="email_or_username_hint">Email o Usuario</string>
     <string name="password_hint">Contraseña</string>
     <string name="titulo_fullsound">FullSound</string>
+    <string name="subtitulo_login">Bienvenido de vuelta</string>
+    <string name="subtitulo_register">Crea tu cuenta</string>
+    <string name="separador_o">O</string>
     <string name="usuario_hint">Usuario</string>
 
     <!-- Beats CRUD -->
@@ -21,6 +25,11 @@
     <string name="leer_beats">Leer Beats</string>
     <string name="actualizar_beat">Actualizar Beat</string>
     <string name="eliminar_beat">Eliminar Beat</string>
+    <string name="gestiona_coleccion">Gestion de beats</string>
+    <string name="anadir_beat_desc">Añadir beat</string>
+    <string name="explorar_beats_desc">Explorar beats</string>
+    <string name="modificar_beat_desc">Modifica un beat</string>
+    <string name="eliminar_beat_desc">Elimina un beat</string>
 
     <!-- Register Fragment -->
     <string name="register">Registrarse</string>

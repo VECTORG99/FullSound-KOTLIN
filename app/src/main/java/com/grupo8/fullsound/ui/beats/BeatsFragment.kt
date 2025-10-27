@@ -4,14 +4,18 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
+import com.grupo8.fullsound.R
 import com.grupo8.fullsound.data.local.AppDatabase
 import com.grupo8.fullsound.data.repositories.BeatRepository
 import com.grupo8.fullsound.databinding.FragmentBeatsBinding
 import com.grupo8.fullsound.utils.Resource
+import com.grupo8.fullsound.utils.UserSession
 
 class BeatsFragment : Fragment() {
 
@@ -34,6 +38,15 @@ class BeatsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // Configurar el botón de retroceso para cerrar la app
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                // Finalizar la actividad (cerrar la app)
+                requireActivity().finish()
+            }
+        })
+
         setupObservers()
         setupClickListeners()
 
@@ -42,23 +55,51 @@ class BeatsFragment : Fragment() {
     }
 
     private fun setupClickListeners() {
-        // TODO: Implementar listeners para los botones CRUD
-        binding.btnCrear.setOnClickListener {
-            // Crear beat
+        // Botón de cerrar sesión
+        binding.btnLogout.setOnClickListener {
+            logout()
         }
 
-        binding.btnLeer.setOnClickListener {
+        // Botones de navegación
+        binding.btnNavBeats.setOnClickListener {
+            // Ya estamos en Beats
+        }
+
+        binding.btnNavCarrito.setOnClickListener {
+            // TODO: Navegar al carrito
+            showMessage("Navegando al carrito...")
+        }
+
+        // Cards CRUD
+        binding.cardCrear.setOnClickListener {
+            // TODO: Navegar a crear beat
+            showMessage("Crear beat")
+        }
+
+        binding.cardLeer.setOnClickListener {
             // Leer beats
             viewModel.getAllBeats()
+            showMessage("Cargando beats...")
         }
 
-        binding.btnActualizar.setOnClickListener {
-            // Actualizar beat
+        binding.cardActualizar.setOnClickListener {
+            // TODO: Navegar a actualizar beat
+            showMessage("Actualizar beat")
         }
 
-        binding.btnEliminar.setOnClickListener {
-            // Eliminar beat
+        binding.cardEliminar.setOnClickListener {
+            // TODO: Navegar a eliminar beat
+            showMessage("Eliminar beat")
         }
+    }
+
+    private fun logout() {
+        // Limpiar la sesión
+        val userSession = UserSession(requireContext())
+        userSession.logout()
+
+        // Navegar al login
+        findNavController().navigate(R.id.loginFragment)
     }
 
     private fun setupObservers() {

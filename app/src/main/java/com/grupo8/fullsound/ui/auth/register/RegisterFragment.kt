@@ -2,12 +2,12 @@ package com.grupo8.fullsound.ui.auth.register
 
 import android.animation.ArgbEvaluator
 import android.animation.ValueAnimator
-import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.graphics.toColorInt
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
@@ -17,7 +17,6 @@ import com.grupo8.fullsound.data.local.AppDatabase
 import com.grupo8.fullsound.data.repositories.UserRepository
 import com.grupo8.fullsound.databinding.FragmentRegisterBinding
 import com.grupo8.fullsound.utils.Resource
-import com.grupo8.fullsound.utils.UserSession
 
 class RegisterFragment : Fragment() {
 
@@ -46,17 +45,19 @@ class RegisterFragment : Fragment() {
 
     private fun startRgbTitleAnimation() {
         val textView: TextView = binding.txtTitulo
+        // Animación RGB completa con todos los colores del arcoíris
         val colors = intArrayOf(
-            Color.RED,
-            Color.MAGENTA,
-            Color.BLUE,
-            Color.CYAN,
-            Color.GREEN,
-            Color.YELLOW,
-            Color.RED
+            "#FF0000".toColorInt(), // Rojo
+            "#FF7F00".toColorInt(), // Naranja
+            "#FFFF00".toColorInt(), // Amarillo
+            "#00FF00".toColorInt(), // Verde
+            "#0000FF".toColorInt(), // Azul
+            "#4B0082".toColorInt(), // Índigo
+            "#9400D3".toColorInt(), // Violeta
+            "#FF0000".toColorInt()  // Rojo (volver al inicio)
         )
         val animator = ValueAnimator.ofFloat(0f, (colors.size - 1).toFloat())
-        animator.duration = 4000L
+        animator.duration = 7000L
         animator.repeatCount = ValueAnimator.INFINITE
         animator.addUpdateListener { animation ->
             val position = animation.animatedValue as Float
@@ -87,20 +88,9 @@ class RegisterFragment : Fragment() {
                     binding.registerButton.isEnabled = false
                 }
                 is Resource.Success -> {
-                    // Guardar sesión del usuario recién registrado
-                    val user = result.data
-                    if (user != null) {
-                        val userSession = UserSession(requireContext())
-                        userSession.saveUserSession(
-                            userId = user.id.hashCode(),
-                            email = user.email,
-                            username = user.username
-                        )
-                    }
-
-                    showMessage("Registro exitoso")
-                    // Navegar a Beats después de registrarse
-                    findNavController().navigate(R.id.action_registerFragment_to_beatsFragment)
+                    showMessage("Registro exitoso. Por favor, inicia sesión")
+                    // Navegar a Login después de registrarse
+                    findNavController().navigate(R.id.action_registerFragment_to_loginFragment)
                 }
                 is Resource.Error -> {
                     binding.registerButton.isEnabled = true
@@ -145,6 +135,10 @@ class RegisterFragment : Fragment() {
                 val password = binding.passwordEditText.text.toString()
                 viewModel.register(email, username, password)
             }
+        }
+
+        binding.loginText.setOnClickListener {
+            findNavController().navigate(R.id.action_registerFragment_to_loginFragment)
         }
     }
 
