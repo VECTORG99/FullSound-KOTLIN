@@ -1,5 +1,6 @@
 *.iml
 .gradle
+.idea/copilotDiffState.xml
 /local.properties
 /.idea/caches
 /.idea/libraries
