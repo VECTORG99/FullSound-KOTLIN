@@ -328,34 +328,87 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal"
-                        android:padding="20dp">
+                        android:orientation="vertical">
 
-                        <com.google.android.material.imageview.ShapeableImageView
-                            android:layout_width="56dp"
-                            android:layout_height="56dp"
-                            android:background="?attr/colorSecondary"
-                            android:padding="12dp"
-                            android:src="@drawable/ic_album"
-                            app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Full"
-                            app:tint="?attr/colorOnSecondary" />
-
+                        <!-- Header del Card Leer -->
                         <LinearLayout
-                            android:layout_width="0dp"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="20dp"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:padding="20dp">
 
-                            <TextView
-                                android:id="@+id/btn_leer"
-                                android:layout_width="wrap_content"
+                            <com.google.android.material.imageview.ShapeableImageView
+                                android:layout_width="56dp"
+                                android:layout_height="56dp"
+                                android:background="?attr/colorSecondary"
+                                android:padding="12dp"
+                                android:src="@drawable/ic_album"
+                                app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Full"
+                                app:tint="?attr/colorOnSecondary" />
+
+                            <LinearLayout
+                                android:layout_width="0dp"
                                 android:layout_height="wrap_content"
-                                android:text="@string/leer_beats"
+                                android:layout_marginStart="20dp"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/btn_leer"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/leer_beats"
+                                    android:textAppearance="?attr/textAppearanceTitleMedium"
+                                    android:textColor="?attr/colorOnSurface"
+                                    android:textStyle="bold" />
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                        <!-- Contenedor de Lista de Beats (Expansible) -->
+                        <LinearLayout
+                            android:id="@+id/container_lista_beats"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="20dp"
+                            android:paddingTop="0dp"
+                            android:visibility="gone">
+
+                            <!-- Título de la sección -->
+                            <TextView
+                                android:id="@+id/txt_total_beats"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="16dp"
+                                android:gravity="center"
+                                android:text="@string/total_beats"
                                 android:textAppearance="?attr/textAppearanceTitleMedium"
                                 android:textColor="?attr/colorOnSurface"
                                 android:textStyle="bold" />
+
+                            <!-- RecyclerView para mostrar la lista de beats -->
+                            <androidx.recyclerview.widget.RecyclerView
+                                android:id="@+id/recycler_beats"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:nestedScrollingEnabled="false"
+                                android:overScrollMode="never" />
+
+                            <!-- Mensaje cuando no hay beats -->
+                            <TextView
+                                android:id="@+id/txt_no_beats"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:layout_marginBottom="16dp"
+                                android:gravity="center"
+                                android:text="@string/no_beats_disponibles"
+                                android:textAppearance="?attr/textAppearanceBodyLarge"
+                                android:textColor="?attr/colorOnSurfaceVariant"
+                                android:visibility="gone" />
 
                         </LinearLayout>
 
@@ -431,34 +484,199 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal"
-                        android:padding="20dp">
+                        android:orientation="vertical">
 
-                        <com.google.android.material.imageview.ShapeableImageView
-                            android:layout_width="56dp"
-                            android:layout_height="56dp"
-                            android:background="?attr/colorError"
-                            android:padding="12dp"
-                            android:src="@drawable/ic_album"
-                            app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Full"
-                            app:tint="?attr/colorOnError" />
-
+                        <!-- Header del Card Eliminar -->
                         <LinearLayout
-                            android:layout_width="0dp"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="20dp"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:padding="20dp">
 
-                            <TextView
-                                android:id="@+id/btn_eliminar"
-                                android:layout_width="wrap_content"
+                            <com.google.android.material.imageview.ShapeableImageView
+                                android:layout_width="56dp"
+                                android:layout_height="56dp"
+                                android:background="?attr/colorError"
+                                android:padding="12dp"
+                                android:src="@drawable/ic_album"
+                                app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Full"
+                                app:tint="?attr/colorOnError" />
+
+                            <LinearLayout
+                                android:layout_width="0dp"
                                 android:layout_height="wrap_content"
-                                android:text="@string/eliminar_beat"
-                                android:textAppearance="?attr/textAppearanceTitleMedium"
-                                android:textColor="?attr/colorOnSurface"
-                                android:textStyle="bold" />
+                                android:layout_marginStart="20dp"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/btn_eliminar"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/eliminar_beat"
+                                    android:textAppearance="?attr/textAppearanceTitleMedium"
+                                    android:textColor="?attr/colorOnSurface"
+                                    android:textStyle="bold" />
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                        <!-- Formulario Eliminar Beat (Expansible) -->
+                        <LinearLayout
+                            android:id="@+id/form_eliminar_beat"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="20dp"
+                            android:paddingTop="0dp"
+                            android:visibility="gone">
+
+                            <!-- Campo ID del Beat a Eliminar -->
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:id="@+id/input_id_eliminar"
+                                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="16dp"
+                                android:hint="@string/id_beat_hint"
+                                app:boxStrokeColor="?attr/colorError"
+                                app:hintTextColor="?attr/colorError">
+
+                                <com.google.android.material.textfield.TextInputEditText
+                                    android:id="@+id/edit_id_eliminar"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:inputType="number"
+                                    android:maxLines="1" />
+
+                            </com.google.android.material.textfield.TextInputLayout>
+
+                            <!-- Botón Buscar Beat -->
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btn_buscar_beat"
+                                style="@style/Widget.Material3.Button.OutlinedButton"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="16dp"
+                                android:text="@string/buscar_beat"
+                                app:icon="@drawable/ic_album"
+                                app:iconGravity="textStart" />
+
+                            <!-- Card de Información del Beat a Eliminar -->
+                            <com.google.android.material.card.MaterialCardView
+                                android:id="@+id/card_beat_info"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="16dp"
+                                android:visibility="gone"
+                                app:cardBackgroundColor="?attr/colorErrorContainer"
+                                app:cardCornerRadius="12dp"
+                                app:cardElevation="2dp">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:padding="16dp">
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginBottom="12dp"
+                                        android:gravity="center"
+                                        android:text="@string/beat_a_eliminar"
+                                        android:textAppearance="?attr/textAppearanceTitleMedium"
+                                        android:textColor="?attr/colorOnErrorContainer"
+                                        android:textStyle="bold" />
+
+                                    <!-- Imagen del Beat -->
+                                    <com.google.android.material.card.MaterialCardView
+                                        android:layout_width="150dp"
+                                        android:layout_height="150dp"
+                                        android:layout_gravity="center"
+                                        android:layout_marginBottom="12dp"
+                                        app:cardCornerRadius="8dp"
+                                        app:cardElevation="2dp">
+
+                                        <ImageView
+                                            android:id="@+id/img_beat_eliminar"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="match_parent"
+                                            android:contentDescription="@string/imagen_beat_desc"
+                                            android:scaleType="centerCrop"
+                                            android:src="@drawable/image" />
+
+                                    </com.google.android.material.card.MaterialCardView>
+
+                                    <!-- Info del Beat -->
+                                    <LinearLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:gravity="center"
+                                        android:orientation="vertical">
+
+                                        <TextView
+                                            android:id="@+id/txt_titulo_eliminar"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginBottom="4dp"
+                                            android:gravity="center"
+                                            android:textAppearance="?attr/textAppearanceTitleLarge"
+                                            android:textColor="?attr/colorOnErrorContainer"
+                                            android:textStyle="bold" />
+
+                                        <TextView
+                                            android:id="@+id/txt_artista_eliminar"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginBottom="4dp"
+                                            android:textAppearance="?attr/textAppearanceBodyMedium"
+                                            android:textColor="?attr/colorOnErrorContainer" />
+
+                                        <TextView
+                                            android:id="@+id/txt_bpm_eliminar"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:textAppearance="?attr/textAppearanceBodyMedium"
+                                            android:textColor="?attr/colorOnErrorContainer" />
+
+                                    </LinearLayout>
+
+                                </LinearLayout>
+
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <!-- Botones de Acción -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal"
+                                android:weightSum="2">
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/btn_cancelar_eliminar"
+                                    style="@style/Widget.Material3.Button.TextButton"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginEnd="8dp"
+                                    android:layout_weight="1"
+                                    android:text="@string/cancelar"
+                                    android:textColor="?attr/colorOnSurfaceVariant" />
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/btn_confirmar_eliminar"
+                                    style="@style/Widget.Material3.Button.ElevatedButton"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="@string/eliminar"
+                                    android:textColor="?attr/colorOnError"
+                                    app:backgroundTint="?attr/colorError" />
+
+                            </LinearLayout>
 
                         </LinearLayout>
 

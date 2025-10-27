@@ -34,9 +34,15 @@ class BeatsFragment : Fragment() {
         BeatsViewModelFactory(beatRepository)
     }
 
+    // Adaptador para la lista de beats
+    private val beatsAdapter = BeatsAdapter()
+
     // URIs de archivos seleccionados
     private var selectedImageUri: Uri? = null
     private var selectedAudioUri: Uri? = null
+
+    // Beat seleccionado para eliminar
+    private var beatToDelete: com.grupo8.fullsound.data.models.Beat? = null
 
     // Launcher para seleccionar imagen
     private val selectImageLauncher = registerForActivityResult(
@@ -71,11 +77,20 @@ class BeatsFragment : Fragment() {
             }
         })
 
+        setupRecyclerView()
         setupObservers()
         setupClickListeners()
 
         // Cargar todos los beats al iniciar
         viewModel.getAllBeats()
+    }
+
+    private fun setupRecyclerView() {
+        binding.recyclerBeats.apply {
+            adapter = beatsAdapter
+            layoutManager = androidx.recyclerview.widget.LinearLayoutManager(requireContext())
+            setHasFixedSize(false)
+        }
     }
 
     private fun setupClickListeners() {
@@ -100,9 +115,7 @@ class BeatsFragment : Fragment() {
         }
 
         binding.cardLeer.setOnClickListener {
-            // Leer beats
-            viewModel.getAllBeats()
-            showMessage("Cargando beats...")
+            toggleListaBeats()
         }
 
         binding.cardActualizar.setOnClickListener {
@@ -111,8 +124,7 @@ class BeatsFragment : Fragment() {
         }
 
         binding.cardEliminar.setOnClickListener {
-            // TODO: Navegar a eliminar beat
-            showMessage("Eliminar beat")
+            toggleFormEliminar()
         }
 
         // Botones del formulario de crear
@@ -132,6 +144,19 @@ class BeatsFragment : Fragment() {
         binding.btnSeleccionarAudio.setOnClickListener {
             selectAudioLauncher.launch("audio/*")
         }
+
+        // Botones del formulario de eliminar
+        binding.btnBuscarBeat.setOnClickListener {
+            buscarBeatParaEliminar()
+        }
+
+        binding.btnCancelarEliminar.setOnClickListener {
+            hideFormEliminar()
+        }
+
+        binding.btnConfirmarEliminar.setOnClickListener {
+            confirmarEliminarBeat()
+        }
     }
 
     private fun toggleFormCrear() {
@@ -140,6 +165,73 @@ class BeatsFragment : Fragment() {
         } else {
             binding.formCrearBeat.visibility = View.GONE
         }
+    }
+
+    private fun toggleListaBeats() {
+        if (binding.containerListaBeats.visibility == View.GONE) {
+            binding.containerListaBeats.visibility = View.VISIBLE
+            // Recargar beats al abrir
+            viewModel.getAllBeats()
+        } else {
+            binding.containerListaBeats.visibility = View.GONE
+        }
+    }
+
+    private fun toggleFormEliminar() {
+        if (binding.formEliminarBeat.visibility == View.GONE) {
+            binding.formEliminarBeat.visibility = View.VISIBLE
+        } else {
+            binding.formEliminarBeat.visibility = View.GONE
+        }
+    }
+
+    private fun hideFormEliminar() {
+        binding.formEliminarBeat.visibility = View.GONE
+        limpiarFormularioEliminar()
+    }
+
+    private fun limpiarFormularioEliminar() {
+        binding.editIdEliminar.text?.clear()
+        binding.inputIdEliminar.error = null
+        binding.cardBeatInfo.visibility = View.GONE
+        beatToDelete = null
+    }
+
+    private fun buscarBeatParaEliminar() {
+        val idText = binding.editIdEliminar.text.toString().trim()
+
+        if (idText.isEmpty()) {
+            binding.inputIdEliminar.error = "Ingresa el ID del beat"
+            return
+        }
+
+        val beatId = idText.toIntOrNull()
+        if (beatId == null || beatId <= 0) {
+            binding.inputIdEliminar.error = "Ingresa un ID válido"
+            return
+        }
+
+        binding.inputIdEliminar.error = null
+        // Buscar el beat por ID
+        viewModel.getBeatById(beatId)
+    }
+
+    private fun mostrarBeatParaEliminar(beat: com.grupo8.fullsound.data.models.Beat) {
+        beatToDelete = beat
+        binding.cardBeatInfo.visibility = View.VISIBLE
+        binding.txtTituloEliminar.text = beat.titulo
+        binding.txtArtistaEliminar.text = "Artista: ${beat.artista}"
+        binding.txtBpmEliminar.text = "BPM: ${beat.bpm}"
+        // Usar siempre el placeholder
+        binding.imgBeatEliminar.setImageResource(R.drawable.image)
+    }
+
+    private fun confirmarEliminarBeat() {
+        beatToDelete?.let { beat ->
+            // Eliminar el beat
+            viewModel.deleteBeat(beat)
+            hideFormEliminar()
+        } ?: showMessage("No hay beat seleccionado para eliminar")
     }
 
     private fun hideFormCrear() {
@@ -337,13 +429,29 @@ class BeatsFragment : Fragment() {
                     // Mostrar cargando
                 }
                 is Resource.Success -> {
-                    val beats = result.data
-                    // Actualizar UI con la lista de beats
-                    binding.txtTituloBeats.text = "Total de Beats: ${beats?.size ?: 0}"
+                    val beats = result.data ?: emptyList()
+                    // Actualizar el total de beats en el header
+                    binding.txtTituloBeats.text = "Beats (${beats.size})"
+                    // Actualizar el total en la sección de leer
+                    binding.txtTotalBeats.text = "Total de Beats: ${beats.size}"
+
+                    // Actualizar el adaptador con los beats
+                    beatsAdapter.submitList(beats)
+
+                    // Mostrar/ocultar mensaje de "no hay beats"
+                    if (beats.isEmpty()) {
+                        binding.recyclerBeats.visibility = View.GONE
+                        binding.txtNoBeats.visibility = View.VISIBLE
+                    } else {
+                        binding.recyclerBeats.visibility = View.VISIBLE
+                        binding.txtNoBeats.visibility = View.GONE
+                    }
                 }
                 is Resource.Error -> {
                     // Mostrar error
                     showMessage(result.message ?: "Error al cargar beats")
+                    binding.recyclerBeats.visibility = View.GONE
+                    binding.txtNoBeats.visibility = View.VISIBLE
                 }
             }
         }
@@ -352,11 +460,23 @@ class BeatsFragment : Fragment() {
         viewModel.beatResult.observe(viewLifecycleOwner) { result ->
             when (result) {
                 is Resource.Success -> {
-                    showMessage("Operación exitosa")
-                    viewModel.getAllBeats()
+                    result.data?.let { beat ->
+                        // Si estamos buscando un beat para eliminar, mostrarlo
+                        if (binding.formEliminarBeat.visibility == View.VISIBLE) {
+                            mostrarBeatParaEliminar(beat)
+                        } else {
+                            showMessage("Operación exitosa")
+                            viewModel.getAllBeats()
+                        }
+                    }
                 }
                 is Resource.Error -> {
                     showMessage(result.message ?: "Error en operación")
+                    // Si estamos buscando un beat para eliminar y no se encuentra
+                    if (binding.formEliminarBeat.visibility == View.VISIBLE) {
+                        binding.cardBeatInfo.visibility = View.GONE
+                        beatToDelete = null
+                    }
                 }
                 else -> {}
             }

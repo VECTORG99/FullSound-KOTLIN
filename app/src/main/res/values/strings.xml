@@ -44,6 +44,28 @@
     <string name="modificar_beat_desc">Modifica un beat</string>
     <string name="eliminar_beat_desc">Elimina un beat</string>
 
+    <!-- Eliminar Beat -->
+    <string name="id_beat_hint">ID del Beat</string>
+    <string name="buscar_beat">Buscar Beat</string>
+    <string name="beat_a_eliminar">Beat a Eliminar</string>
+    <string name="eliminar">Eliminar</string>
+
+    <!-- Item Beat -->
+    <string name="imagen_beat_desc">Imagen del beat</string>
+    <string name="titulo_beat_default">Título del Beat</string>
+    <string name="id_label">ID: </string>
+    <string name="id_default">1</string>
+    <string name="artista_label">Artista: </string>
+    <string name="artista_default">Nombre del Artista</string>
+    <string name="bpm_label">BPM: </string>
+    <string name="bpm_default">120</string>
+    <string name="imagen_label">Imagen:</string>
+    <string name="imagen_path_default">/path/to/image.jpg</string>
+    <string name="audio_label">Audio:</string>
+    <string name="audio_path_default">/path/to/audio.mp3</string>
+    <string name="total_beats">Total de Beats: 0</string>
+    <string name="no_beats_disponibles">No hay beats disponibles</string>
+
     <!-- Register Fragment -->
     <string name="register">Registrarse</string>
     <string name="name">Nombre completo</string>
