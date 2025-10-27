@@ -11,7 +11,7 @@ object LocalBeatsProvider {
         return listOf(
             Beat(
                 id = 0,
-                titulo = "Samuel canchalla",
+                titulo = "Samuel canchaya",
                 artista = "Ludwig van Beethoven",
                 bpm = 95,
                 imagenPath = images[0 % images.size],
@@ -74,25 +74,5 @@ object LocalBeatsProvider {
                 mp3Path = "beat8"
             )
         )
-    }
-
-
-    // Obtiene un beat por su ID
-
-    fun getBeatById(id: Int): Beat? {
-        return getBeats().find { it.id == id }
-    }
-
-
-     // Obtener imagenes
-
-    fun getImageFileName(imagePath: String): String {
-        return "images/$imagePath.jpg"
-    }
-
-        // Obtener recursos de audio
-    fun getAudioResourceId(context: android.content.Context, mp3Path: String): Int {
-        // El mp3Path ya viene sin la extensión (beat1, beat2, etc.)
-        return context.resources.getIdentifier(mp3Path, "raw", context.packageName)
     }
 }

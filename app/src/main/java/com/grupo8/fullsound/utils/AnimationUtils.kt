@@ -63,14 +63,6 @@ object AnimationHelper {
     }
 
     /**
-     * Anima una vista con efecto bounce (rebote)
-     */
-    fun bounce(view: View) {
-        val animation = AnimationUtils.loadAnimation(view.context, com.grupo8.fullsound.R.anim.bounce)
-        view.startAnimation(animation)
-    }
-
-    /**
      * Anima una vista con scale up
      */
     fun scaleUp(view: View, duration: Long = 200) {
@@ -163,4 +155,3 @@ object AnimationHelper {
         SCALE
     }
 }
-
