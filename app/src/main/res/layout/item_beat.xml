@@ -171,36 +171,61 @@
 
         </LinearLayout>
 
-        <!-- Botones de acción -->
+        <!-- Botones de acción: Play a la izquierda y dos botones apilados a la derecha -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:orientation="horizontal"
-            android:gravity="center">
+            android:gravity="center_vertical">
 
-            <!-- Botón Agregar al Carrito -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_add_carrito"
+            <!-- Botón Reproducir/Pausar -->
+            <ImageButton
+                android:id="@+id/btn_play"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginEnd="12dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/play_pause"
+                android:scaleType="center"
+                android:src="@android:drawable/ic_media_play" />
+
+            <!-- Contenedor vertical para botones (ocupa el espacio restante) -->
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:layout_marginEnd="8dp"
-                android:text="@string/add_carrito"
-                app:icon="@android:drawable/ic_input_add"
-                app:iconGravity="textStart"
-                style="@style/Widget.Material3.Button.OutlinedButton" />
+                android:orientation="vertical">
 
-            <!-- Botón Comprar -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_comprar"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginStart="8dp"
-                android:text="@string/comprar"
-                app:icon="@android:drawable/ic_menu_send"
-                app:iconGravity="textStart" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_add_carrito"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginBottom="8dp"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:minHeight="48dp"
+                    android:singleLine="true"
+                    android:ellipsize="end"
+                    android:text="@string/add_carrito"
+                    app:icon="@android:drawable/ic_input_add"
+                    app:iconGravity="textStart"
+                    style="@style/Widget.Material3.Button.OutlinedButton" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_comprar"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:minHeight="48dp"
+                    android:singleLine="true"
+                    android:ellipsize="end"
+                    android:text="@string/comprar"
+                    app:icon="@android:drawable/ic_menu_send"
+                    app:iconGravity="textStart" />
+
+            </LinearLayout>
 
         </LinearLayout>
 

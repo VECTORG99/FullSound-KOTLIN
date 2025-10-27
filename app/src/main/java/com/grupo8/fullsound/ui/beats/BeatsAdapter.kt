@@ -33,6 +33,9 @@ class BeatsAdapter(
         private val onComprar: (Beat) -> Unit
     ) : RecyclerView.ViewHolder(binding.root) {
 
+        private var mediaPlayer: android.media.MediaPlayer? = null
+        private var isPlaying = false
+
         fun bind(beat: Beat) {
             binding.apply {
                 // Datos del beat
@@ -98,6 +101,21 @@ class BeatsAdapter(
                     }
                 }
 
+                // Audio: preparar el nombre mostrado
+                txtAudioNombre.text = File(beat.mp3Path).name
+
+                // Configurar botón play/pause
+                btnPlay.setOnClickListener {
+                    if (isPlaying) {
+                        pauseAudio()
+                    } else {
+                        playAudio(beat)
+                    }
+                }
+
+                // Si se recicla, nos aseguramos de que el icono esté en estado inicial
+                updatePlayIcon()
+
                 // Click listeners para los botones
                 btnAddCarrito.setOnClickListener {
                     onAddToCarrito(beat)
@@ -107,6 +125,86 @@ class BeatsAdapter(
                     onComprar(beat)
                 }
             }
+        }
+
+        private fun playAudio(beat: Beat) {
+            try {
+                // Liberar si ya existía
+                mediaPlayer?.release()
+                mediaPlayer = android.media.MediaPlayer()
+
+                val ctx = binding.root.context
+
+                // Determinar fuente: si mp3Path apunta a un archivo existente, usar decodeFile
+                val possibleFile = java.io.File(beat.mp3Path)
+                if (possibleFile.exists()) {
+                    mediaPlayer?.setDataSource(possibleFile.absolutePath)
+                } else {
+                    // Intentar cargar desde raw por nombre (sin extensión)
+                    val resId = ctx.resources.getIdentifier(beat.mp3Path, "raw", ctx.packageName)
+                    if (resId != 0) {
+                        val afd = ctx.resources.openRawResourceFd(resId)
+                        mediaPlayer?.setDataSource(afd.fileDescriptor, afd.startOffset, afd.length)
+                        afd.close()
+                    } else {
+                        // Fallback: intentar nombres beat1..beat5
+                        val fallbackIdx = ((beat.id % 5) + 5) % 5 + 1
+                        val fallbackName = "beat$fallbackIdx"
+                        val fallbackRes = ctx.resources.getIdentifier(fallbackName, "raw", ctx.packageName)
+                        if (fallbackRes != 0) {
+                            val afd2 = ctx.resources.openRawResourceFd(fallbackRes)
+                            mediaPlayer?.setDataSource(afd2.fileDescriptor, afd2.startOffset, afd2.length)
+                            afd2.close()
+                        } else {
+                            // No hay fuente válida
+                            android.util.Log.w("BeatsAdapter", "No audio source for beat ${beat.id}")
+                            mediaPlayer?.release()
+                            mediaPlayer = null
+                            return
+                        }
+                    }
+                }
+
+                mediaPlayer?.prepare()
+                mediaPlayer?.start()
+                isPlaying = true
+                updatePlayIcon()
+
+                mediaPlayer?.setOnCompletionListener {
+                    isPlaying = false
+                    updatePlayIcon()
+                    mediaPlayer?.release()
+                    mediaPlayer = null
+                }
+
+            } catch (e: Exception) {
+                android.util.Log.e("BeatsAdapter", "Error playing audio for beat ${beat.id}: ${e.message}")
+                mediaPlayer?.release()
+                mediaPlayer = null
+                isPlaying = false
+                updatePlayIcon()
+            }
+        }
+
+        private fun pauseAudio() {
+            mediaPlayer?.let {
+                if (it.isPlaying) {
+                    it.pause()
+                    isPlaying = false
+                    updatePlayIcon()
+                }
+            }
+        }
+
+        private fun updatePlayIcon() {
+            val playIcon = if (isPlaying) android.R.drawable.ic_media_pause else android.R.drawable.ic_media_play
+            binding.btnPlay.setImageResource(playIcon)
+        }
+
+        fun releasePlayer() {
+            mediaPlayer?.release()
+            mediaPlayer = null
+            isPlaying = false
         }
     }
 
@@ -118,5 +216,10 @@ class BeatsAdapter(
         override fun areContentsTheSame(oldItem: Beat, newItem: Beat): Boolean {
             return oldItem == newItem
         }
+    }
+
+    override fun onViewRecycled(holder: BeatViewHolder) {
+        super.onViewRecycled(holder)
+        holder.releasePlayer()
     }
 }
