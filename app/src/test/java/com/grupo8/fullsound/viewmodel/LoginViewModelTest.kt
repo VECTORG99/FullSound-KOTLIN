@@ -3,6 +3,7 @@ package com.grupo8.fullsound.viewmodel
 import androidx.lifecycle.Observer
 import com.grupo8.fullsound.repository.UserRepository
 import io.kotest.core.spec.style.StringSpec
+import io.kotest.matchers.shouldBe
 import io.mockk.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -42,9 +43,12 @@ class LoginViewModelTest : StringSpec({
 
         viewModel.validateForm("test@test.com", "password123")
 
-        verify { observer.onChanged(match {
-            it.emailError == null && it.passwordError == null && it.isDataValid == true
-        }) }
+        val slot = slot<LoginFormState>()
+        verify { observer.onChanged(capture(slot)) }
+
+        slot.captured.emailError shouldBe null
+        slot.captured.passwordError shouldBe null
+        slot.captured.isDataValid shouldBe true
 
         viewModel.loginFormState.removeObserver(observer)
     }
@@ -56,9 +60,11 @@ class LoginViewModelTest : StringSpec({
 
         viewModel.validateForm("test@test.com", "1234")
 
-        verify { observer.onChanged(match {
-            it.passwordError != null && it.isDataValid == false
-        }) }
+        val slot = slot<LoginFormState>()
+        verify { observer.onChanged(capture(slot)) }
+
+        slot.captured.passwordError shouldBe "La contraseña debe tener al menos 5 caracteres"
+        slot.captured.isDataValid shouldBe false
 
         viewModel.loginFormState.removeObserver(observer)
     }

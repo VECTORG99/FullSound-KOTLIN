@@ -47,9 +47,13 @@ class UserRepositoryTest : StringSpec({
             repository.loginResult.observeForever(observer)
 
             repository.login("test@test.com", "pass")
-            advanceUntilIdle()
 
-            verify { observer.onChanged(match { it is Resource.Success && it.data == user }) }
+            // Avanzar el dispatcher de test y el dispatcher IO
+            testScheduler.advanceUntilIdle()
+
+            verify(timeout = 1000) { observer.onChanged(match { it is Resource.Loading }) }
+            verify(timeout = 1000) { observer.onChanged(match { it is Resource.Success && it.data == user }) }
+
             repository.loginResult.removeObserver(observer)
         }
     }
@@ -63,11 +67,14 @@ class UserRepositoryTest : StringSpec({
             repository.loginResult.observeForever(observer)
 
             repository.login("wrong@test.com", "wrong")
-            advanceUntilIdle()
 
-            verify { observer.onChanged(match {
+            testScheduler.advanceUntilIdle()
+
+            verify(timeout = 1000) { observer.onChanged(match { it is Resource.Loading }) }
+            verify(timeout = 1000) { observer.onChanged(match {
                 it is Resource.Error && it.message == "Credenciales inválidas"
             }) }
+
             repository.loginResult.removeObserver(observer)
         }
     }
@@ -82,11 +89,14 @@ class UserRepositoryTest : StringSpec({
             repository.registerResult.observeForever(observer)
 
             repository.register("test@test.com", "newuser", "pass123", "New")
-            advanceUntilIdle()
 
-            verify { observer.onChanged(match {
+            testScheduler.advanceUntilIdle()
+
+            verify(timeout = 1000) { observer.onChanged(match { it is Resource.Loading }) }
+            verify(timeout = 1000) { observer.onChanged(match {
                 it is Resource.Error && it.message == "El email ya está registrado"
             }) }
+
             repository.registerResult.removeObserver(observer)
         }
     }

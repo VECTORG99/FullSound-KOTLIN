@@ -4,6 +4,7 @@ import androidx.lifecycle.Observer
 import com.grupo8.fullsound.model.Beat
 import com.grupo8.fullsound.repository.CarritoRepository
 import io.kotest.core.spec.style.StringSpec
+import io.kotest.matchers.shouldBe
 import io.mockk.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -48,11 +49,15 @@ class CarritoViewModelTest : StringSpec({
             viewModel.addToCarritoResult.observeForever(observer)
 
             viewModel.addBeatToCarrito(beat)
-            advanceUntilIdle()
 
-            verify { observer.onChanged(match {
-                it is AddToCarritoResult.Success && it.beatTitle == "Beat"
-            }) }
+            // Avanzar dispatcher
+            testScheduler.advanceUntilIdle()
+
+            val slot = slot<AddToCarritoResult>()
+            verify(timeout = 1000) { observer.onChanged(capture(slot)) }
+
+            val result = slot.captured
+            result shouldBe AddToCarritoResult.Success("Beat")
 
             viewModel.addToCarritoResult.removeObserver(observer)
         }
@@ -68,11 +73,15 @@ class CarritoViewModelTest : StringSpec({
             viewModel.addToCarritoResult.observeForever(observer)
 
             viewModel.addBeatToCarrito(beat)
-            advanceUntilIdle()
 
-            verify { observer.onChanged(match {
-                it is AddToCarritoResult.AlreadyExists && it.beatTitle == "Beat"
-            }) }
+            // Avanzar dispatcher
+            testScheduler.advanceUntilIdle()
+
+            val slot = slot<AddToCarritoResult>()
+            verify(timeout = 1000) { observer.onChanged(capture(slot)) }
+
+            val result = slot.captured
+            result shouldBe AddToCarritoResult.AlreadyExists("Beat")
 
             viewModel.addToCarritoResult.removeObserver(observer)
         }

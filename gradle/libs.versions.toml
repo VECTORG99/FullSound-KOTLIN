@@ -61,6 +61,7 @@ androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 junit = { module = "junit:junit", version = "4.13.2" }
 androidx-junit = { module = "androidx.test.ext:junit", version = "1.1.5" }
 androidx-espresso-core = { module = "androidx.test.espresso:espresso-core", version = "3.5.1" }
+androidx-fragment-testing = { module = "androidx.fragment:fragment-testing", version = "1.6.2" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 kotest-runner = { module = "io.kotest:kotest-runner-junit5", version = "5.9.1" }
