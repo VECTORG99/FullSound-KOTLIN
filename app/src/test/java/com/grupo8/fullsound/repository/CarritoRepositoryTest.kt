@@ -6,6 +6,7 @@ import com.grupo8.fullsound.model.CarritoItem
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
 import io.mockk.*
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
 
 /**
@@ -18,6 +19,8 @@ class CarritoRepositoryTest : StringSpec({
 
     beforeTest {
         carritoDao = mockk()
+        // Mockear getAllItems() que se llama en el constructor del repository
+        every { carritoDao.getAllItems() } returns flowOf(emptyList())
         repository = CarritoRepository(carritoDao)
     }
 
