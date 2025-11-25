@@ -1,18 +1,10 @@
-// ...new file...
-package com.grupo8.fullsound.util
-
+package com.grupo8.fullsound.utils
+// ...existing code...
 import java.text.NumberFormat
 import java.util.Locale
 import kotlin.math.round
-
+// ...existing code...
 object FormatUtils {
-    /**
-     * Formatea un monto (Double) a formato CLP:
-     * - Redondea al peso entero más cercano
-     * - Agrupa miles con '.'
-     * - No muestra decimales
-     * Resultado: "$ 12.345"
-     */
     fun formatClp(amount: Double): String {
         val nf: NumberFormat = NumberFormat.getIntegerInstance(Locale("es", "CL"))
         nf.isGroupingUsed = true
@@ -20,4 +12,5 @@ object FormatUtils {
         return "$ ${nf.format(rounded)}"
     }
 }
+// ...existing code...
 

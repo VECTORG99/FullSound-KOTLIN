@@ -20,7 +20,7 @@ import com.grupo8.fullsound.ui.beats.CarritoViewModelFactory
 import com.grupo8.fullsound.utils.UserSession
 import com.grupo8.fullsound.utils.AnimationHelper
 import kotlinx.coroutines.launch
-import com.grupo8.fullsound.util.FormatUtils
+import com.grupo8.fullsound.utils.FormatUtils
 
 class CarritoFragment : Fragment() {
 

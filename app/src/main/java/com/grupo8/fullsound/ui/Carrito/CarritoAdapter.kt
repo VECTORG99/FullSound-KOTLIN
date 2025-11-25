@@ -10,7 +10,7 @@ import com.grupo8.fullsound.model.CarritoItem
 import com.grupo8.fullsound.databinding.ItemCarritoBinding
 import java.io.File
 import java.util.Locale
-import com.grupo8.fullsound.util.FormatUtils
+import com.grupo8.fullsound.utils.FormatUtils
 
 class CarritoAdapter(
     private val onRemove: (CarritoItem) -> Unit
