@@ -10,6 +10,7 @@ import com.grupo8.fullsound.model.CarritoItem
 import com.grupo8.fullsound.databinding.ItemCarritoBinding
 import java.io.File
 import java.util.Locale
+import com.grupo8.fullsound.util.FormatUtils
 
 class CarritoAdapter(
     private val onRemove: (CarritoItem) -> Unit
@@ -36,15 +37,17 @@ class CarritoAdapter(
             binding.txtTituloCarrito.text = item.titulo
             binding.txtArtistaCarrito.text = item.artista
 
-            // Formatear precios en CLP con separadores de miles y sin decimales (o 0 decimales)
+            // Formatear precios en CLP con separadores de miles y sin decimales
             try {
-                val nf = java.text.NumberFormat.getCurrencyInstance(java.util.Locale("es", "CL"))
-                binding.txtPrecioUnitario.text = nf.format(item.precio)
-                binding.txtPrecioTotalItem.text = nf.format(item.precio * item.cantidad)
-            } catch (e: Exception) {
-                binding.txtPrecioUnitario.text = String.format(Locale.US, "$%.2f", item.precio)
+                binding.txtPrecioTotalItem.text = FormatUtils.formatClp(item.precio * item.cantidad)
+            } catch (_: Exception) {
                 binding.txtPrecioTotalItem.text = String.format(Locale.US, "$%.2f", item.precio * item.cantidad)
             }
+
+            // Ajustes para evitar que el texto se corte
+            binding.txtTituloCarrito.setSingleLine(true)
+            binding.txtTituloCarrito.isSelected = true
+            binding.txtArtistaCarrito.setSingleLine(true)
 
             // Cargar imagen
             loadImage(item.imagenPath)

@@ -20,7 +20,7 @@ import com.grupo8.fullsound.ui.beats.CarritoViewModelFactory
 import com.grupo8.fullsound.utils.UserSession
 import com.grupo8.fullsound.utils.AnimationHelper
 import kotlinx.coroutines.launch
-import java.util.Locale
+import com.grupo8.fullsound.util.FormatUtils
 
 class CarritoFragment : Fragment() {
 
@@ -147,7 +147,7 @@ class CarritoFragment : Fragment() {
             if (total > 0) {
                 AlertDialog.Builder(requireContext())
                     .setTitle("Confirmar compra")
-                    .setMessage("Total a pagar: ${String.format(Locale.US, "$%.2f", total)}\n\n¿Deseas proceder con la compra?")
+                    .setMessage("Total a pagar: ${FormatUtils.formatClp(total)}\n\n¿Deseas proceder con la compra?")
                     .setPositiveButton("Comprar") { _, _ ->
                         // Aquí iría la lógica de pago real
                         showMessage("¡Compra realizada con éxito!")
@@ -164,7 +164,7 @@ class CarritoFragment : Fragment() {
     private fun updateTotal() {
         lifecycleScope.launch {
             val total = carritoViewModel.getTotalPrice()
-            binding.txtTotal.text = String.format(Locale.US, "$%.2f", total)
+            binding.txtTotal.text = FormatUtils.formatClp(total)
         }
     }
 
@@ -195,5 +195,3 @@ class CarritoFragment : Fragment() {
         _binding = null
     }
 }
-
-
