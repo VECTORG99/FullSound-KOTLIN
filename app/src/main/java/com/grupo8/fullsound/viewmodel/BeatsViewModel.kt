@@ -18,8 +18,14 @@ class BeatsViewModel(private val beatRepository: BeatRepository) : ViewModel() {
     }
 
     // READ
+    // Variante por defecto (sin conversión)
     fun getAllBeats() {
         beatRepository.getAllBeats()
+    }
+
+    // Variante con conversion a CLP usando la API de Fixer (necesita Context)
+    fun getAllBeatsInClp(fixerApiKey: String, context: android.content.Context) {
+        beatRepository.getAllBeats(fixerApiKey, context)
     }
 
     fun getBeatById(beatId: Int) {
@@ -45,4 +51,3 @@ class BeatsViewModel(private val beatRepository: BeatRepository) : ViewModel() {
         beatRepository.insertExampleBeats()
     }
 }
-

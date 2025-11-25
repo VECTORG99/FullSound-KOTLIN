@@ -171,6 +171,17 @@
 
         </LinearLayout>
 
+        <!-- Precio (centrado) -->
+        <TextView
+            android:id="@+id/txt_precio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:text="@string/precio_default"
+            android:textAppearance="?attr/textAppearanceTitleMedium"
+            android:textColor="?attr/colorOnSurface" />
+
         <!-- Botones de acción: Play a la izquierda y dos botones apilados a la derecha -->
         <LinearLayout
             android:layout_width="match_parent"

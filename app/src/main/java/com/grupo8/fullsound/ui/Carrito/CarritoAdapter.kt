@@ -35,10 +35,16 @@ class CarritoAdapter(
         fun bind(item: CarritoItem) {
             binding.txtTituloCarrito.text = item.titulo
             binding.txtArtistaCarrito.text = item.artista
-            binding.txtPrecioUnitario.text = String.format(Locale.US, "$%.2f", item.precio)
 
-            // Mostrar precio total (siempre será el precio unitario ya que cantidad = 1)
-            binding.txtPrecioTotalItem.text = String.format(Locale.US, "$%.2f", item.precio)
+            // Formatear precios en CLP con separadores de miles y sin decimales (o 0 decimales)
+            try {
+                val nf = java.text.NumberFormat.getCurrencyInstance(java.util.Locale("es", "CL"))
+                binding.txtPrecioUnitario.text = nf.format(item.precio)
+                binding.txtPrecioTotalItem.text = nf.format(item.precio * item.cantidad)
+            } catch (e: Exception) {
+                binding.txtPrecioUnitario.text = String.format(Locale.US, "$%.2f", item.precio)
+                binding.txtPrecioTotalItem.text = String.format(Locale.US, "$%.2f", item.precio * item.cantidad)
+            }
 
             // Cargar imagen
             loadImage(item.imagenPath)
@@ -91,4 +97,3 @@ class CarritoAdapter(
         }
     }
 }
-

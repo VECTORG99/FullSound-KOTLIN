@@ -44,8 +44,8 @@ class BeatsAdapter(
                 txtArtista.text = beat.artista
                 txtBpm.text = beat.bpm.toString()
 
-                // Extraer solo el nombre del archivo de audio
-                val audioFileName = File(beat.mp3Path).name
+                // Extraer solo el nombre del archivo de audio (proteger si mp3Path está vacío)
+                val audioFileName = if (beat.mp3Path.isNullOrBlank()) "" else File(beat.mp3Path).name
                 txtAudioNombre.text = audioFileName
 
                 // Asegurar que el ImageView empiece con el placeholder
@@ -56,7 +56,7 @@ class BeatsAdapter(
                 var imageResId = 0
                 var bitmapLoaded = false
                 try {
-                    if (!beat.imagenPath.isNullOrEmpty()) {
+                    if (!beat.imagenPath.isNullOrBlank()) {
                         // Si la ruta corresponde a un archivo existente, cargar desde archivo
                         val possibleFile = java.io.File(beat.imagenPath)
                         if (possibleFile.exists()) {
@@ -101,8 +101,17 @@ class BeatsAdapter(
                     }
                 }
 
-                // Audio: preparar el nombre mostrado
-                txtAudioNombre.text = File(beat.mp3Path).name
+                // Precio: formatear en CLP sin decimales y con redondeo HALF_UP
+                try {
+                    val nf = java.text.NumberFormat.getCurrencyInstance(java.util.Locale("es", "CL"))
+                    nf.maximumFractionDigits = 0
+                    nf.minimumFractionDigits = 0
+                    nf.roundingMode = java.math.RoundingMode.HALF_UP
+                    txtPrecio.text = nf.format(beat.precio)
+                } catch (e: Exception) {
+                    // Fallback con formato simple y locale explícito
+                    txtPrecio.text = String.format(java.util.Locale.US, "$%.0f", Math.round(beat.precio))
+                }
 
                 // Configurar botón play/pause
                 btnPlay.setOnClickListener {

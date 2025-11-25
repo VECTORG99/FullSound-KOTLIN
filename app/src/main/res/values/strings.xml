@@ -68,6 +68,7 @@
     <string name="audio_label">Audio:</string>
     <string name="audio_path_default">/path/to/audio.mp3</string>
     <string name="play_pause">Reproducir / Pausar</string>
+    <string name="precio_default">$0</string>
     <string name="total_beats">Total de Beats: 0</string>
     <string name="no_beats_disponibles">No hay beats disponibles</string>
     <string name="volver">Volver</string>

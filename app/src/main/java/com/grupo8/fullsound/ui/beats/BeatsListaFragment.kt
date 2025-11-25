@@ -132,7 +132,8 @@ class BeatsListaFragment : Fragment() {
 
     private fun loadBeats() {
         lifecycleScope.launch {
-            beatsViewModel.getAllBeats()
+            // Convertir precios a CLP usando Fixer (API key proporcionada)
+            beatsViewModel.getAllBeatsInClp("24740d67b25b632aa0ac3956a536003e", requireContext())
 
             // Esperar un poco para ver si hay beats en la BD
             kotlinx.coroutines.delay(500)
@@ -146,15 +147,11 @@ class BeatsListaFragment : Fragment() {
 
     private fun loadLocalBeats() {
         lifecycleScope.launch {
-            val localBeats = LocalBeatsProvider.getBeats()
+            // Insertar ejemplos solo si la BD está vacía (evita duplicados). BeatsViewModel.insertExampleBeats
+            beatsViewModel.insertExampleBeats()
 
-            // Insertar en la BD para persistencia
-            localBeats.forEach { beat ->
-                beatsViewModel.insertBeat(beat)
-            }
-
-            // Recargar
-            beatsViewModel.getAllBeats()
+            // Recargar y mostrar precios en CLP
+            beatsViewModel.getAllBeatsInClp("24740d67b25b632aa0ac3956a536003e", requireContext())
         }
     }
 
@@ -213,4 +210,3 @@ class CarritoViewModelFactory(private val carritoRepository: com.grupo8.fullsoun
         throw IllegalArgumentException("Unknown ViewModel class")
     }
 }
-
