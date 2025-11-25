@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import com.grupo8.fullsound.model.User
 import com.grupo8.fullsound.repository.UserRepository
 import com.grupo8.fullsound.utils.Resource
+import com.grupo8.fullsound.utils.FormValidator
 
 class RegisterViewModel(private val userRepository: UserRepository) : ViewModel() {
 
@@ -19,9 +20,9 @@ class RegisterViewModel(private val userRepository: UserRepository) : ViewModel(
     }
 
     fun validateForm(email: String, username: String, password: String) {
-        val emailValid = isValidEmail(email)
-        val usernameValid = isValidUsername(username)
-        val passwordValid = isPasswordValid(password)
+        val emailValid = FormValidator.isValidEmailStrict(email)
+        val usernameValid = FormValidator.isValidUsername(username)
+        val passwordValid = FormValidator.isValidPassword(password)
 
         _registerFormState.value = RegisterFormState(
             emailError = if (!emailValid) "Email inválido. Debe tener un dominio (ej: @gmail.com)" else null,
@@ -29,23 +30,6 @@ class RegisterViewModel(private val userRepository: UserRepository) : ViewModel(
             passwordError = if (!passwordValid) "La contraseña debe tener al menos 5 caracteres" else null,
             isDataValid = emailValid && usernameValid && passwordValid
         )
-    }
-
-    private fun isValidEmail(email: String): Boolean {
-        // Verifica email
-        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
-            && email.contains("@")
-            && email.substringAfter("@").contains(".")
-    }
-
-    private fun isValidUsername(username: String): Boolean {
-        // Verifica que no esté vacío
-        return username.isNotBlank()
-    }
-
-    private fun isPasswordValid(password: String): Boolean {
-        // Mínimo 5 caracteres en contraseña
-        return password.length >= 5
     }
 }
 
