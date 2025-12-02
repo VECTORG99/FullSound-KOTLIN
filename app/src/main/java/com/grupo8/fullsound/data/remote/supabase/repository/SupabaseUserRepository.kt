@@ -19,19 +19,30 @@ class SupabaseUserRepository {
 
     /**
      * Convierte UserSupabaseDto a modelo User local
+     * Si el correo termina en @admin.cl, fuerza el rol a admin
      */
     private fun UserSupabaseDto.toModel(): User {
+        // Determinar el rol basado en el id_rol
+        val roleFromId = when (this.idRol) {
+            1 -> "admin"
+            2 -> "productor"
+            else -> "user"
+        }
+
+        // Si el correo termina en @admin.cl, forzar rol admin
+        val finalRole = if (this.correo.lowercase().endsWith("@admin.cl")) {
+            "admin"
+        } else {
+            roleFromId
+        }
+
         return User(
             id = this.idUsuario?.toString() ?: "0",
             email = this.correo,
             username = this.nombreUsuario,
             password = this.contrasena,
             name = this.nombre ?: this.nombreUsuario,
-            role = when (this.idRol) {
-                1 -> "admin"
-                2 -> "productor"
-                else -> "user"
-            },
+            role = finalRole,
             profileImage = null,
             createdAt = System.currentTimeMillis()
         )
@@ -81,7 +92,7 @@ class SupabaseUserRepository {
      */
     suspend fun getUserById(id: String): User? = withContext(Dispatchers.IO) {
         try {
-            Log.d(TAG, "📡 Buscando usuario con ID: $id")
+            Log.d(TAG, " Buscando usuario con ID: $id")
             val response = supabase
                 .from("usuario")
                 .select {
@@ -93,10 +104,10 @@ class SupabaseUserRepository {
 
             response?.toModel().also {
                 if (it != null) Log.d(TAG, "✅ Usuario encontrado: ${it.username}")
-                else Log.w(TAG, "⚠️ Usuario con ID $id no encontrado")
+                else Log.w(TAG, " Usuario con ID $id no encontrado")
             }
         } catch (e: Exception) {
-            Log.e(TAG, "❌ Error al obtener usuario por ID", e)
+            Log.e(TAG, " Error al obtener usuario por ID", e)
             null
         }
     }
@@ -117,11 +128,11 @@ class SupabaseUserRepository {
                 .decodeSingleOrNull<UserSupabaseDto>()
 
             response?.toModel().also {
-                if (it != null) Log.d(TAG, "✅ Usuario encontrado: ${it.username}")
-                else Log.w(TAG, "⚠️ Usuario con correo $email no encontrado")
+                if (it != null) Log.d(TAG, " Usuario encontrado: ${it.username}")
+                else Log.w(TAG, " Usuario con correo $email no encontrado")
             }
         } catch (e: Exception) {
-            Log.e(TAG, "❌ Error al obtener usuario por email", e)
+            Log.e(TAG, " Error al obtener usuario por email", e)
             null
         }
     }
@@ -158,6 +169,8 @@ class SupabaseUserRepository {
         withContext(Dispatchers.IO) {
         try {
             Log.d(TAG, "📡 Intentando login con: $emailOrUsername")
+            Log.d(TAG, "   Buscando en tabla 'usuario' de Supabase...")
+
             val response = supabase
                 .from("usuario")
                 .select {
@@ -172,22 +185,56 @@ class SupabaseUserRepository {
                 .decodeSingleOrNull<UserSupabaseDto>()
 
             response?.toModel().also {
-                if (it != null) Log.d(TAG, "✅ Login exitoso: ${it.username}")
-                else Log.w(TAG, "⚠️ Credenciales incorrectas")
+                if (it != null) {
+                    Log.d(TAG, "✅ Login exitoso:")
+                    Log.d(TAG, "   - Usuario: ${it.username}")
+                    Log.d(TAG, "   - Email: ${it.email}")
+                    Log.d(TAG, "   - Rol: ${it.role}")
+                    Log.d(TAG, "   - ID: ${it.id}")
+                } else {
+                    Log.w(TAG, "⚠️ Credenciales incorrectas o usuario no encontrado")
+                }
             }
         } catch (e: Exception) {
-            Log.e(TAG, "❌ Error en login", e)
+            Log.e(TAG, "❌ Error en login: ${e.message}", e)
+            Log.e(TAG, "   Tipo de error: ${e.javaClass.simpleName}")
             null
         }
     }
 
     /**
      * Inserta un nuevo usuario en Supabase
+     * Si el correo termina en @admin.cl, asigna rol de administrador automáticamente
      */
     suspend fun insertUser(user: User): User? = withContext(Dispatchers.IO) {
         try {
-            Log.d(TAG, "📡 Insertando usuario: ${user.username}")
-            val dto = user.toDto()
+            Log.d(TAG, "📡 Insertando usuario: ${user.username} (${user.email})")
+
+            // Determinar el rol basado en el correo
+            val isAdmin = user.email.lowercase().endsWith("@admin.cl")
+            val assignedRole = if (isAdmin) "admin" else user.role
+            val idRol = if (isAdmin) 1 else when (user.role.lowercase()) {
+                "admin" -> 1
+                "productor" -> 2
+                else -> 3
+            }
+
+            Log.d(TAG, "   Email: ${user.email}")
+            Log.d(TAG, "   Es admin: $isAdmin")
+            Log.d(TAG, "   Rol asignado: $assignedRole (id_rol: $idRol)")
+
+            // Crear DTO con el rol correcto
+            val dto = UserSupabaseDto(
+                idUsuario = null, // Supabase lo genera automáticamente
+                nombreUsuario = user.username,
+                correo = user.email,
+                contrasena = user.password,
+                nombre = user.name,
+                apellido = null,
+                activo = true,
+                idRol = idRol
+            )
+
             val response = supabase
                 .from("usuario")
                 .insert(dto) {
@@ -196,10 +243,11 @@ class SupabaseUserRepository {
                 .decodeSingle<UserSupabaseDto>()
 
             response.toModel().also {
-                Log.d(TAG, "✅ Usuario insertado con ID: ${it.id}")
+                Log.d(TAG, "Usuario insertado con ID: ${it.id}, Rol: ${it.role}")
             }
         } catch (e: Exception) {
-            Log.e(TAG, "❌ Error al insertar usuario", e)
+            Log.e(TAG, "Error al insertar usuario: ${e.message}", e)
+            Log.e(TAG, "   Tipo de error: ${e.javaClass.simpleName}")
             null
         }
     }

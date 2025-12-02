@@ -65,18 +65,27 @@ class UserRepository(
         CoroutineScope(Dispatchers.IO).launch {
             _registerResult.postValue(Resource.Loading())
             try {
+                android.util.Log.d("UserRepository", "=== INICIANDO REGISTRO ===")
+                android.util.Log.d("UserRepository", "Email: $email")
+                android.util.Log.d("UserRepository", "Username: $username")
+                android.util.Log.d("UserRepository", "Name: $name")
+
                 // Verificar en Supabase primero si el email o username ya existen
                 var emailExists = false
                 var usernameExists = false
                 
                 try {
+                    android.util.Log.d("UserRepository", "Verificando si email existe en Supabase...")
                     val supabaseEmailUser = supabaseRepo.getUserByEmail(email)
                     emailExists = supabaseEmailUser != null
-                    
+                    android.util.Log.d("UserRepository", "Email existe: $emailExists")
+
+                    android.util.Log.d("UserRepository", "Verificando si username existe en Supabase...")
                     val supabaseUsernameUser = supabaseRepo.getUserByUsername(username)
                     usernameExists = supabaseUsernameUser != null
+                    android.util.Log.d("UserRepository", "Username existe: $usernameExists")
                 } catch (supabaseEx: Exception) {
-                    supabaseEx.printStackTrace()
+                    android.util.Log.e("UserRepository", "❌ Error al verificar en Supabase: ${supabaseEx.message}", supabaseEx)
                     // Si falla Supabase, verificar en BD local
                     val existingEmail = userDao.getUserByEmail(email)
                     emailExists = existingEmail != null
@@ -86,11 +95,13 @@ class UserRepository(
                 }
                 
                 if (emailExists) {
+                    android.util.Log.w("UserRepository", "⚠️ Email ya registrado")
                     _registerResult.postValue(Resource.Error("El email ya está registrado"))
                     return@launch
                 }
                 
                 if (usernameExists) {
+                    android.util.Log.w("UserRepository", "⚠️ Username ya en uso")
                     _registerResult.postValue(Resource.Error("El nombre de usuario ya está en uso"))
                     return@launch
                 }
@@ -105,19 +116,40 @@ class UserRepository(
                     createdAt = System.currentTimeMillis()
                 )
                 
+                android.util.Log.d("UserRepository", "Usuario creado localmente con ID: ${newUser.id}")
+
                 // Intentar insertar en Supabase
+                android.util.Log.d("UserRepository", "🚀 Intentando insertar en Supabase...")
                 val supabaseUser = try {
-                    supabaseRepo.insertUser(newUser)
+                    val result = supabaseRepo.insertUser(newUser)
+                    if (result != null) {
+                        android.util.Log.d("UserRepository", "✅ Usuario insertado en Supabase con ID: ${result.id}")
+                    } else {
+                        android.util.Log.e("UserRepository", "❌ insertUser retornó null")
+                    }
+                    result
                 } catch (supabaseEx: Exception) {
+                    android.util.Log.e("UserRepository", "❌ ERROR al insertar en Supabase: ${supabaseEx.message}", supabaseEx)
+                    android.util.Log.e("UserRepository", "   Tipo de error: ${supabaseEx.javaClass.simpleName}")
                     supabaseEx.printStackTrace()
                     null
                 }
                 
                 // Insertar en BD local (con el usuario de Supabase si se obtuvo)
                 val finalUser = supabaseUser ?: newUser
+                android.util.Log.d("UserRepository", "Guardando en Room DB...")
                 userDao.insertUser(finalUser)
+                android.util.Log.d("UserRepository", "✅ Usuario guardado en Room DB")
+
+                if (supabaseUser != null) {
+                    android.util.Log.d("UserRepository", "✅ REGISTRO EXITOSO - Usuario en Supabase Y Room")
+                } else {
+                    android.util.Log.w("UserRepository", "⚠️ REGISTRO PARCIAL - Usuario solo en Room (Supabase falló)")
+                }
+
                 _registerResult.postValue(Resource.Success(finalUser))
             } catch (e: Exception) {
+                android.util.Log.e("UserRepository", "❌ ERROR GENERAL en registro: ${e.message}", e)
                 _registerResult.postValue(Resource.Error("Error al registrar usuario: ${e.message}"))
             }
         }

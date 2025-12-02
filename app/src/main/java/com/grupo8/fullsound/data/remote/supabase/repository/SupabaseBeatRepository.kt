@@ -81,7 +81,34 @@ class SupabaseBeatRepository {
     }
 
     /**
+     * Extrae el nombre de archivo de una URL o ruta completa
+     * Si es una URL de Supabase, extrae el nombre del archivo
+     * Si es una ruta local, extrae el nombre del archivo
+     * Si es null o vacío, retorna null
+     */
+    private fun extractFileName(urlOrPath: String?): String? {
+        if (urlOrPath.isNullOrBlank()) return null
+
+        // Si es una URL de Supabase, extraer el nombre del archivo
+        if (urlOrPath.startsWith("http://") || urlOrPath.startsWith("https://")) {
+            // Ejemplo: https://...supabase.co/storage/v1/object/public/Imagenes/3.jpg -> 3.jpg
+            val parts = urlOrPath.split("/")
+            return parts.lastOrNull()
+        }
+
+        // Si es una ruta local, extraer el nombre del archivo
+        if (urlOrPath.contains("/") || urlOrPath.contains("\\")) {
+            val file = java.io.File(urlOrPath)
+            return file.name
+        }
+
+        // Si ya es solo un nombre de archivo, retornarlo
+        return urlOrPath
+    }
+
+    /**
      * Convierte Beat (modelo local) a BeatSupabaseDto
+     * Extrae los nombres de archivo de las URLs para guardar en Supabase
      */
     private fun modelToDto(beat: Beat): BeatSupabaseDto {
         return BeatSupabaseDto(
@@ -96,9 +123,9 @@ class SupabaseBeatRepository {
             genero = beat.genero,
             etiquetas = beat.etiquetas,
             descripcion = beat.descripcion,
-            imagenUrl = beat.imagenPath,
-            audioUrl = beat.mp3Path,
-            audioDemoUrl = beat.audioDemoPath,
+            imagenUrl = extractFileName(beat.imagenPath), // Solo el nombre del archivo
+            audioUrl = extractFileName(beat.mp3Path), // Solo el nombre del archivo
+            audioDemoUrl = extractFileName(beat.audioDemoPath), // Solo el nombre del archivo
             reproducciones = beat.reproducciones,
             estado = beat.estado,
             createdAt = beat.createdAt,
@@ -177,8 +204,19 @@ class SupabaseBeatRepository {
     suspend fun insertBeat(beat: Beat): Beat {
         return try {
             Log.d(TAG, "📡 Insertando beat: ${beat.titulo} en Supabase...")
+            Log.d(TAG, "   Datos a insertar:")
+            Log.d(TAG, "   - Título: ${beat.titulo}")
+            Log.d(TAG, "   - Artista: ${beat.artista}")
+            Log.d(TAG, "   - BPM: ${beat.bpm}")
+            Log.d(TAG, "   - Precio: ${beat.precio}")
+            Log.d(TAG, "   - Género: ${beat.genero}")
+            Log.d(TAG, "   - Estado: ${beat.estado}")
 
             val dto = modelToDto(beat)
+
+            Log.d(TAG, "   DTO generado:")
+            Log.d(TAG, "   - imagen_url: ${dto.imagenUrl}")
+            Log.d(TAG, "   - audio_url: ${dto.audioUrl}")
 
             val result = SupabaseClient.client
                 .from("beat")
@@ -190,7 +228,8 @@ class SupabaseBeatRepository {
             Log.d(TAG, "✅ Beat insertado exitosamente con ID: ${result.idBeat}")
             dtoToModel(result)
         } catch (e: Exception) {
-            Log.e(TAG, "❌ Error al insertar beat en Supabase", e)
+            Log.e(TAG, "❌ Error al insertar beat en Supabase: ${e.message}", e)
+            Log.e(TAG, "   Tipo de error: ${e.javaClass.simpleName}")
             throw e
         }
     }
@@ -201,8 +240,18 @@ class SupabaseBeatRepository {
     suspend fun updateBeat(beat: Beat): Beat {
         return try {
             Log.d(TAG, "📡 Actualizando beat con ID: ${beat.id} en Supabase...")
+            Log.d(TAG, "   Datos a actualizar:")
+            Log.d(TAG, "   - Título: ${beat.titulo}")
+            Log.d(TAG, "   - Artista: ${beat.artista}")
+            Log.d(TAG, "   - BPM: ${beat.bpm}")
+            Log.d(TAG, "   - Precio: ${beat.precio}")
 
             val dto = modelToDto(beat)
+
+            Log.d(TAG, "   DTO generado para actualizar:")
+            Log.d(TAG, "   - id_beat: ${dto.idBeat}")
+            Log.d(TAG, "   - imagen_url: ${dto.imagenUrl}")
+            Log.d(TAG, "   - audio_url: ${dto.audioUrl}")
 
             val result = SupabaseClient.client
                 .from("beat")
@@ -214,10 +263,11 @@ class SupabaseBeatRepository {
                 }
                 .decodeSingle<BeatSupabaseDto>()
 
-            Log.d(TAG, "✅ Beat actualizado exitosamente")
+            Log.d(TAG, "✅ Beat actualizado exitosamente - ID: ${result.idBeat}")
             dtoToModel(result)
         } catch (e: Exception) {
-            Log.e(TAG, "❌ Error al actualizar beat en Supabase", e)
+            Log.e(TAG, "❌ Error al actualizar beat en Supabase: ${e.message}", e)
+            Log.e(TAG, "   Tipo de error: ${e.javaClass.simpleName}")
             throw e
         }
     }
@@ -228,6 +278,7 @@ class SupabaseBeatRepository {
     suspend fun deleteBeat(beatId: Int) {
         try {
             Log.d(TAG, "📡 Eliminando beat con ID: $beatId de Supabase...")
+            Log.d(TAG, "   Ejecutando DELETE WHERE id_beat = $beatId")
 
             SupabaseClient.client
                 .from("beat")
@@ -237,9 +288,10 @@ class SupabaseBeatRepository {
                     }
                 }
 
-            Log.d(TAG, "✅ Beat eliminado exitosamente")
+            Log.d(TAG, "✅ Beat con ID $beatId eliminado exitosamente de Supabase")
         } catch (e: Exception) {
-            Log.e(TAG, "❌ Error al eliminar beat de Supabase", e)
+            Log.e(TAG, "❌ Error al eliminar beat de Supabase: ${e.message}", e)
+            Log.e(TAG, "   Tipo de error: ${e.javaClass.simpleName}")
             throw e
         }
     }

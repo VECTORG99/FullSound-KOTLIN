@@ -343,9 +343,15 @@ class BeatsFragment : Fragment() {
         }
 
         beatToDelete?.let { beat ->
-            // Eliminar el beat
+            android.util.Log.d("BeatsFragment", "🗑 Eliminando beat ID: ${beat.id} - ${beat.titulo}")
+
+            // Eliminar el beat (Supabase + caché local)
             viewModel.deleteBeat(beat)
             hideFormEliminar()
+            showMessage(" Beat eliminado exitosamente")
+
+            // Recargar lista de beats
+            viewModel.getAllBeats()
         } ?: showMessage("No hay beat seleccionado para eliminar")
     }
 
@@ -484,8 +490,13 @@ class BeatsFragment : Fragment() {
             binding.inputArtistaActualizar.error = null
         }
 
-        val bpm = bpmText.toIntOrNull()
-        if (bpm == null || bpm <= 0) {
+        val bpm = if (bpmText.isNotEmpty()) {
+            bpmText.toIntOrNull()
+        } else {
+            beat.bpm
+        }
+
+        if (bpmText.isNotEmpty() && (bpm == null || bpm <= 0)) {
             binding.inputBpmActualizar.error = "Ingresa un BPM válido"
             isValid = false
         } else {
@@ -496,17 +507,22 @@ class BeatsFragment : Fragment() {
             return
         }
 
-        // Crear beat actualizado
+        // Crear beat actualizado (mantener los demás campos)
         val beatActualizado = beat.copy(
             titulo = titulo,
             artista = artista,
-            bpm = bpm!!
+            bpm = bpm
         )
 
-        // Actualizar en la base de datos
+        android.util.Log.d("BeatsFragment", "Actualizando beat ID: ${beat.id} - $titulo")
+
+        // Actualizar en la base de datos (Supabase + caché local)
         viewModel.updateBeat(beatActualizado)
         hideFormActualizar()
         showMessage("Beat actualizado exitosamente")
+
+        // Recargar lista de beats
+        viewModel.getAllBeats()
     }
 
     private fun hideFormCrear() {
@@ -594,59 +610,89 @@ class BeatsFragment : Fragment() {
         val artista = binding.editArtista.text.toString().trim()
         val bpmText = binding.editBpm.text.toString().trim()
 
-        // Validar campos
+        // Validar campos obligatorios
+        var isValid = true
+
         if (titulo.isEmpty()) {
             binding.inputTitulo.error = "El título es requerido"
-            return
+            isValid = false
+        } else {
+            binding.inputTitulo.error = null
         }
+
         if (artista.isEmpty()) {
             binding.inputArtista.error = "El artista es requerido"
-            return
-        }
-        if (bpmText.isEmpty()) {
-            binding.inputBpm.error = "El BPM es requerido"
-            return
+            isValid = false
+        } else {
+            binding.inputArtista.error = null
         }
 
-        val bpm = bpmText.toIntOrNull()
-        if (bpm == null || bpm <= 0) {
+        val bpm = if (bpmText.isNotEmpty()) {
+            bpmText.toIntOrNull()
+        } else {
+            null
+        }
+
+        if (bpmText.isNotEmpty() && (bpm == null || bpm <= 0)) {
             binding.inputBpm.error = "Ingresa un BPM válido"
-            return
+            isValid = false
+        } else {
+            binding.inputBpm.error = null
         }
 
-        // Validar que se hayan seleccionado imagen y audio
-        if (selectedImageUri == null) {
-            showMessage("Por favor selecciona una imagen")
-            return
-        }
-        if (selectedAudioUri == null) {
-            showMessage("Por favor selecciona un audio")
+        if (!isValid) {
             return
         }
 
         try {
-            // Copiar archivos al almacenamiento interno de la app
-            val imagePath = copyFileToInternalStorage(selectedImageUri!!, "imagen_${System.currentTimeMillis()}.jpg", "images")
-            val audioPath = copyFileToInternalStorage(selectedAudioUri!!, "audio_${System.currentTimeMillis()}.mp3", "audio")
+            // Procesar imagen y audio si se seleccionaron (opcional por ahora)
+            var imagePath: String? = null
+            var audioPath: String? = null
 
-            // Crear el beat
+            if (selectedImageUri != null) {
+                imagePath = copyFileToInternalStorage(
+                    selectedImageUri!!,
+                    "imagen_${System.currentTimeMillis()}.jpg",
+                    "images"
+                )
+            }
+
+            if (selectedAudioUri != null) {
+                audioPath = copyFileToInternalStorage(
+                    selectedAudioUri!!,
+                    "audio_${System.currentTimeMillis()}.mp3",
+                    "audio"
+                )
+            }
+
+            // Crear el beat (sin ID para que Supabase lo genere)
+            // Precio por defecto: 10000 CLP
             val nuevoBeat = com.grupo8.fullsound.model.Beat(
+                id = 0, // Supabase generará el ID
                 titulo = titulo,
                 artista = artista,
                 bpm = bpm,
+                precio = 10000.0, // Precio por defecto en CLP
+                genero = null, // Se puede agregar después
                 imagenPath = imagePath,
-                mp3Path = audioPath
+                mp3Path = audioPath,
+                estado = "DISPONIBLE"
             )
 
-            // Guardar en la base de datos
+            android.util.Log.d("BeatsFragment", "🎵 Creando beat: $titulo por $artista")
+
+            // Guardar en la base de datos (Supabase + caché local)
             viewModel.insertBeat(nuevoBeat)
 
             // Limpiar formulario y ocultarlo
             hideFormCrear()
-            showMessage("Beat guardado exitosamente")
+            showMessage("✅ Beat creado exitosamente")
+
+            // Recargar lista de beats
+            viewModel.getAllBeats()
         } catch (e: Exception) {
-            showMessage("Error al guardar el beat: ${e.message}")
-            e.printStackTrace()
+            showMessage("❌ Error al guardar el beat: ${e.message}")
+            android.util.Log.e("BeatsFragment", "Error al guardar beat", e)
         }
     }
 
