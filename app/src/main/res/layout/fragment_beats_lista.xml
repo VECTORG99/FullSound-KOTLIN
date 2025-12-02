@@ -7,7 +7,71 @@
     android:background="@color/md_theme_background"
     android:orientation="vertical">
 
-    <!-- Contenedor con botón de atrás y RecyclerView -->
+    <!-- Header con botón de volver -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_back"
+            style="@style/Widget.Material3.Button.IconButton.Filled"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_gravity="start"
+            android:layout_margin="16dp"
+            android:contentDescription="@string/volver"
+            android:elevation="4dp"
+            app:backgroundTint="@color/md_theme_primaryContainer"
+            app:icon="@drawable/ic_arrow_back"
+            app:iconGravity="textStart"
+            app:iconPadding="0dp"
+            app:iconSize="24dp"
+            app:iconTint="@color/md_theme_onBackground" />
+
+    </FrameLayout>
+
+    <!-- Filtro de género -->
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="8dp"
+        app:cardBackgroundColor="?attr/colorSurfaceVariant"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="4dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="12dp"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_album"
+                android:contentDescription="@string/filtrar_por_genero"
+                app:tint="?attr/colorOnSurfaceVariant" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_filtro_genero"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:text="@string/todos_los_generos"
+                android:textAlignment="viewStart"
+                app:icon="@drawable/ic_arrow_down"
+                app:iconGravity="end" />
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Contenedor con RecyclerView -->
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -20,7 +84,6 @@
             android:layout_height="match_parent"
             android:clipToPadding="false"
             android:padding="8dp"
-            android:paddingTop="72dp"
             tools:listitem="@layout/item_beat" />
 
         <!-- Mensaje vacío -->
@@ -50,22 +113,6 @@
 
         </LinearLayout>
 
-        <!-- Botón de volver atrás flotante -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_back"
-            style="@style/Widget.Material3.Button.IconButton.Filled"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
-            android:layout_gravity="top|start"
-            android:layout_margin="16dp"
-            android:contentDescription="@string/volver"
-            android:elevation="4dp"
-            app:backgroundTint="@color/md_theme_primaryContainer"
-            app:icon="@drawable/ic_arrow_back"
-            app:iconGravity="textStart"
-            app:iconPadding="0dp"
-            app:iconSize="24dp"
-            app:iconTint="@color/md_theme_onBackground" />
 
     </FrameLayout>
 

@@ -7,7 +7,17 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.grupo8.fullsound.model.Beat
 import com.grupo8.fullsound.databinding.ItemBeatBinding
-import java.io.File
+import com.grupo8.fullsound.BuildConfig
+import com.grupo8.fullsound.data.remote.fixer.ExchangeRateProvider
+import coil.load
+import coil.request.ErrorResult
+import coil.request.SuccessResult
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.text.NumberFormat
+import java.util.Locale
 
 class BeatsAdapter(
     private val onAddToCarrito: (Beat) -> Unit,
@@ -39,79 +49,46 @@ class BeatsAdapter(
         fun bind(beat: Beat) {
             binding.apply {
                 // Datos del beat
-                txtId.text = beat.id.toString()
                 txtTitulo.text = beat.titulo
-                txtArtista.text = beat.artista
-                txtBpm.text = beat.bpm.toString()
+                txtArtista.text = beat.artista ?: "Desconocido"
+                txtGenero.text = beat.genero ?: "N/A"
+                txtBpm.text = beat.bpm?.toString() ?: "N/A"
 
-                // Extraer solo el nombre del archivo de audio (proteger si mp3Path está vacío)
-                val audioFileName = if (beat.mp3Path.isNullOrBlank()) "" else File(beat.mp3Path).name
-                txtAudioNombre.text = audioFileName
+                // ID y nombre de audio ocultos (ya están con visibility="gone" en el XML)
 
-                // Asegurar que el ImageView empiece con el placeholder
-                imgBeat.setImageResource(com.grupo8.fullsound.R.drawable.image)
+                // DIAGNÓSTICO: Log detallado del beat
+                android.util.Log.d("BeatsAdapter", "🔍 Beat ${beat.id}: ${beat.titulo}")
+                android.util.Log.d("BeatsAdapter", "   imagenPath: ${beat.imagenPath}")
+                android.util.Log.d("BeatsAdapter", "   mp3Path: ${beat.mp3Path}")
+                android.util.Log.d("BeatsAdapter", "   audioDemoPath: ${beat.audioDemoPath}")
 
-                // Cargar imagen desde drawable usando el nombre en beat.imagenPath
-                val ctx = binding.root.context
-                var imageResId = 0
-                var bitmapLoaded = false
-                try {
-                    if (!beat.imagenPath.isNullOrBlank()) {
-                        // Si la ruta corresponde a un archivo existente, cargar desde archivo
-                        val possibleFile = java.io.File(beat.imagenPath)
-                        if (possibleFile.exists()) {
-                            val bmp = android.graphics.BitmapFactory.decodeFile(possibleFile.absolutePath)
-                            if (bmp != null) {
-                                imgBeat.setImageBitmap(bmp)
-                                bitmapLoaded = true
-                                android.util.Log.d("BeatsAdapter", "Loaded bitmap from file: ${possibleFile.absolutePath}")
-                            } else {
-                                // intentar como drawable
-                                imageResId = ctx.resources.getIdentifier(beat.imagenPath, "drawable", ctx.packageName)
-                                android.util.Log.d("BeatsAdapter", "Tried as drawable: ${beat.imagenPath}, resId=$imageResId")
+                // Cargar imagen desde URL de Supabase usando Coil
+                val imageUrl = beat.imagenPath
+
+                if (!imageUrl.isNullOrBlank() && (imageUrl.startsWith("http://") || imageUrl.startsWith("https://"))) {
+                    // Es una URL de Supabase, cargar con Coil
+                    android.util.Log.d("BeatsAdapter", "📸 Cargando imagen desde Supabase: $imageUrl")
+                    imgBeat.load(imageUrl) {
+                        crossfade(true)
+                        placeholder(com.grupo8.fullsound.R.drawable.image)
+                        error(com.grupo8.fullsound.R.drawable.image)
+                        listener(
+                            onSuccess = { _, _ ->
+                                android.util.Log.d("BeatsAdapter", "✅ Imagen cargada desde Supabase para beat ${beat.id}")
+                            },
+                            onError = { _, result ->
+                                android.util.Log.e("BeatsAdapter", "❌ Error cargando imagen: ${result.throwable.message}")
                             }
-                        } else {
-                            // intentar como drawable por nombre
-                            imageResId = ctx.resources.getIdentifier(beat.imagenPath, "drawable", ctx.packageName)
-                            android.util.Log.d("BeatsAdapter", "Tried as drawable (no file): ${beat.imagenPath}, resId=$imageResId")
-                        }
+                        )
                     }
-                } catch (e: Exception) {
-                    imageResId = 0
-                    android.util.Log.w("BeatsAdapter", "Error loading image for beat ${beat.id}: ${e.message}")
+                } else {
+                    // Fallback a placeholder local
+                    android.util.Log.d("BeatsAdapter", "⚠️ No hay URL válida, usando placeholder para beat ${beat.id}")
+                    imgBeat.setImageResource(com.grupo8.fullsound.R.drawable.image)
                 }
 
-                // Si no cargó bitmap desde archivo, aplicar drawable o fallback
-                if (!bitmapLoaded) {
-                    // Fallback cíclico a img1..img5 si no existe imagen definida o recurso no encontrado
-                    if (imageResId == 0) {
-                        val idx = ((beat.id % 5) + 5) % 5 + 1 // garantiza 1..5
-                        val fallbackName = "img$idx"
-                        imageResId = ctx.resources.getIdentifier(fallbackName, "drawable", ctx.packageName)
-                        android.util.Log.d("BeatsAdapter", "Fallback drawable: $fallbackName -> resId=$imageResId")
-                    }
-
-                    // Aplicar drawable si se encontró, sino placeholder
-                    if (imageResId != 0) {
-                        imgBeat.setImageResource(imageResId)
-                        android.util.Log.d("BeatsAdapter", "Set drawable resId=$imageResId for beat ${beat.id}")
-                    } else {
-                        imgBeat.setImageResource(com.grupo8.fullsound.R.drawable.image)
-                        android.util.Log.d("BeatsAdapter", "Used placeholder for beat ${beat.id}")
-                    }
-                }
-
-                // Precio: formatear en CLP sin decimales y con redondeo HALF_UP
-                try {
-                    val nf = java.text.NumberFormat.getCurrencyInstance(java.util.Locale("es", "CL"))
-                    nf.maximumFractionDigits = 0
-                    nf.minimumFractionDigits = 0
-                    nf.roundingMode = java.math.RoundingMode.HALF_UP
-                    txtPrecio.text = nf.format(beat.precio)
-                } catch (e: Exception) {
-                    // Fallback con formato simple y locale explícito
-                    txtPrecio.text = String.format(java.util.Locale.US, "$%.0f", Math.round(beat.precio))
-                }
+                // Precios: Mostrar CLP (precio base) y USD (convertido)
+                displayPrices(beat)
 
                 // Configurar botón play/pause
                 btnPlay.setOnClickListener {
@@ -142,36 +119,43 @@ class BeatsAdapter(
                 mediaPlayer?.release()
                 mediaPlayer = android.media.MediaPlayer()
 
-                val ctx = binding.root.context
+                val audioUrl = beat.mp3Path ?: beat.audioDemoPath
 
-                // Determinar fuente: si mp3Path apunta a un archivo existente, usar decodeFile
-                val possibleFile = java.io.File(beat.mp3Path)
-                if (possibleFile.exists()) {
-                    mediaPlayer?.setDataSource(possibleFile.absolutePath)
-                } else {
-                    // Intentar cargar desde raw por nombre (sin extensión)
-                    val resId = ctx.resources.getIdentifier(beat.mp3Path, "raw", ctx.packageName)
-                    if (resId != 0) {
-                        val afd = ctx.resources.openRawResourceFd(resId)
-                        mediaPlayer?.setDataSource(afd.fileDescriptor, afd.startOffset, afd.length)
-                        afd.close()
+                if (!audioUrl.isNullOrBlank()) {
+                    // Si es una URL de Supabase (HTTP/HTTPS), usarla directamente
+                    if (audioUrl.startsWith("http://") || audioUrl.startsWith("https://")) {
+                        android.util.Log.d("BeatsAdapter", "🎵 Reproduciendo audio desde Supabase: $audioUrl")
+                        mediaPlayer?.setDataSource(audioUrl)
                     } else {
-                        // Fallback: intentar nombres beat1..beat5
-                        val fallbackIdx = ((beat.id % 5) + 5) % 5 + 1
-                        val fallbackName = "beat$fallbackIdx"
-                        val fallbackRes = ctx.resources.getIdentifier(fallbackName, "raw", ctx.packageName)
-                        if (fallbackRes != 0) {
-                            val afd2 = ctx.resources.openRawResourceFd(fallbackRes)
-                            mediaPlayer?.setDataSource(afd2.fileDescriptor, afd2.startOffset, afd2.length)
-                            afd2.close()
+                        // Intentar como archivo local
+                        val possibleFile = java.io.File(audioUrl)
+                        if (possibleFile.exists()) {
+                            android.util.Log.d("BeatsAdapter", "🎵 Reproduciendo audio desde archivo local")
+                            mediaPlayer?.setDataSource(possibleFile.absolutePath)
                         } else {
-                            // No hay fuente válida
-                            android.util.Log.w("BeatsAdapter", "No audio source for beat ${beat.id}")
-                            mediaPlayer?.release()
-                            mediaPlayer = null
-                            return
+                            // Intentar desde recursos raw
+                            val ctx = binding.root.context
+                            val resId = ctx.resources.getIdentifier(audioUrl, "raw", ctx.packageName)
+                            if (resId != 0) {
+                                android.util.Log.d("BeatsAdapter", "🎵 Reproduciendo audio desde raw resources")
+                                val afd = ctx.resources.openRawResourceFd(resId)
+                                mediaPlayer?.setDataSource(afd.fileDescriptor, afd.startOffset, afd.length)
+                                afd.close()
+                            } else {
+                                // No hay fuente válida
+                                android.util.Log.w("BeatsAdapter", "⚠️ No se encontró fuente de audio para beat ${beat.id}")
+                                mediaPlayer?.release()
+                                mediaPlayer = null
+                                return
+                            }
                         }
                     }
+                } else {
+                    // No hay URL de audio
+                    android.util.Log.w("BeatsAdapter", "⚠️ No hay URL de audio para beat ${beat.id}")
+                    mediaPlayer?.release()
+                    mediaPlayer = null
+                    return
                 }
 
                 mediaPlayer?.prepare()
@@ -208,6 +192,56 @@ class BeatsAdapter(
         private fun updatePlayIcon() {
             val playIcon = if (isPlaying) android.R.drawable.ic_media_pause else android.R.drawable.ic_media_play
             binding.btnPlay.setImageResource(playIcon)
+        }
+
+        /**
+         * Muestra los precios en CLP (principal) y USD (convertido)
+         */
+        private fun displayPrices(beat: Beat) {
+            val context = binding.root.context
+
+            // Formatear precio en CLP (sin decimales)
+            val clpFormatted = try {
+                val nf = NumberFormat.getNumberInstance(Locale("es", "CL"))
+                nf.maximumFractionDigits = 0
+                nf.minimumFractionDigits = 0
+                "$${nf.format(beat.precio)} CLP"
+            } catch (e: Exception) {
+                "$${beat.precio.toInt()} CLP"
+            }
+
+            // Mostrar precio CLP inmediatamente
+            binding.txtPrecioClp.text = clpFormatted
+            binding.txtPrecioUsd.text = "Cargando..."
+
+            // Convertir a USD en segundo plano
+            CoroutineScope(Dispatchers.Main).launch {
+                try {
+                    val apiKey = try {
+                        BuildConfig.FIXER_API_KEY
+                    } catch (e: Exception) {
+                        android.util.Log.w("BeatsAdapter", "⚠️ FIXER_API_KEY no configurada, usando valor por defecto")
+                        "YOUR_FIXER_API_KEY_HERE"
+                    }
+
+                    val usdAmount = withContext(Dispatchers.IO) {
+                        ExchangeRateProvider.convertClpToUsd(beat.precio, context, apiKey)
+                    }
+
+                    if (usdAmount != null) {
+                        // Formatear precio en USD (con 2 decimales)
+                        val usdFormatted = String.format(Locale.US, "$%.2f USD", usdAmount)
+                        binding.txtPrecioUsd.text = usdFormatted
+                        android.util.Log.d("BeatsAdapter", "💵 ${beat.titulo}: $clpFormatted = $usdFormatted")
+                    } else {
+                        binding.txtPrecioUsd.text = "USD no disponible"
+                        android.util.Log.w("BeatsAdapter", "⚠️ No se pudo convertir precio para beat ${beat.id}")
+                    }
+                } catch (e: Exception) {
+                    binding.txtPrecioUsd.text = "Error USD"
+                    android.util.Log.e("BeatsAdapter", "❌ Error convirtiendo precio: ${e.message}")
+                }
+            }
         }
 
         fun releasePlayer() {

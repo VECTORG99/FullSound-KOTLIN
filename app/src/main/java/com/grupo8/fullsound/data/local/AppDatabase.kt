@@ -10,7 +10,7 @@ import com.grupo8.fullsound.model.CarritoItem
 
 @Database(
     entities = [User::class, Beat::class, CarritoItem::class],
-    version = 3,
+    version = 5,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {

@@ -1,6 +1,7 @@
 package com.grupo8.fullsound.ui.beats
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,21 +10,19 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.grupo8.fullsound.R
 import com.grupo8.fullsound.data.local.AppDatabase
-import com.grupo8.fullsound.data.local.LocalBeatsProvider
+import com.grupo8.fullsound.databinding.FragmentBeatsListaBinding
 import com.grupo8.fullsound.repository.BeatRepository
 import com.grupo8.fullsound.repository.CarritoRepository
-import com.grupo8.fullsound.viewmodel.BeatsViewModel
-import com.grupo8.fullsound.viewmodel.CarritoViewModel
-import com.grupo8.fullsound.databinding.FragmentBeatsListaBinding
+import com.grupo8.fullsound.utils.AnimationHelper
 import com.grupo8.fullsound.utils.Resource
 import com.grupo8.fullsound.utils.UserSession
-import com.grupo8.fullsound.utils.AnimationHelper
-import kotlinx.coroutines.launch
+import com.grupo8.fullsound.utils.SupabaseDiagnostic
+import com.grupo8.fullsound.viewmodel.BeatsViewModel
+import com.grupo8.fullsound.viewmodel.CarritoViewModel
 
 class BeatsListaFragment : Fragment() {
 
@@ -43,6 +42,8 @@ class BeatsListaFragment : Fragment() {
     }
 
     private lateinit var beatsAdapter: BeatsAdapter
+    private var allBeats: List<com.grupo8.fullsound.model.Beat> = emptyList()
+    private var currentGeneroFilter: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -58,11 +59,11 @@ class BeatsListaFragment : Fragment() {
 
         setupToolbar()
         setupRecyclerView()
+        setupGenreFilter()
         setupObservers()
         setupBottomNavigation()
         animateEntrance()
 
-        // Cargar beats (primero intentar de la BD, si no hay, cargar de LocalBeatsProvider)
         loadBeats()
     }
 
@@ -73,7 +74,6 @@ class BeatsListaFragment : Fragment() {
     private fun setupToolbar() {
         binding.btnBack.setOnClickListener {
             AnimationHelper.animateClick(it)
-            // Navegar de regreso al CRUD de Beats (BeatsFragment)
             findNavController().navigate(R.id.action_beatsListaFragment_to_beatsFragment)
         }
     }
@@ -84,9 +84,7 @@ class BeatsListaFragment : Fragment() {
                 carritoViewModel.addBeatToCarrito(beat)
             },
             onComprar = { beat ->
-                // Agregar al carrito y navegar
                 carritoViewModel.addBeatToCarrito(beat)
-                // Aquí podrías navegar al carrito o a una pantalla de checkout
             }
         )
 
@@ -97,7 +95,6 @@ class BeatsListaFragment : Fragment() {
     }
 
     private fun setupObservers() {
-        // Observar resultado de agregar al carrito
         carritoViewModel.addToCarritoResult.observe(viewLifecycleOwner) { result ->
             when (result) {
                 is com.grupo8.fullsound.viewmodel.AddToCarritoResult.Success -> {
@@ -115,13 +112,8 @@ class BeatsListaFragment : Fragment() {
                     // Mostrar loading
                 }
                 is Resource.Success -> {
-                    val beats = result.data ?: emptyList()
-                    if (beats.isEmpty()) {
-                        showEmptyState()
-                    } else {
-                        hideEmptyState()
-                        beatsAdapter.submitList(beats)
-                    }
+                    allBeats = result.data ?: emptyList()
+                    applyGenreFilter()
                 }
                 is Resource.Error -> {
                     showMessage(result.message ?: "Error al cargar beats")
@@ -130,44 +122,68 @@ class BeatsListaFragment : Fragment() {
         }
     }
 
-    private fun loadBeats() {
-        lifecycleScope.launch {
-            // Convertir precios a CLP usando Fixer (API key proporcionada)
-            beatsViewModel.getAllBeatsInClp("24740d67b25b632aa0ac3956a536003e", requireContext())
-
-            // Esperar un poco para ver si hay beats en la BD
-            kotlinx.coroutines.delay(500)
-
-            // Si no hay beats, cargar los de LocalBeatsProvider
-            if (beatsAdapter.itemCount == 0) {
-                loadLocalBeats()
-            }
+    private fun setupGenreFilter() {
+        binding.btnFiltroGenero.setOnClickListener {
+            showGenreFilterDialog()
         }
     }
 
-    private fun loadLocalBeats() {
-        lifecycleScope.launch {
-            // Insertar ejemplos solo si la BD está vacía (evita duplicados). BeatsViewModel.insertExampleBeats
-            beatsViewModel.insertExampleBeats()
+    private fun showGenreFilterDialog() {
+        // Obtener lista de géneros únicos
+        val genres = allBeats.mapNotNull { it.genero }.distinct().sorted().toMutableList()
+        genres.add(0, "Todos los géneros")
 
-            // Recargar y mostrar precios en CLP
-            beatsViewModel.getAllBeatsInClp("24740d67b25b632aa0ac3956a536003e", requireContext())
+        val genresArray = genres.toTypedArray()
+
+        androidx.appcompat.app.AlertDialog.Builder(requireContext())
+            .setTitle(getString(R.string.filtrar_por_genero))
+            .setItems(genresArray) { _, which ->
+                val selectedGenre = genres[which]
+                currentGeneroFilter = if (selectedGenre == "Todos los géneros") null else selectedGenre
+                binding.btnFiltroGenero.text = selectedGenre
+                applyGenreFilter()
+            }
+            .show()
+    }
+
+    private fun applyGenreFilter() {
+        val filteredBeats = if (currentGeneroFilter == null) {
+            allBeats
+        } else {
+            allBeats.filter { it.genero == currentGeneroFilter }
         }
+
+        if (filteredBeats.isEmpty()) {
+            showEmptyState()
+        } else {
+            hideEmptyState()
+            beatsAdapter.submitList(filteredBeats)
+        }
+
+        Log.d("BeatsListaFragment", "Filtro aplicado: $currentGeneroFilter - ${filteredBeats.size} beats")
+    }
+
+    private fun loadBeats() {
+        Log.d("BeatsListaFragment", "=== Iniciando carga de beats desde Supabase ===")
+
+        // Ejecutar diagnóstico de Supabase
+        SupabaseDiagnostic.runDiagnostics(requireContext()) { diagnosticResult ->
+            Log.d("BeatsListaFragment", "DIAGNÓSTICO SUPABASE:\n$diagnosticResult")
+        }
+
+        beatsViewModel.getAllBeats()
     }
 
     private fun setupBottomNavigation() {
-        // Botón Logout
         binding.btnLogout.setOnClickListener {
             AnimationHelper.animateClick(it)
             logout()
         }
 
-        // Botón Beats Lista (ya estamos aquí)
         binding.btnNavBeatsLista.setOnClickListener {
             // Ya estamos en la lista de beats
         }
 
-        // Botón Carrito
         binding.btnNavCarrito.setOnClickListener {
             AnimationHelper.animateClick(it)
             findNavController().navigate(R.id.action_beatsListaFragment_to_carritoFragment)
@@ -200,13 +216,13 @@ class BeatsListaFragment : Fragment() {
     }
 }
 
-
-class CarritoViewModelFactory(private val carritoRepository: com.grupo8.fullsound.repository.CarritoRepository) : ViewModelProvider.Factory {
+class CarritoViewModelFactory(private val carritoRepository: CarritoRepository) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(com.grupo8.fullsound.viewmodel.CarritoViewModel::class.java)) {
+        if (modelClass.isAssignableFrom(CarritoViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return com.grupo8.fullsound.viewmodel.CarritoViewModel(carritoRepository) as T
+            return CarritoViewModel(carritoRepository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }
 }
+

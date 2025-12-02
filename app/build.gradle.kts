@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -21,6 +22,21 @@ android {
 
         vectorDrawables {
             useSupportLibrary = true
+        }
+
+        // Leer variables del archivo .env
+        val envFile = rootProject.file(".env")
+        if (envFile.exists()) {
+            envFile.readLines().forEach { line ->
+                if (line.isNotBlank() && !line.startsWith("#") && line.contains("=")) {
+                    val (key, value) = line.split("=", limit = 2)
+                    buildConfigField("String", key.trim(), "\"${value.trim()}\"")
+                }
+            }
+        } else {
+            // Valores por defecto si no existe el archivo .env
+            buildConfigField("String", "SUPABASE_URL", "\"\"")
+            buildConfigField("String", "SUPABASE_ANON_KEY", "\"\"")
         }
     }
 
@@ -45,6 +61,7 @@ android {
     buildFeatures {
         viewBinding = true
         compose = true
+        buildConfig = true
     }
 
     composeOptions {
@@ -81,6 +98,23 @@ dependencies {
 
     // Coroutines
     implementation(libs.kotlinx.coroutines.android)
+
+    // Supabase
+    implementation(libs.supabase.postgrest.kt)
+    implementation(libs.supabase.realtime.kt)
+    implementation(libs.supabase.storage.kt)
+
+    // Ktor (requerido por Supabase)
+    implementation(libs.ktor.client.android)
+    implementation(libs.ktor.client.core)
+    implementation(libs.ktor.client.cio)
+    implementation(libs.ktor.utils)
+
+    // Serialization
+    implementation(libs.kotlinx.serialization.json)
+
+    // Image Loading (Coil para cargar imágenes desde URLs de Supabase)
+    implementation("io.coil-kt:coil:2.5.0")
 
     // Compose
     implementation(platform(libs.androidx.compose.bom))

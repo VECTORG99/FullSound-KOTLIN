@@ -10,6 +10,32 @@ object ExchangeRateProvider {
     private const val KEY_RATE = "usd_to_clp_rate"
     private const val KEY_TS = "usd_to_clp_ts"
 
+    /**
+     * Convierte un monto de CLP a USD usando la tasa de cambio
+     * @param clpAmount Monto en pesos chilenos
+     * @param context Contexto de la aplicación
+     * @param apiKey API key de Fixer
+     * @return Monto en USD o null si hay error
+     */
+    suspend fun convertClpToUsd(clpAmount: Double, context: Context, apiKey: String): Double? {
+        val usdToClpRate = getUsdToClpRate(context, apiKey) ?: return null
+        // Si 1 USD = X CLP, entonces CLP / X = USD
+        return clpAmount / usdToClpRate
+    }
+
+    /**
+     * Obtiene la tasa de cambio con caché y logging
+     */
+    suspend fun getExchangeRateWithLogging(context: Context, apiKey: String): Double? {
+        val rate = getUsdToClpRate(context, apiKey)
+        if (rate != null) {
+            android.util.Log.d("ExchangeRateProvider", "💱 Tasa de cambio: 1 USD = $rate CLP")
+        } else {
+            android.util.Log.w("ExchangeRateProvider", "⚠️ No se pudo obtener la tasa de cambio")
+        }
+        return rate
+    }
+
     suspend fun getUsdToClpRate(context: Context, apiKey: String): Double? {
         return withContext(Dispatchers.IO) {
             try {

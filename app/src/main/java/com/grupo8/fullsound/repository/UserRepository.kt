@@ -9,8 +9,12 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.UUID
+import com.grupo8.fullsound.data.remote.supabase.repository.SupabaseUserRepository
 
-class UserRepository(private val userDao: UserDao) {
+class UserRepository(
+    private val userDao: UserDao,
+    private val supabaseRepo: SupabaseUserRepository = SupabaseUserRepository()
+) {
 
     private val _loginResult = MutableLiveData<Resource<User>>()
     val loginResult: LiveData<Resource<User>> = _loginResult
@@ -31,6 +35,20 @@ class UserRepository(private val userDao: UserDao) {
         CoroutineScope(Dispatchers.IO).launch {
             _loginResult.postValue(Resource.Loading())
             try {
+                // Intentar login desde Supabase primero
+                try {
+                    val supabaseUser = supabaseRepo.getUserByEmailOrUsername(emailOrUsername, password)
+                    if (supabaseUser != null) {
+                        // Guardar/actualizar en caché local
+                        userDao.insertUser(supabaseUser)
+                        _loginResult.postValue(Resource.Success(supabaseUser))
+                        return@launch
+                    }
+                } catch (supabaseEx: Exception) {
+                    supabaseEx.printStackTrace()
+                }
+
+                // Fallback a BD local
                 val user = userDao.getUserByEmailOrUsername(emailOrUsername, password)
                 if (user != null) {
                     _loginResult.postValue(Resource.Success(user))
@@ -47,16 +65,32 @@ class UserRepository(private val userDao: UserDao) {
         CoroutineScope(Dispatchers.IO).launch {
             _registerResult.postValue(Resource.Loading())
             try {
-                // Verificar si el email ya existe
-                val existingEmail = userDao.getUserByEmail(email)
-                if (existingEmail != null) {
+                // Verificar en Supabase primero si el email o username ya existen
+                var emailExists = false
+                var usernameExists = false
+                
+                try {
+                    val supabaseEmailUser = supabaseRepo.getUserByEmail(email)
+                    emailExists = supabaseEmailUser != null
+                    
+                    val supabaseUsernameUser = supabaseRepo.getUserByUsername(username)
+                    usernameExists = supabaseUsernameUser != null
+                } catch (supabaseEx: Exception) {
+                    supabaseEx.printStackTrace()
+                    // Si falla Supabase, verificar en BD local
+                    val existingEmail = userDao.getUserByEmail(email)
+                    emailExists = existingEmail != null
+                    
+                    val existingUsername = userDao.getUserByUsername(username)
+                    usernameExists = existingUsername != null
+                }
+                
+                if (emailExists) {
                     _registerResult.postValue(Resource.Error("El email ya está registrado"))
                     return@launch
                 }
-
-                // Verificar si el username ya existe
-                val existingUsername = userDao.getUserByUsername(username)
-                if (existingUsername != null) {
+                
+                if (usernameExists) {
                     _registerResult.postValue(Resource.Error("El nombre de usuario ya está en uso"))
                     return@launch
                 }
@@ -70,8 +104,19 @@ class UserRepository(private val userDao: UserDao) {
                     name = name,
                     createdAt = System.currentTimeMillis()
                 )
-                userDao.insertUser(newUser)
-                _registerResult.postValue(Resource.Success(newUser))
+                
+                // Intentar insertar en Supabase
+                val supabaseUser = try {
+                    supabaseRepo.insertUser(newUser)
+                } catch (supabaseEx: Exception) {
+                    supabaseEx.printStackTrace()
+                    null
+                }
+                
+                // Insertar en BD local (con el usuario de Supabase si se obtuvo)
+                val finalUser = supabaseUser ?: newUser
+                userDao.insertUser(finalUser)
+                _registerResult.postValue(Resource.Success(finalUser))
             } catch (e: Exception) {
                 _registerResult.postValue(Resource.Error("Error al registrar usuario: ${e.message}"))
             }
@@ -83,6 +128,20 @@ class UserRepository(private val userDao: UserDao) {
         CoroutineScope(Dispatchers.IO).launch {
             _userResult.postValue(Resource.Loading())
             try {
+                // Intentar obtener desde Supabase primero
+                try {
+                    val supabaseUser = supabaseRepo.getUserById(userId)
+                    if (supabaseUser != null) {
+                        // Actualizar caché local
+                        userDao.insertUser(supabaseUser)
+                        _userResult.postValue(Resource.Success(supabaseUser))
+                        return@launch
+                    }
+                } catch (supabaseEx: Exception) {
+                    supabaseEx.printStackTrace()
+                }
+
+                // Fallback a BD local
                 val user = userDao.getUserById(userId)
                 if (user != null) {
                     _userResult.postValue(Resource.Success(user))
@@ -99,6 +158,20 @@ class UserRepository(private val userDao: UserDao) {
         CoroutineScope(Dispatchers.IO).launch {
             _usersResult.postValue(Resource.Loading())
             try {
+                // Intentar obtener desde Supabase primero
+                try {
+                    val supabaseUsers = supabaseRepo.getAllUsers()
+                    if (supabaseUsers.isNotEmpty()) {
+                        // Actualizar caché local
+                        supabaseUsers.forEach { userDao.insertUser(it) }
+                        _usersResult.postValue(Resource.Success(supabaseUsers))
+                        return@launch
+                    }
+                } catch (supabaseEx: Exception) {
+                    supabaseEx.printStackTrace()
+                }
+
+                // Fallback a BD local
                 val users = userDao.getAllUsers()
                 _usersResult.postValue(Resource.Success(users))
             } catch (e: Exception) {
@@ -112,6 +185,14 @@ class UserRepository(private val userDao: UserDao) {
         CoroutineScope(Dispatchers.IO).launch {
             _userResult.postValue(Resource.Loading())
             try {
+                // Intentar actualizar en Supabase primero
+                try {
+                    supabaseRepo.updateUser(user)
+                } catch (supabaseEx: Exception) {
+                    supabaseEx.printStackTrace()
+                }
+
+                // Actualizar en BD local
                 userDao.updateUser(user)
                 _userResult.postValue(Resource.Success(user))
             } catch (e: Exception) {
@@ -125,6 +206,14 @@ class UserRepository(private val userDao: UserDao) {
         CoroutineScope(Dispatchers.IO).launch {
             _deleteResult.postValue(Resource.Loading())
             try {
+                // Intentar eliminar de Supabase primero
+                try {
+                    supabaseRepo.deleteUser(user.id)
+                } catch (supabaseEx: Exception) {
+                    supabaseEx.printStackTrace()
+                }
+
+                // Eliminar de BD local
                 userDao.deleteUser(user)
                 _deleteResult.postValue(Resource.Success("Usuario eliminado exitosamente"))
             } catch (e: Exception) {
@@ -137,6 +226,14 @@ class UserRepository(private val userDao: UserDao) {
         CoroutineScope(Dispatchers.IO).launch {
             _deleteResult.postValue(Resource.Loading())
             try {
+                // Intentar eliminar de Supabase primero
+                try {
+                    supabaseRepo.deleteUser(userId)
+                } catch (supabaseEx: Exception) {
+                    supabaseEx.printStackTrace()
+                }
+
+                // Eliminar de BD local
                 userDao.deleteUserById(userId)
                 _deleteResult.postValue(Resource.Success("Usuario eliminado exitosamente"))
             } catch (e: Exception) {

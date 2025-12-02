@@ -21,9 +21,9 @@ class CarritoRepository(private val carritoDao: CarritoDao) {
             val newItem = CarritoItem(
                 beatId = beat.id,
                 titulo = beat.titulo,
-                artista = beat.artista,
+                artista = beat.artista, // Ya es String? en CarritoItem
                 precio = beat.precio,
-                imagenPath = beat.imagenPath,
+                imagenPath = beat.imagenPath, // Ya es String? en CarritoItem
                 cantidad = 1  // Siempre 1, no se permite más
             )
             carritoDao.insertItem(newItem)

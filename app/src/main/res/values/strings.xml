@@ -63,11 +63,15 @@
     <string name="artista_default">Nombre del Artista</string>
     <string name="bpm_label">BPM: </string>
     <string name="bpm_default">120</string>
+    <string name="genero_label">Género: </string>
+    <string name="genero_default">N/A</string>
     <string name="imagen_label">Imagen:</string>
     <string name="imagen_path_default">/path/to/image.jpg</string>
     <string name="audio_label">Audio:</string>
     <string name="audio_path_default">/path/to/audio.mp3</string>
     <string name="play_pause">Reproducir / Pausar</string>
+    <string name="filtrar_por_genero">Filtrar por Género</string>
+    <string name="todos_los_generos">Todos los géneros</string>
     <string name="precio_default">$0</string>
     <string name="total_beats">Total de Beats: 0</string>
     <string name="no_beats_disponibles">No hay beats disponibles</string>

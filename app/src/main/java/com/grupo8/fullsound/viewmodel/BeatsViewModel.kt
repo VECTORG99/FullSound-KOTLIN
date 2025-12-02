@@ -12,21 +12,16 @@ class BeatsViewModel(private val beatRepository: BeatRepository) : ViewModel() {
     val beatResult: LiveData<Resource<Beat>> = beatRepository.beatResult
     val deleteResult: LiveData<Resource<String>> = beatRepository.deleteResult
 
-    // CREATE ESTOY CANSADO JEFE
+    // CREATE
     fun insertBeat(beat: Beat) {
         beatRepository.insertBeat(beat)
     }
 
-    // READ
-    // Variante por defecto (sin conversión)
+    // READ - Los precios ya vienen en CLP desde Supabase
     fun getAllBeats() {
         beatRepository.getAllBeats()
     }
 
-    // Variante con conversion a CLP usando la API de Fixer (necesita Context)
-    fun getAllBeatsInClp(fixerApiKey: String, context: android.content.Context) {
-        beatRepository.getAllBeats(fixerApiKey, context)
-    }
 
     fun getBeatById(beatId: Int) {
         beatRepository.getBeatById(beatId)
@@ -44,10 +39,5 @@ class BeatsViewModel(private val beatRepository: BeatRepository) : ViewModel() {
 
     fun deleteBeatById(beatId: Int) {
         beatRepository.deleteBeatById(beatId)
-    }
-
-    // INSERTAR BEATS ESTOY CANSADO JEFE
-    fun insertExampleBeats() {
-        beatRepository.insertExampleBeats()
     }
 }

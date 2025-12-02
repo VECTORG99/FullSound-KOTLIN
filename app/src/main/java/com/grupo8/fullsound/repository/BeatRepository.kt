@@ -8,15 +8,17 @@ import com.grupo8.fullsound.utils.Resource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import android.util.Log
 
-// Añadimos imports para Retrofit
-import com.grupo8.fullsound.data.remote.RetrofitClient
-import com.grupo8.fullsound.data.remote.dto.BeatDto
+// Import para Supabase
+import com.grupo8.fullsound.data.remote.supabase.repository.SupabaseBeatRepository
 
-// Import para fixer
-import com.grupo8.fullsound.data.remote.fixer.ExchangeRateProvider
+class BeatRepository(
+    private val beatDao: BeatDao,
+    private val supabaseRepo: SupabaseBeatRepository = SupabaseBeatRepository()
+) {
 
-class BeatRepository(private val beatDao: BeatDao) {
+    private val TAG = "BeatRepository"
 
     private val _beatsResult = MutableLiveData<Resource<List<Beat>>>()
     val beatsResult: LiveData<Resource<List<Beat>>> = _beatsResult
@@ -27,123 +29,77 @@ class BeatRepository(private val beatDao: BeatDao) {
     private val _deleteResult = MutableLiveData<Resource<String>>()
     val deleteResult: LiveData<Resource<String>> = _deleteResult
 
-    // Mapeo desde BeatDto -> Beat local
-    private fun dtoToBeat(dto: BeatDto): Beat {
-        // Si no hay id remoto, generar uno estable a partir de title+artist para evitar duplicados
-        val computedId = if (dto.id > 0) dto.id else {
-            val key = (dto.title ?: "") + "|" + (dto.artist ?: "")
-            val h = key.hashCode()
-            val abs = if (h == Int.MIN_VALUE) Int.MAX_VALUE else Math.abs(h)
-            // Evitar 0
-            if (abs == 0) 1 else abs
-        }
-
-        return Beat(
-            id = computedId,
-            titulo = dto.title ?: "Sin título",
-            artista = dto.artist ?: "Desconocido",
-            bpm = dto.bpm ?: 0,
-            imagenPath = dto.image ?: "img1",
-            mp3Path = dto.mp3 ?: "",
-            precio = dto.price ?: 9.99
-        )
-    }
-
-    // Convierte precio USD -> CLP usando fixer (si falla devuelve precio USD)
-    private suspend fun convertUsdToClpIfPossible(usdPrice: Double, apiKey: String, context: android.content.Context): Double {
-        return try {
-            val rate = ExchangeRateProvider.getUsdToClpRate(context, apiKey)
-            if (rate != null) {
-                // redondear a 2 decimales
-                String.format("%.2f", usdPrice * rate).replace(',', '.').toDouble()
-            } else {
-                usdPrice
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            usdPrice
-        }
-    }
 
     // CREATE
     fun insertBeat(beat: Beat) {
         CoroutineScope(Dispatchers.IO).launch {
             _beatResult.postValue(Resource.Loading())
             try {
-                beatDao.insertBeat(beat)
-                _beatResult.postValue(Resource.Success(beat))
+                // Intentar insertar en Supabase primero
+                val supabaseBeat = try {
+                    supabaseRepo.insertBeat(beat)
+                } catch (supabaseEx: Exception) {
+                    Log.e(TAG, "Error al insertar en Supabase", supabaseEx)
+                    null
+                }
+
+                // Insertar en BD local (con el ID de Supabase si se obtuvo)
+                val finalBeat = supabaseBeat ?: beat
+                beatDao.insertBeat(finalBeat)
+                _beatResult.postValue(Resource.Success(finalBeat))
             } catch (e: Exception) {
                 _beatResult.postValue(Resource.Error("Error al insertar beat: ${e.message}"))
             }
         }
     }
 
-    // READ
-    // getAllBeats ahora tiene una variante que recibe opcionalmente apiKeyFixer para convertir precios a CLP
-    fun getAllBeats(apiKeyFixer: String? = null, context: android.content.Context? = null) {
+    // READ - Obtiene todos los beats desde Supabase (sin API key, precios ya están en CLP)
+    fun getAllBeats() {
         CoroutineScope(Dispatchers.IO).launch {
+            Log.d(TAG, "=== getAllBeats llamado ===")
             _beatsResult.postValue(Resource.Loading())
             try {
-                // Intentar primero obtener desde API remota
+                // PRIORIDAD 1: Obtener desde Supabase
+                Log.d(TAG, "Intentando obtener beats desde Supabase...")
                 try {
-                    val remoteDtos = RetrofitClient.apiService.getBeats()
-                    var remoteBeats = remoteDtos.map { dtoToBeat(it) }
+                    val supabaseBeats = supabaseRepo.getAllBeats()
+                    Log.d(TAG, "Supabase retornó ${supabaseBeats.size} beats")
 
-                    // Si se pasa apiKey y price viene en USD, intentamos convertir
-                    if (apiKeyFixer != null && context != null) {
-                        // Convertir cada precio de USD -> CLP (suponiendo que dto.price está en USD)
-                        val convertedList = mutableListOf<Beat>()
-                        for (b in remoteBeats) {
-                            val cp = try {
-                                convertUsdToClpIfPossible(b.precio, apiKeyFixer, context)
-                            } catch (_: Exception) {
-                                b.precio
-                            }
-                            convertedList.add(b.copy(precio = cp))
+                    if (supabaseBeats.isNotEmpty()) {
+                        Log.d(TAG, "✅ Beats encontrados en Supabase:")
+                        supabaseBeats.forEachIndexed { index, beat ->
+                            Log.d(TAG, "  ${index + 1}. ${beat.titulo} - ${beat.artista} - \$${beat.precio} CLP")
                         }
-                        remoteBeats = convertedList
-                    }
 
-                    // Guardar/actualizar en BD local
-                    remoteBeats.forEach { beatDao.insertBeat(it) }
-                    // Leer desde BD para obtener los IDs reales generados por Room
-                    var beatsFromDb = beatDao.getAllBeats()
-                    // Si se pasó apiKeyFixer, convertir precios en la lista leída de la BD
-                    if (apiKeyFixer != null && context != null && beatsFromDb.isNotEmpty()) {
-                        val converted = mutableListOf<Beat>()
-                        for (b in beatsFromDb) {
-                            val cp = try {
-                                convertUsdToClpIfPossible(b.precio, apiKeyFixer, context)
-                            } catch (_: Exception) { b.precio }
-                            converted.add(b.copy(precio = cp))
-                        }
-                        beatsFromDb = converted
+                        // Guardar en BD local como caché
+                        Log.d(TAG, "Guardando beats en caché local...")
+                        supabaseBeats.forEach { beatDao.insertBeat(it) }
+
+                        Log.d(TAG, "✅ Retornando ${supabaseBeats.size} beats desde Supabase")
+                        _beatsResult.postValue(Resource.Success(supabaseBeats))
+                        return@launch
+                    } else {
+                        Log.w(TAG, "⚠️ Supabase retornó lista vacía")
                     }
-                    _beatsResult.postValue(Resource.Success(beatsFromDb))
-                     return@launch
-                 } catch (apiEx: Exception) {
-                    // Si falla la API, continuamos con la BD local
-                    apiEx.printStackTrace()
+                } catch (supabaseEx: Exception) {
+                    Log.e(TAG, "❌ Error al obtener beats de Supabase: ${supabaseEx.message}", supabaseEx)
+                    // Si falla Supabase, continuar con fallback
                 }
 
-                var beats = beatDao.getAllBeats()
+                // PRIORIDAD 2: Fallback a BD local (Room)
+                Log.d(TAG, "Obteniendo beats desde Room DB (caché local)...")
+                val beats = beatDao.getAllBeats()
+                Log.d(TAG, "Room retornó ${beats.size} beats")
 
-                // Si se solicita conversion y hay beats locales (precio en USD), convertir
-                if (apiKeyFixer != null && context != null && beats.isNotEmpty()) {
-                    val convertedLocal = mutableListOf<Beat>()
-                    for (b in beats) {
-                        val cp = try {
-                            convertUsdToClpIfPossible(b.precio, apiKeyFixer, context)
-                        } catch (_: Exception) {
-                            b.precio
-                        }
-                        convertedLocal.add(b.copy(precio = cp))
-                    }
-                    beats = convertedLocal
+                if (beats.isNotEmpty()) {
+                    Log.d(TAG, "✅ Retornando ${beats.size} beats desde Room DB")
+                    _beatsResult.postValue(Resource.Success(beats))
+                } else {
+                    Log.w(TAG, "⚠️ No hay beats disponibles")
+                    _beatsResult.postValue(Resource.Success(emptyList()))
                 }
-
-                _beatsResult.postValue(Resource.Success(beats))
             } catch (e: Exception) {
+                Log.e(TAG, "❌ Error general al obtener beats: ${e.message}", e)
                 _beatsResult.postValue(Resource.Error("Error al obtener beats: ${e.message}"))
             }
         }
@@ -153,6 +109,20 @@ class BeatRepository(private val beatDao: BeatDao) {
         CoroutineScope(Dispatchers.IO).launch {
             _beatResult.postValue(Resource.Loading())
             try {
+                // Intentar obtener desde Supabase primero
+                try {
+                    val supabaseBeat = supabaseRepo.getBeatById(beatId)
+                    if (supabaseBeat != null) {
+                        // Actualizar caché local
+                        beatDao.insertBeat(supabaseBeat)
+                        _beatResult.postValue(Resource.Success(supabaseBeat))
+                        return@launch
+                    }
+                } catch (supabaseEx: Exception) {
+                    supabaseEx.printStackTrace()
+                }
+
+                // Fallback a BD local
                 val beat = beatDao.getBeatById(beatId)
                 if (beat != null) {
                     _beatResult.postValue(Resource.Success(beat))
@@ -170,6 +140,14 @@ class BeatRepository(private val beatDao: BeatDao) {
         CoroutineScope(Dispatchers.IO).launch {
             _beatResult.postValue(Resource.Loading())
             try {
+                // Intentar actualizar en Supabase primero
+                try {
+                    supabaseRepo.updateBeat(beat)
+                } catch (supabaseEx: Exception) {
+                    supabaseEx.printStackTrace()
+                }
+
+                // Actualizar en BD local
                 beatDao.updateBeat(beat)
                 _beatResult.postValue(Resource.Success(beat))
             } catch (e: Exception) {
@@ -183,6 +161,14 @@ class BeatRepository(private val beatDao: BeatDao) {
         CoroutineScope(Dispatchers.IO).launch {
             _deleteResult.postValue(Resource.Loading())
             try {
+                // Intentar eliminar de Supabase primero
+                try {
+                    supabaseRepo.deleteBeat(beat.id)
+                } catch (supabaseEx: Exception) {
+                    supabaseEx.printStackTrace()
+                }
+
+                // Eliminar de BD local
                 beatDao.deleteBeat(beat)
                 _deleteResult.postValue(Resource.Success("Beat eliminado exitosamente"))
             } catch (e: Exception) {
@@ -195,6 +181,14 @@ class BeatRepository(private val beatDao: BeatDao) {
         CoroutineScope(Dispatchers.IO).launch {
             _deleteResult.postValue(Resource.Loading())
             try {
+                // Intentar eliminar de Supabase primero
+                try {
+                    supabaseRepo.deleteBeat(beatId)
+                } catch (supabaseEx: Exception) {
+                    supabaseEx.printStackTrace()
+                }
+
+                // Eliminar de BD local
                 beatDao.deleteBeatById(beatId)
                 _deleteResult.postValue(Resource.Success("Beat eliminado exitosamente"))
             } catch (e: Exception) {
@@ -211,29 +205,6 @@ class BeatRepository(private val beatDao: BeatDao) {
                 _deleteResult.postValue(Resource.Success("Todos los beats eliminados"))
             } catch (e: Exception) {
                 _deleteResult.postValue(Resource.Error("Error al eliminar beats: ${e.message}"))
-            }
-        }
-    }
-
-    // INSERTAR BEATS DE EJEMPLO
-    fun insertExampleBeats() {
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                // Verificar si ya hay beats en la base de datos
-                val existingBeats = beatDao.getAllBeats()
-                if (existingBeats.isEmpty()) {
-                    // Insertar beats de ejemplo
-                    val exampleBeats = com.grupo8.fullsound.data.local.LocalBeatsProvider.getBeats()
-                    exampleBeats.forEach { beat ->
-                        beatDao.insertBeat(beat)
-                    }
-                }
-                // Cargar beats
-                val beats = beatDao.getAllBeats()
-                _beatsResult.postValue(Resource.Success(beats))
-            } catch (e: Exception) {
-                e.printStackTrace()
-                _beatsResult.postValue(Resource.Error("Error al cargar beats: ${e.message}"))
             }
         }
     }

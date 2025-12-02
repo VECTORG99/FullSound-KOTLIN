@@ -96,8 +96,8 @@ class BeatsFragment : Fragment() {
         // Configurar la UI según el rol (admin vs usuario común)
         configureUIBasedOnUserRole()
 
-        // Insertar beats de ejemplo si no existen y cargar todos los beats
-        viewModel.insertExampleBeats()
+        // Los beats se cargarán automáticamente desde Supabase (o caché local)
+        // al navegar a BeatsListaFragment
     }
 
     private fun configureUIBasedOnUserRole() {
@@ -122,9 +122,9 @@ class BeatsFragment : Fragment() {
             binding.btnCrear.text = "Subir beat"
             binding.btnLeer.text = "Ver catálogo"
 
-            // Mostrar el catálogo por defecto (precios en CLP)
+            // Mostrar el catálogo por defecto (precios en CLP desde Supabase)
             binding.containerListaBeats.visibility = View.VISIBLE
-            viewModel.getAllBeatsInClp("24740d67b25b632aa0ac3956a536003e", requireContext())
+            viewModel.getAllBeats()
 
             // Opcional: ocultar el mensaje de total que aplica para admin CRUD si existe
             // (Se mantiene el cardCrear para que puedan subir sus beats)
@@ -243,8 +243,8 @@ class BeatsFragment : Fragment() {
             AnimationHelper.AnimationType.FADE
         )
         if (!isVisible) {
-            // Recargar beats al abrir (mostrar en CLP)
-            viewModel.getAllBeatsInClp("24740d67b25b632aa0ac3956a536003e", requireContext())
+            // Recargar beats al abrir (precios en CLP desde Supabase)
+            viewModel.getAllBeats()
         }
     }
 
@@ -753,12 +753,8 @@ class BeatsFragment : Fragment() {
                         else {
                             showMessage("Operación exitosa")
                             // Recargar según rol: admin ve USD, usuarios CLP
-                            val userSession2 = UserSession(requireContext())
-                            if (userSession2.isAdmin()) {
-                                viewModel.getAllBeats()
-                            } else {
-                                viewModel.getAllBeatsInClp("24740d67b25b632aa0ac3956a536003e", requireContext())
-                            }
+                            // Recargar beats desde Supabase (precios en CLP)
+                            viewModel.getAllBeats()
                         }
                      }
                 }
@@ -785,13 +781,8 @@ class BeatsFragment : Fragment() {
             when (result) {
                 is Resource.Success -> {
                     showMessage(result.data ?: "Eliminado exitosamente")
-                    // Recargar la lista según rol
-                    val userSession3 = UserSession(requireContext())
-                    if (userSession3.isAdmin()) {
-                        viewModel.getAllBeats()
-                    } else {
-                        viewModel.getAllBeatsInClp("24740d67b25b632aa0ac3956a536003e", requireContext())
-                    }
+                    // Recargar la lista desde Supabase (precios en CLP)
+                    viewModel.getAllBeats()
                 }
                 is Resource.Error -> {
                     showMessage(result.message ?: "Error al eliminar")

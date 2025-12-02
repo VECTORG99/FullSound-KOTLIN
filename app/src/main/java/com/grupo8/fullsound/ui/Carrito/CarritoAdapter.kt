@@ -35,7 +35,7 @@ class CarritoAdapter(
 
         fun bind(item: CarritoItem) {
             binding.txtTituloCarrito.text = item.titulo
-            binding.txtArtistaCarrito.text = item.artista
+            binding.txtArtistaCarrito.text = item.artista ?: "Artista desconocido"
 
             // Formatear precios en CLP con separadores de miles y sin decimales
             try {
@@ -50,7 +50,7 @@ class CarritoAdapter(
             binding.txtArtistaCarrito.setSingleLine(true)
 
             // Cargar imagen
-            loadImage(item.imagenPath)
+            loadImage(item.imagenPath ?: "")
 
             // Listener solo para eliminar
             binding.btnRemove.setOnClickListener {
