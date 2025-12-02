@@ -52,7 +52,7 @@ class LoginViewModelTest : StringSpec({
 
     lateinit var userRepository: UserRepository
     lateinit var viewModel: LoginViewModel
-    val testDispatcher = StandardTestDispatcher()
+    val testDispatcher = UnconfinedTestDispatcher()
 
     beforeSpec {
         Dispatchers.setMain(testDispatcher)
