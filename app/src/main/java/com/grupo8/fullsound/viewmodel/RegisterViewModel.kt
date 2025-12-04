@@ -15,20 +15,22 @@ class RegisterViewModel(private val userRepository: UserRepository) : ViewModel(
 
     val registerResult: LiveData<Resource<User>> = userRepository.registerResult
 
-    fun register(email: String, username: String, password: String) {
-        userRepository.register(email, username, password, username)
+    fun register(email: String, username: String, password: String, rut: String) {
+        userRepository.register(email, username, password, username, rut)
     }
 
-    fun validateForm(email: String, username: String, password: String) {
+    fun validateForm(email: String, username: String, password: String, rut: String) {
         val emailValid = FormValidator.isValidEmailStrict(email)
         val usernameValid = FormValidator.isValidUsername(username)
         val passwordValid = FormValidator.isValidPassword(password)
+        val rutValid = com.grupo8.fullsound.utils.RutValidator.validarRut(rut)
 
         _registerFormState.value = RegisterFormState(
             emailError = if (!emailValid) "Email inválido. Debe tener un dominio (ej: @gmail.com)" else null,
             usernameError = if (!usernameValid) "El usuario no puede estar vacío" else null,
             passwordError = if (!passwordValid) "La contraseña debe tener al menos 5 caracteres" else null,
-            isDataValid = emailValid && usernameValid && passwordValid
+            rutError = com.grupo8.fullsound.utils.RutValidator.obtenerMensajeError(rut),
+            isDataValid = emailValid && usernameValid && passwordValid && rutValid
         )
     }
 }
@@ -37,6 +39,7 @@ data class RegisterFormState(
     val emailError: String? = null,
     val usernameError: String? = null,
     val passwordError: String? = null,
+    val rutError: String? = null,
     val isDataValid: Boolean = false
 )
 

@@ -19,6 +19,7 @@
     <string name="subtitulo_register">Crea tu cuenta</string>
     <string name="separador_o">O</string>
     <string name="usuario_hint">Usuario</string>
+    <string name="rut_hint">RUT</string>
 
     <!-- Beats CRUD -->
     <string name="crear_beat">Crear Beat</string>
@@ -101,6 +102,8 @@
     <string name="agrega_beats_carrito">Agrega beats para comenzar</string>
     <string name="add_carrito">Agregar al Carrito</string>
     <string name="comprar_ahora">Comprar Ahora</string>
+    <string name="subtotal">Subtotal:</string>
+    <string name="iva">IVA (19%):</string>
     <string name="total">Total:</string>
     <string name="vaciar">Vaciar</string>
     <string name="comprar">Comprar</string>

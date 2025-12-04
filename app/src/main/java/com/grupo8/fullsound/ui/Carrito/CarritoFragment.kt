@@ -142,12 +142,22 @@ class CarritoFragment : Fragment() {
 
     private fun processCheckout() {
         lifecycleScope.launch {
-            val total = carritoViewModel.getTotalPrice()
+            val subtotal = carritoViewModel.getSubtotal()
+            val iva = carritoViewModel.getIva()
+            val total = carritoViewModel.getTotalConIva()
 
             if (total > 0) {
+                val mensaje = """
+                    Subtotal: ${FormatUtils.formatClp(subtotal)}
+                    IVA (19%): ${FormatUtils.formatClp(iva)}
+                    Total: ${FormatUtils.formatClp(total)}
+                    
+                    ¿Deseas proceder con la compra?
+                """.trimIndent()
+
                 AlertDialog.Builder(requireContext())
                     .setTitle("Confirmar compra")
-                    .setMessage("Total a pagar: ${FormatUtils.formatClp(total)}\n\n¿Deseas proceder con la compra?")
+                    .setMessage(mensaje)
                     .setPositiveButton("Comprar") { _, _ ->
                         // Aquí iría la lógica de pago real
                         showMessage("¡Compra realizada con éxito!")
@@ -163,7 +173,12 @@ class CarritoFragment : Fragment() {
 
     private fun updateTotal() {
         lifecycleScope.launch {
-            val total = carritoViewModel.getTotalPrice()
+            val subtotal = carritoViewModel.getSubtotal()
+            val iva = carritoViewModel.getIva()
+            val total = carritoViewModel.getTotalConIva()
+
+            binding.txtSubtotal.text = FormatUtils.formatClp(subtotal)
+            binding.txtIva.text = FormatUtils.formatClp(iva)
             binding.txtTotal.text = FormatUtils.formatClp(total)
         }
     }

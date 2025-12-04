@@ -134,6 +134,47 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
+            <!-- RUT Input -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/rutInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:hint="@string/rut_hint"
+                app:startIconDrawable="@drawable/ic_user"
+                app:startIconTint="@color/md_theme_primary"
+                app:errorEnabled="true"
+                app:boxBackgroundMode="filled"
+                app:boxBackgroundColor="#000000"
+                app:boxStrokeColor="@color/md_theme_primary"
+                app:hintTextColor="@color/md_theme_primary"
+                app:boxCornerRadiusTopStart="16dp"
+                app:boxCornerRadiusTopEnd="16dp"
+                app:boxCornerRadiusBottomStart="16dp"
+                app:boxCornerRadiusBottomEnd="16dp"
+                app:endIconMode="clear_text"
+                app:endIconTint="@color/md_theme_onSurfaceVariant"
+                app:helperText="Ej: 12.345.678-9"
+                app:helperTextEnabled="true"
+                style="@style/Widget.Material3.TextInputLayout.FilledBox"
+                app:layout_constraintTop_toBottomOf="@id/usernameInput"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/rutEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="56dp"
+                    android:inputType="text"
+                    android:maxLines="1"
+                    android:textColor="#FFFFFF"
+                    android:textColorHint="#B0B0B0"
+                    android:importantForAutofill="auto"
+                    android:gravity="center" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
             <!-- Password Input -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/passwordInput"
@@ -155,7 +196,7 @@
                 app:boxCornerRadiusBottomStart="16dp"
                 app:boxCornerRadiusBottomEnd="16dp"
                 style="@style/Widget.Material3.TextInputLayout.FilledBox"
-                app:layout_constraintTop_toBottomOf="@id/usernameInput"
+                app:layout_constraintTop_toBottomOf="@id/rutInput"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent">
 

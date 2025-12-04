@@ -11,6 +11,7 @@ data class User(
     val username: String,
     val password: String,
     val name: String,
+    val rut: String,
     val role: String = "user",
     val profileImage: String? = null,
     val createdAt: Long
@@ -24,6 +25,7 @@ data class LoginRequest(
 data class RegisterRequest(
     val email: String,
     val password: String,
-    val name: String
+    val name: String,
+    val rut: String
 )
 

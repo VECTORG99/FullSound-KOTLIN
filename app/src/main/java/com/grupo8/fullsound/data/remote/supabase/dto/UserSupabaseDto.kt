@@ -37,6 +37,9 @@ data class UserSupabaseDto(
     val apellido: String? = null,
 
     @SerialName("nombre")
-    val nombre: String? = null
+    val nombre: String? = null,
+
+    @SerialName("rut")
+    val rut: String? = null
 )
 

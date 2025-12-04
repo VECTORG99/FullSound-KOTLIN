@@ -1,5 +1,6 @@
 package com.grupo8.fullsound.ui.beats
 
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.media.MediaMetadataRetriever
 import android.net.Uri
@@ -532,30 +533,50 @@ class BeatsFragment : Fragment() {
 
     private fun handleImageSelection(uri: Uri) {
         try {
-            // Validar que la imagen sea cuadrada
+            // Cargar la imagen completa
             val inputStream = requireContext().contentResolver.openInputStream(uri)
-            val options = BitmapFactory.Options().apply {
-                inJustDecodeBounds = true
-            }
-            BitmapFactory.decodeStream(inputStream, null, options)
+            val originalBitmap = BitmapFactory.decodeStream(inputStream)
             inputStream?.close()
 
-            val width = options.outWidth
-            val height = options.outHeight
-
-            if (width != height) {
-                showMessage("La imagen debe ser cuadrada (mismo ancho y alto)")
+            if (originalBitmap == null) {
+                showMessage("Error al cargar la imagen")
                 return
             }
 
-            // Guardar la URI seleccionada
-            selectedImageUri = uri
+            val width = originalBitmap.width
+            val height = originalBitmap.height
 
-            // Obtener el nombre del archivo
+            // Si la imagen no es cuadrada, recortarla al centro
+            val croppedBitmap = if (width != height) {
+                val size = minOf(width, height)
+                val x = (width - size) / 2
+                val y = (height - size) / 2
+
+                showMessage("Imagen recortada a formato cuadrado (${size}x${size})")
+                Bitmap.createBitmap(originalBitmap, x, y, size, size)
+            } else {
+                showMessage("Imagen cuadrada detectada (${width}x${height})")
+                originalBitmap
+            }
+
+            // Guardar la imagen recortada en un archivo temporal
+            val tempFile = File(requireContext().cacheDir, "temp_image_${System.currentTimeMillis()}.jpg")
+            FileOutputStream(tempFile).use { out ->
+                croppedBitmap.compress(Bitmap.CompressFormat.JPEG, 90, out)
+            }
+
+            // Crear URI desde el archivo temporal
+            selectedImageUri = Uri.fromFile(tempFile)
+
+            // Obtener el nombre del archivo original
             val fileName = getFileName(uri) ?: "imagen_seleccionada.jpg"
             binding.txtImagenSeleccionada.text = fileName
 
-            showMessage("Imagen seleccionada: $fileName")
+            // Liberar memoria
+            if (croppedBitmap != originalBitmap) {
+                originalBitmap.recycle()
+            }
+
         } catch (e: Exception) {
             showMessage("Error al seleccionar la imagen: ${e.message}")
             e.printStackTrace()

@@ -43,6 +43,20 @@ class CarritoViewModel(private val carritoRepository: CarritoRepository) : ViewM
     suspend fun getTotalPrice(): Double {
         return carritoRepository.getTotalPrice()
     }
+
+    suspend fun getSubtotal(): Double {
+        return carritoRepository.getTotalPrice()
+    }
+
+    suspend fun getIva(): Double {
+        val subtotal = getSubtotal()
+        return com.grupo8.fullsound.utils.Constants.calcularIva(subtotal)
+    }
+
+    suspend fun getTotalConIva(): Double {
+        val subtotal = getSubtotal()
+        return com.grupo8.fullsound.utils.Constants.calcularTotalConIva(subtotal)
+    }
 }
 
 sealed class AddToCarritoResult {

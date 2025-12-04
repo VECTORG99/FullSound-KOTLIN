@@ -61,7 +61,7 @@ class UserRepository(
         }
     }
 
-    fun register(email: String, username: String, password: String, name: String) {
+    fun register(email: String, username: String, password: String, name: String, rut: String) {
         CoroutineScope(Dispatchers.IO).launch {
             _registerResult.postValue(Resource.Loading())
             try {
@@ -69,6 +69,7 @@ class UserRepository(
                 android.util.Log.d("UserRepository", "Email: $email")
                 android.util.Log.d("UserRepository", "Username: $username")
                 android.util.Log.d("UserRepository", "Name: $name")
+                android.util.Log.d("UserRepository", "RUT: $rut")
 
                 // Verificar en Supabase primero si el email o username ya existen
                 var emailExists = false
@@ -113,6 +114,7 @@ class UserRepository(
                     username = username,
                     password = password,
                     name = name,
+                    rut = rut,
                     createdAt = System.currentTimeMillis()
                 )
                 

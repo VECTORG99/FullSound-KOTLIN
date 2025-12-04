@@ -52,6 +52,7 @@ class RegisterFragment : Fragment() {
             binding.txtTitulo,
             binding.usernameInput,
             binding.emailInput,
+            binding.rutInput,
             binding.passwordInput,
             binding.registerButton,
             binding.loginText
@@ -95,6 +96,7 @@ class RegisterFragment : Fragment() {
 
             binding.emailInput.error = formState.emailError
             binding.usernameInput.error = formState.usernameError
+            binding.rutInput.error = formState.rutError
             binding.passwordInput.error = formState.passwordError
         }
 
@@ -135,6 +137,14 @@ class RegisterFragment : Fragment() {
             }
         })
 
+        binding.rutEditText.addTextChangedListener(object : android.text.TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: android.text.Editable?) {
+                validateForm()
+            }
+        })
+
         binding.passwordEditText.addTextChangedListener(object : android.text.TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
@@ -149,8 +159,9 @@ class RegisterFragment : Fragment() {
             if (viewModel.registerFormState.value?.isDataValid == true) {
                 val email = binding.emailEditText.text.toString()
                 val username = binding.usernameEditText.text.toString()
+                val rut = binding.rutEditText.text.toString()
                 val password = binding.passwordEditText.text.toString()
-                viewModel.register(email, username, password)
+                viewModel.register(email, username, password, rut)
             }
         }
 
@@ -163,8 +174,9 @@ class RegisterFragment : Fragment() {
     private fun validateForm() {
         val email = binding.emailEditText.text.toString()
         val username = binding.usernameEditText.text.toString()
+        val rut = binding.rutEditText.text.toString()
         val password = binding.passwordEditText.text.toString()
-        viewModel.validateForm(email, username, password)
+        viewModel.validateForm(email, username, password, rut)
     }
 
     private fun showMessage(message: String) {

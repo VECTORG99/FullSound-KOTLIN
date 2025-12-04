@@ -42,6 +42,7 @@ class SupabaseUserRepository {
             username = this.nombreUsuario,
             password = this.contrasena,
             name = this.nombre ?: this.nombreUsuario,
+            rut = this.rut ?: "",
             role = finalRole,
             profileImage = null,
             createdAt = System.currentTimeMillis()
@@ -64,7 +65,8 @@ class SupabaseUserRepository {
                 "admin" -> 1
                 "productor" -> 2
                 else -> 3
-            }
+            },
+            rut = this.rut
         )
     }
 
@@ -232,7 +234,8 @@ class SupabaseUserRepository {
                 nombre = user.name,
                 apellido = null,
                 activo = true,
-                idRol = idRol
+                idRol = idRol,
+                rut = user.rut
             )
 
             val response = supabase
