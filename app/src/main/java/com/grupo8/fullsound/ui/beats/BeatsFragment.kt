@@ -38,7 +38,7 @@ class BeatsFragment : Fragment() {
 
     private val viewModel: BeatsViewModel by viewModels {
         val database = AppDatabase.getInstance(requireContext())
-        val beatRepository = BeatRepository(database.beatDao())
+        val beatRepository = BeatRepository(database.beatDao(), requireContext())
         BeatsViewModelFactory(beatRepository)
     }
 

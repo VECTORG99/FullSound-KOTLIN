@@ -1,5 +1,7 @@
 package com.grupo8.fullsound.repository
 
+import android.content.Context
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.grupo8.fullsound.data.local.BeatDao
@@ -8,14 +10,14 @@ import com.grupo8.fullsound.utils.Resource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import android.util.Log
 
-// Import para Supabase
-import com.grupo8.fullsound.data.remote.supabase.repository.SupabaseBeatRepository
+// Import para el backend Spring Boot
+import com.grupo8.fullsound.repository.api.ApiBeatRepository
 
 class BeatRepository(
     private val beatDao: BeatDao,
-    private val supabaseRepo: SupabaseBeatRepository = SupabaseBeatRepository()
+    private val context: Context,
+    private val apiRepo: ApiBeatRepository = ApiBeatRepository(context)
 ) {
 
     private val TAG = "BeatRepository"
@@ -35,55 +37,92 @@ class BeatRepository(
         CoroutineScope(Dispatchers.IO).launch {
             _beatResult.postValue(Resource.Loading())
             try {
-                // Intentar insertar en Supabase primero
-                val supabaseBeat = try {
-                    supabaseRepo.insertBeat(beat)
-                } catch (supabaseEx: Exception) {
-                    Log.e(TAG, "Error al insertar en Supabase", supabaseEx)
-                    null
+                Log.d(TAG, "Insertando beat en backend Spring Boot...")
+                // Intentar insertar en el backend Spring Boot
+                val backendBeat = try {
+                    // TODO: Implementar método createBeat en ApiBeatRepository
+                    // apiRepo.createBeat(beat.toBeatRequestDto())
+                    Log.w(TAG, "Método createBeat no implementado aún en ApiBeatRepository")
+                    beat
+                } catch (backendEx: Exception) {
+                    Log.e(TAG, "Error al obtener beat del backend", backendEx)
+                    beat
                 }
 
-                // Insertar en BD local (con el ID de Supabase si se obtuvo)
-                val finalBeat = supabaseBeat ?: beat
-                beatDao.insertBeat(finalBeat)
-                _beatResult.postValue(Resource.Success(finalBeat))
+                // Guardar en BD local como caché
+                beatDao.insertBeat(backendBeat)
+                _beatResult.postValue(Resource.Success(backendBeat))
             } catch (e: Exception) {
+                Log.e(TAG, "Error al insertar beat", e)
                 _beatResult.postValue(Resource.Error("Error al insertar beat: ${e.message}"))
             }
         }
     }
 
-    // READ - Obtiene todos los beats desde Supabase (sin API key, precios ya están en CLP)
+    // READ - Obtiene todos los beats desde el backend Spring Boot
     fun getAllBeats() {
         CoroutineScope(Dispatchers.IO).launch {
             Log.d(TAG, "=== getAllBeats llamado ===")
             _beatsResult.postValue(Resource.Loading())
             try {
-                // PRIORIDAD 1: Obtener desde Supabase
-                Log.d(TAG, "Intentando obtener beats desde Supabase...")
+                // PRIORIDAD 1: Obtener desde backend Spring Boot
+                Log.d(TAG, "Intentando obtener beats desde backend Spring Boot...")
                 try {
-                    val supabaseBeats = supabaseRepo.getAllBeats()
-                    Log.d(TAG, "Supabase retornó ${supabaseBeats.size} beats")
+                    val response = apiRepo.getAllBeats()
 
-                    if (supabaseBeats.isNotEmpty()) {
-                        Log.d(TAG, "✅ Beats encontrados en Supabase:")
-                        supabaseBeats.forEachIndexed { index, beat ->
-                            Log.d(TAG, "  ${index + 1}. ${beat.titulo} - ${beat.artista} - \$${beat.precio} CLP")
+                    when (response) {
+                        is Resource.Success -> {
+                            val beatDtos = response.data ?: emptyList()
+                            Log.d(TAG, "Backend retornó ${beatDtos.size} beats")
+
+                            if (beatDtos.isNotEmpty()) {
+                                Log.d(TAG, "✅ Beats encontrados en backend:")
+
+                                // Convertir DTOs a modelo Beat
+                                val beats = beatDtos.map { dto ->
+                                    Beat(
+                                        id = dto.id,
+                                        titulo = dto.titulo,
+                                        artista = dto.artista ?: "",
+                                        precio = dto.precio.toDouble(),
+                                        slug = dto.slug ?: "",
+                                        bpm = dto.bpm ?: 0,
+                                        tonalidad = dto.tonalidad ?: "",
+                                        duracion = dto.duracion ?: 0,
+                                        genero = dto.genero ?: "",
+                                        etiquetas = dto.etiquetas ?: "",
+                                        descripcion = dto.descripcion ?: "",
+                                        imagenPath = dto.imagenUrl ?: "",
+                                        mp3Path = dto.audioUrl ?: "",
+                                        estado = dto.estado
+                                    )
+                                }
+
+                                beats.forEachIndexed { index, beat ->
+                                    Log.d(TAG, "  ${index + 1}. ${beat.titulo} - ${beat.artista} - \$${beat.precio} CLP")
+                                }
+
+                                // Guardar en BD local como caché
+                                Log.d(TAG, "Guardando beats en caché local...")
+                                beats.forEach { beatDao.insertBeat(it) }
+
+                                Log.d(TAG, "✅ Retornando ${beats.size} beats desde backend")
+                                _beatsResult.postValue(Resource.Success(beats))
+                                return@launch
+                            } else {
+                                Log.w(TAG, "⚠️ Backend retornó lista vacía")
+                            }
                         }
-
-                        // Guardar en BD local como caché
-                        Log.d(TAG, "Guardando beats en caché local...")
-                        supabaseBeats.forEach { beatDao.insertBeat(it) }
-
-                        Log.d(TAG, "✅ Retornando ${supabaseBeats.size} beats desde Supabase")
-                        _beatsResult.postValue(Resource.Success(supabaseBeats))
-                        return@launch
-                    } else {
-                        Log.w(TAG, "⚠️ Supabase retornó lista vacía")
+                        is Resource.Error -> {
+                            Log.e(TAG, "❌ Error del backend: ${response.message}")
+                        }
+                        else -> {
+                            Log.w(TAG, "⚠️ Estado desconocido del backend")
+                        }
                     }
-                } catch (supabaseEx: Exception) {
-                    Log.e(TAG, "❌ Error al obtener beats de Supabase: ${supabaseEx.message}", supabaseEx)
-                    // Si falla Supabase, continuar con fallback
+                } catch (backendEx: Exception) {
+                    Log.e(TAG, "❌ Error al obtener beats del backend: ${backendEx.message}", backendEx)
+                    // Si falla el backend, continuar con fallback
                 }
 
                 // PRIORIDAD 2: Fallback a BD local (Room)
@@ -109,17 +148,34 @@ class BeatRepository(
         CoroutineScope(Dispatchers.IO).launch {
             _beatResult.postValue(Resource.Loading())
             try {
-                // Intentar obtener desde Supabase primero
+                // Intentar obtener desde backend Spring Boot primero
                 try {
-                    val supabaseBeat = supabaseRepo.getBeatById(beatId)
-                    if (supabaseBeat != null) {
+                    val response = apiRepo.getBeatById(beatId)
+                    if (response is Resource.Success && response.data != null) {
+                        val dto = response.data
+                        val beat = Beat(
+                            id = dto.id,
+                            titulo = dto.titulo,
+                            artista = dto.artista ?: "",
+                            precio = dto.precio.toDouble(),
+                            slug = dto.slug ?: "",
+                            bpm = dto.bpm ?: 0,
+                            tonalidad = dto.tonalidad ?: "",
+                            duracion = dto.duracion ?: 0,
+                            genero = dto.genero ?: "",
+                            etiquetas = dto.etiquetas ?: "",
+                            descripcion = dto.descripcion ?: "",
+                            imagenPath = dto.imagenUrl ?: "",
+                            mp3Path = dto.audioUrl ?: "",
+                            estado = dto.estado
+                        )
                         // Actualizar caché local
-                        beatDao.insertBeat(supabaseBeat)
-                        _beatResult.postValue(Resource.Success(supabaseBeat))
+                        beatDao.insertBeat(beat)
+                        _beatResult.postValue(Resource.Success(beat))
                         return@launch
                     }
-                } catch (supabaseEx: Exception) {
-                    supabaseEx.printStackTrace()
+                } catch (backendEx: Exception) {
+                    Log.e(TAG, "Error al obtener beat del backend", backendEx)
                 }
 
                 // Fallback a BD local
@@ -140,11 +196,12 @@ class BeatRepository(
         CoroutineScope(Dispatchers.IO).launch {
             _beatResult.postValue(Resource.Loading())
             try {
-                // Intentar actualizar en Supabase primero
+                // Intentar actualizar en backend Spring Boot primero
                 try {
-                    supabaseRepo.updateBeat(beat)
-                } catch (supabaseEx: Exception) {
-                    supabaseEx.printStackTrace()
+                    // TODO: Implementar método updateBeat en ApiBeatRepository
+                    Log.w(TAG, "Método updateBeat no implementado aún en ApiBeatRepository")
+                } catch (backendEx: Exception) {
+                    Log.e(TAG, "Error al actualizar beat en backend", backendEx)
                 }
 
                 // Actualizar en BD local
@@ -161,11 +218,12 @@ class BeatRepository(
         CoroutineScope(Dispatchers.IO).launch {
             _deleteResult.postValue(Resource.Loading())
             try {
-                // Intentar eliminar de Supabase primero
+                // Intentar eliminar desde backend Spring Boot primero
                 try {
-                    supabaseRepo.deleteBeat(beat.id)
-                } catch (supabaseEx: Exception) {
-                    supabaseEx.printStackTrace()
+                    // TODO: Implementar método deleteBeat en ApiBeatRepository
+                    Log.w(TAG, "Método deleteBeat no implementado aún en ApiBeatRepository")
+                } catch (backendEx: Exception) {
+                    Log.e(TAG, "Error al eliminar beat del backend", backendEx)
                 }
 
                 // Eliminar de BD local
@@ -181,12 +239,8 @@ class BeatRepository(
         CoroutineScope(Dispatchers.IO).launch {
             _deleteResult.postValue(Resource.Loading())
             try {
-                // Intentar eliminar de Supabase primero
-                try {
-                    supabaseRepo.deleteBeat(beatId)
-                } catch (supabaseEx: Exception) {
-                    supabaseEx.printStackTrace()
-                }
+                // TODO: Implementar eliminación en backend Spring Boot
+                Log.d(TAG, "Eliminando beat del backend...")
 
                 // Eliminar de BD local
                 beatDao.deleteBeatById(beatId)

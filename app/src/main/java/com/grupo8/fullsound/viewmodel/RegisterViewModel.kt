@@ -35,11 +35,4 @@ class RegisterViewModel(private val userRepository: UserRepository) : ViewModel(
     }
 }
 
-data class RegisterFormState(
-    val emailError: String? = null,
-    val usernameError: String? = null,
-    val passwordError: String? = null,
-    val rutError: String? = null,
-    val isDataValid: Boolean = false
-)
 

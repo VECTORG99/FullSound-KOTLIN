@@ -26,7 +26,7 @@ class RegisterFragment : Fragment() {
     private val binding get() = _binding!!
     private val viewModel: RegisterViewModel by viewModels {
         val database = AppDatabase.getInstance(requireContext())
-        val userRepository = UserRepository(database.userDao())
+        val userRepository = UserRepository(database.userDao(), requireContext())
         RegisterViewModelFactory(userRepository)
     }
 

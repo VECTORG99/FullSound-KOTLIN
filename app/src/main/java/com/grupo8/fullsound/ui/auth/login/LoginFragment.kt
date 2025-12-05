@@ -29,7 +29,7 @@ class LoginFragment : Fragment() {
     private val binding get() = _binding!!
     private val viewModel: LoginViewModel by viewModels {
         val database = AppDatabase.getInstance(requireContext())
-        val userRepository = UserRepository(database.userDao())
+        val userRepository = UserRepository(database.userDao(), requireContext())
         LoginViewModelFactory(userRepository)
     }
 

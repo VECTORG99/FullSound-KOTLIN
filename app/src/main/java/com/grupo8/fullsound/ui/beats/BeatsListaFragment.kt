@@ -20,7 +20,6 @@ import com.grupo8.fullsound.repository.CarritoRepository
 import com.grupo8.fullsound.utils.AnimationHelper
 import com.grupo8.fullsound.utils.Resource
 import com.grupo8.fullsound.utils.UserSession
-import com.grupo8.fullsound.utils.SupabaseDiagnostic
 import com.grupo8.fullsound.viewmodel.BeatsViewModel
 import com.grupo8.fullsound.viewmodel.CarritoViewModel
 
@@ -31,7 +30,7 @@ class BeatsListaFragment : Fragment() {
 
     private val beatsViewModel: BeatsViewModel by viewModels {
         val database = AppDatabase.getInstance(requireContext())
-        val beatRepository = BeatRepository(database.beatDao())
+        val beatRepository = BeatRepository(database.beatDao(), requireContext())
         BeatsViewModelFactory(beatRepository)
     }
 
@@ -164,13 +163,7 @@ class BeatsListaFragment : Fragment() {
     }
 
     private fun loadBeats() {
-        Log.d("BeatsListaFragment", "=== Iniciando carga de beats desde Supabase ===")
-
-        // Ejecutar diagnóstico de Supabase
-        SupabaseDiagnostic.runDiagnostics(requireContext()) { diagnosticResult ->
-            Log.d("BeatsListaFragment", "DIAGNÓSTICO SUPABASE:\n$diagnosticResult")
-        }
-
+        Log.d("BeatsListaFragment", "=== Iniciando carga de beats desde backend API ===")
         beatsViewModel.getAllBeats()
     }
 

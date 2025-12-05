@@ -31,9 +31,4 @@ class LoginViewModel(private val userRepository: UserRepository) : ViewModel() {
     }
 }
 
-data class LoginFormState(
-    val emailError: String? = null,
-    val passwordError: String? = null,
-    val isDataValid: Boolean = false
-)
 

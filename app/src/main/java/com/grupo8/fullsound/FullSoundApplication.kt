@@ -1,6 +1,7 @@
-package com.grupo8.fullsound.utils
+package com.grupo8.fullsound
 
 import android.app.Application
+import android.util.Log
 import com.grupo8.fullsound.data.remote.RetrofitClient
 
 /**
@@ -14,5 +15,6 @@ class FullSoundApplication : Application() {
         
         // Inicializar RetrofitClient con contexto de aplicación
         RetrofitClient.initialize(this)
+        Log.d("FullSoundApp", "✅ RetrofitClient inicializado correctamente")
     }
 }

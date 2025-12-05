@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -24,33 +26,39 @@ android {
             useSupportLibrary = true
         }
 
-        // Leer variables del archivo .env
+        // Leer variables desde local.properties primero
+        val localProperties = Properties()
+        val localPropertiesFile = rootProject.file("local.properties")
+        if (localPropertiesFile.exists()) {
+            localPropertiesFile.inputStream().use { stream ->
+                localProperties.load(stream)
+            }
+        }
+
+        // Leer variables del archivo .env (sobrescribe local.properties si existe)
         val envFile = rootProject.file(".env")
         if (envFile.exists()) {
-            envFile.readLines().forEach { line ->
+            val lines = envFile.readLines()
+            for (line in lines) {
                 if (line.isNotBlank() && !line.startsWith("#") && line.contains("=")) {
                     val (key, value) = line.split("=", limit = 2)
                     buildConfigField("String", key.trim(), "\"${value.trim()}\"")
                 }
             }
         } else {
-            // Valores por defecto si no existe el archivo .env
-            buildConfigField("String", "SUPABASE_URL", "\"\"")
-            buildConfigField("String", "SUPABASE_ANON_KEY", "\"\"")
-            buildConfigField("String", "FIXER_API_KEY", "\"default_key\"")
+            // Si no existe .env, usar local.properties o valores por defecto
+            val supabaseUrl = localProperties.getProperty("SUPABASE_URL", "")
+            val supabaseAnonKey = localProperties.getProperty("SUPABASE_ANON_KEY", "")
+            val fixerApiKey = localProperties.getProperty("FIXER_API_KEY", "default_key")
+
+            buildConfigField("String", "SUPABASE_URL", "\"$supabaseUrl\"")
+            buildConfigField("String", "SUPABASE_ANON_KEY", "\"$supabaseAnonKey\"")
+            buildConfigField("String", "FIXER_API_KEY", "\"$fixerApiKey\"")
         }
 
-        // Leer BACKEND_BASE_URL desde local.properties
-        val localProperties = java.util.Properties()
-        val localPropertiesFile = rootProject.file("local.properties")
-        if (localPropertiesFile.exists()) {
-            localProperties.load(localPropertiesFile.inputStream())
-            val backendBaseUrl = localProperties.getProperty("BACKEND_BASE_URL", "http://10.0.2.2:8080/api/")
-            buildConfigField("String", "BACKEND_BASE_URL", "\"$backendBaseUrl\"")
-        } else {
-            // Valor por defecto para emulador Android
-            buildConfigField("String", "BACKEND_BASE_URL", "\"http://10.0.2.2:8080/api/\"")
-        }
+        // Configurar BACKEND_BASE_URL
+        val backendBaseUrl = localProperties.getProperty("BACKEND_BASE_URL", "http://10.0.2.2:8080/api/")
+        buildConfigField("String", "BACKEND_BASE_URL", "\"$backendBaseUrl\"")
     }
 
     testOptions {
@@ -61,6 +69,16 @@ android {
         }
     }
 
+    signingConfigs {
+        create("release") {
+            // Los valores se inyectan desde GitHub Actions o local.properties
+            storeFile = file(System.getProperty("android.injected.signing.store.file") ?: "release.jks")
+            storePassword = System.getProperty("android.injected.signing.store.password") ?: ""
+            keyAlias = System.getProperty("android.injected.signing.key.alias") ?: ""
+            keyPassword = System.getProperty("android.injected.signing.key.password") ?: ""
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -68,6 +86,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("release")
         }
     }
 
