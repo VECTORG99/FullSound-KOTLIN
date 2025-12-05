@@ -215,6 +215,50 @@
 
                             </com.google.android.material.textfield.TextInputLayout>
 
+                            <!-- Campo Género (Dropdown) -->
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:id="@+id/input_genero"
+                                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="16dp"
+                                android:hint="@string/genero_hint"
+                                app:boxStrokeColor="?attr/colorPrimary"
+                                app:hintTextColor="?attr/colorPrimary">
+
+                                <AutoCompleteTextView
+                                    android:id="@+id/edit_genero"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:inputType="none"
+                                    android:maxLines="1" />
+
+                            </com.google.android.material.textfield.TextInputLayout>
+
+                            <!-- Campo Precio -->
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:id="@+id/input_precio"
+                                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="16dp"
+                                android:hint="@string/precio_hint"
+                                app:boxStrokeColor="?attr/colorPrimary"
+                                app:hintTextColor="?attr/colorPrimary"
+                                app:prefixText="$"
+                                app:helperText="Precio en pesos chilenos"
+                                app:helperTextEnabled="true">
+
+                                <com.google.android.material.textfield.TextInputEditText
+                                    android:id="@+id/edit_precio"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:inputType="numberDecimal"
+                                    android:maxLines="1"
+                                    android:text="10000" />
+
+                            </com.google.android.material.textfield.TextInputLayout>
+
                             <!-- Seleccionar Imagen -->
                             <TextView
                                 android:layout_width="match_parent"
@@ -583,6 +627,22 @@
                                         android:textColor="?attr/colorOnSurface"
                                         tools:text="BPM: 120" />
 
+                                    <TextView
+                                        android:id="@+id/txt_genero_actualizar_actual"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:textAppearance="?attr/textAppearanceBodyMedium"
+                                        android:textColor="?attr/colorOnSurface"
+                                        tools:text="Género: Trap" />
+
+                                    <TextView
+                                        android:id="@+id/txt_precio_actualizar_actual"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:textAppearance="?attr/textAppearanceBodyMedium"
+                                        android:textColor="?attr/colorOnSurface"
+                                        tools:text="Precio: $10,000" />
+
                                 </LinearLayout>
 
                             </com.google.android.material.card.MaterialCardView>
@@ -641,7 +701,7 @@
                                     style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginBottom="24dp"
+                                    android:layout_marginBottom="16dp"
                                     android:hint="@string/bpm_hint"
                                     app:boxStrokeColor="?attr/colorPrimary"
                                     app:hintTextColor="?attr/colorPrimary">
@@ -651,6 +711,49 @@
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:inputType="number"
+                                        android:maxLines="1" />
+
+                                </com.google.android.material.textfield.TextInputLayout>
+
+                                <!-- Campo Género (Dropdown) -->
+                                <com.google.android.material.textfield.TextInputLayout
+                                    android:id="@+id/input_genero_actualizar"
+                                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginBottom="16dp"
+                                    android:hint="@string/genero_hint"
+                                    app:boxStrokeColor="?attr/colorPrimary"
+                                    app:hintTextColor="?attr/colorPrimary">
+
+                                    <AutoCompleteTextView
+                                        android:id="@+id/edit_genero_actualizar"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:inputType="none"
+                                        android:maxLines="1" />
+
+                                </com.google.android.material.textfield.TextInputLayout>
+
+                                <!-- Campo Precio -->
+                                <com.google.android.material.textfield.TextInputLayout
+                                    android:id="@+id/input_precio_actualizar"
+                                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginBottom="24dp"
+                                    android:hint="@string/precio_hint"
+                                    app:boxStrokeColor="?attr/colorPrimary"
+                                    app:hintTextColor="?attr/colorPrimary"
+                                    app:prefixText="$"
+                                    app:helperText="Precio en pesos chilenos"
+                                    app:helperTextEnabled="true">
+
+                                    <com.google.android.material.textfield.TextInputEditText
+                                        android:id="@+id/edit_precio_actualizar"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:inputType="numberDecimal"
                                         android:maxLines="1" />
 
                                 </com.google.android.material.textfield.TextInputLayout>

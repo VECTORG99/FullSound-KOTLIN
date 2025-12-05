@@ -40,7 +40,7 @@
             android:id="@+id/txt_titulo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
+            android:layout_marginBottom="4dp"
             android:ellipsize="end"
             android:gravity="center"
             android:maxLines="2"
@@ -48,6 +48,26 @@
             android:textAppearance="?attr/textAppearanceTitleLarge"
             android:textColor="?attr/colorOnSurface"
             android:textStyle="bold" />
+
+        <!-- ID del Beat (visible para admin) -->
+        <TextView
+            android:id="@+id/txt_id_visible"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:gravity="center"
+            android:text="ID: 0"
+            android:textAppearance="?attr/textAppearanceBodySmall"
+            android:textColor="?attr/colorPrimary"
+            android:textStyle="bold"
+            android:visibility="gone" />
+
+        <!-- ID oculto (para compatibilidad) -->
+        <TextView
+            android:id="@+id/txt_id"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="gone" />
 
         <!-- Separador -->
         <View
@@ -141,13 +161,7 @@
 
             </LinearLayout>
 
-            <!-- ID y Audio (ocultos pero mantenidos para compatibilidad) -->
-            <TextView
-                android:id="@+id/txt_id"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:visibility="gone" />
-
+            <!-- Audio (oculto pero mantenido para compatibilidad) -->
             <TextView
                 android:id="@+id/txt_audio_nombre"
                 android:layout_width="0dp"

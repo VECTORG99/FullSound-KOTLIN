@@ -21,7 +21,8 @@ import java.util.Locale
 
 class BeatsAdapter(
     private val onAddToCarrito: (Beat) -> Unit,
-    private val onComprar: (Beat) -> Unit
+    private val onComprar: (Beat) -> Unit,
+    private val showId: Boolean = false
 ) : ListAdapter<Beat, BeatsAdapter.BeatViewHolder>(BeatDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BeatViewHolder {
@@ -30,7 +31,7 @@ class BeatsAdapter(
             parent,
             false
         )
-        return BeatViewHolder(binding, onAddToCarrito, onComprar)
+        return BeatViewHolder(binding, onAddToCarrito, onComprar, showId)
     }
 
     override fun onBindViewHolder(holder: BeatViewHolder, position: Int) {
@@ -40,7 +41,8 @@ class BeatsAdapter(
     class BeatViewHolder(
         private val binding: ItemBeatBinding,
         private val onAddToCarrito: (Beat) -> Unit,
-        private val onComprar: (Beat) -> Unit
+        private val onComprar: (Beat) -> Unit,
+        private val showId: Boolean
     ) : RecyclerView.ViewHolder(binding.root) {
 
         private var mediaPlayer: android.media.MediaPlayer? = null
@@ -53,6 +55,11 @@ class BeatsAdapter(
                 txtArtista.text = beat.artista ?: "Desconocido"
                 txtGenero.text = beat.genero ?: "N/A"
                 txtBpm.text = beat.bpm?.toString() ?: "N/A"
+
+                // Mostrar u ocultar ID según el parámetro
+                txtIdVisible.visibility = if (showId) android.view.View.VISIBLE else android.view.View.GONE
+                txtIdVisible.text = "ID: ${beat.id}"
+                txtId.text = beat.id.toString()
 
                 // ID y nombre de audio ocultos (ya están con visibility="gone" en el XML)
 

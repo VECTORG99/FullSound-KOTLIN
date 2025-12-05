@@ -26,8 +26,34 @@
     <string name="titulo_beat_hint">Título del Beat</string>
     <string name="artista_hint">Artista</string>
     <string name="bpm_hint">BPM</string>
+    <string name="genero_hint">Género</string>
+    <string name="precio_hint">Precio (CLP)</string>
     <string name="imagen_path_hint">Ruta de Imagen</string>
     <string name="mp3_path_hint">Ruta de Audio</string>
+
+    <!-- Géneros musicales -->
+    <string name="seleccionar_genero">Seleccionar género</string>
+    <string-array name="generos_musicales">
+        <item>Trap</item>
+        <item>Hip Hop</item>
+        <item>Reggaeton</item>
+        <item>R&amp;B</item>
+        <item>Pop</item>
+        <item>Rock</item>
+        <item>Electronic</item>
+        <item>Lo-fi</item>
+        <item>Dancehall</item>
+        <item>Afrobeat</item>
+        <item>Drill</item>
+        <item>House</item>
+        <item>Techno</item>
+        <item>Dubstep</item>
+        <item>Ambient</item>
+        <item>Jazz</item>
+        <item>Funk</item>
+        <item>Soul</item>
+        <item>Otro</item>
+    </string-array>
     <string name="cancelar">Cancelar</string>
     <string name="guardar_beat">Guardar Beat</string>
     <string name="imagen_beat">Imagen del Beat</string>

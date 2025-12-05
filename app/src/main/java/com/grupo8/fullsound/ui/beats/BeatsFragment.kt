@@ -21,6 +21,10 @@ import com.grupo8.fullsound.databinding.FragmentBeatsBinding
 import com.grupo8.fullsound.utils.Resource
 import com.grupo8.fullsound.utils.UserSession
 import com.grupo8.fullsound.utils.AnimationHelper
+import com.grupo8.fullsound.data.remote.supabase.repository.SupabaseStorageRepository
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
+import coil.load
 import java.io.File
 import java.io.FileOutputStream
 
@@ -29,23 +33,17 @@ class BeatsFragment : Fragment() {
     private var _binding: FragmentBeatsBinding? = null
     private val binding get() = _binding!!
 
+    // Repositorio para subir archivos a Supabase Storage
+    private lateinit var storageRepository: SupabaseStorageRepository
+
     private val viewModel: BeatsViewModel by viewModels {
         val database = AppDatabase.getInstance(requireContext())
         val beatRepository = BeatRepository(database.beatDao())
         BeatsViewModelFactory(beatRepository)
     }
 
-    // Adaptador para la lista de beats
-    private val beatsAdapter = BeatsAdapter(
-        onAddToCarrito = { beat ->
-            // TODO: Implementar agregar al carrito
-            showMessage("Agregado al carrito: ${beat.titulo}")
-        },
-        onComprar = { beat ->
-            // TODO: Implementar compra directa
-            showMessage("Comprando: ${beat.titulo}")
-        }
-    )
+    // Adaptador para la lista de beats (se configurará según el rol)
+    private lateinit var beatsAdapter: BeatsAdapter
 
     // URIs de archivos seleccionados
     private var selectedImageUri: Uri? = null
@@ -82,6 +80,24 @@ class BeatsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Inicializar repositorio de Supabase Storage
+        storageRepository = SupabaseStorageRepository(requireContext())
+
+        // Determinar si el usuario es admin
+        val userSession = UserSession(requireContext())
+        val isAdmin = userSession.isAdmin()
+
+        // Inicializar adapter con showId según el rol
+        beatsAdapter = BeatsAdapter(
+            onAddToCarrito = { beat ->
+                showMessage("Agregado al carrito: ${beat.titulo}")
+            },
+            onComprar = { beat ->
+                showMessage("Comprando: ${beat.titulo}")
+            },
+            showId = isAdmin
+        )
+
         // Configurar el botón de retroceso para cerrar la app
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -92,6 +108,7 @@ class BeatsFragment : Fragment() {
 
         setupRecyclerView()
         setupObservers()
+        setupGeneroDropdown()
         setupClickListeners()
 
         // Configurar la UI según el rol (admin vs usuario común)
@@ -148,6 +165,24 @@ class BeatsFragment : Fragment() {
             layoutManager = androidx.recyclerview.widget.LinearLayoutManager(requireContext())
             setHasFixedSize(false)
         }
+    }
+
+    private fun setupGeneroDropdown() {
+        // Obtener el array de géneros desde los recursos
+        val generos = resources.getStringArray(R.array.generos_musicales)
+
+        // Crear el adaptador para el dropdown
+        val adapter = android.widget.ArrayAdapter(
+            requireContext(),
+            android.R.layout.simple_dropdown_item_1line,
+            generos
+        )
+
+        // Asignar el adaptador al AutoCompleteTextView de CREAR
+        binding.editGenero.setAdapter(adapter)
+
+        // Asignar el adaptador al AutoCompleteTextView de ACTUALIZAR
+        binding.editGeneroActualizar.setAdapter(adapter)
     }
 
     private fun setupClickListeners() {
@@ -379,6 +414,10 @@ class BeatsFragment : Fragment() {
         binding.editTituloActualizar.text?.clear()
         binding.editArtistaActualizar.text?.clear()
         binding.editBpmActualizar.text?.clear()
+        binding.editGeneroActualizar.text?.clear()
+        binding.editPrecioActualizar.text?.clear()
+        binding.inputGeneroActualizar.error = null
+        binding.inputPrecioActualizar.error = null
         beatToUpdate = null
     }
 
@@ -415,36 +454,31 @@ class BeatsFragment : Fragment() {
         binding.txtTituloActualizarActual.text = "Título: ${beat.titulo}"
         binding.txtArtistaActualizarActual.text = "Artista: ${beat.artista}"
         binding.txtBpmActualizarActual.text = "BPM: ${beat.bpm}"
-        // Cargar imagen para la vista de actualización si existe
-        val imgActualizarView = binding.root.findViewById<android.widget.ImageView>(R.id.img_beat_actualizar)
-        val ctx2 = requireContext()
-        var imageResId2 = 0
-        try {
-            if (!beat.imagenPath.isNullOrEmpty()) {
-                val possibleFile = java.io.File(beat.imagenPath)
-                if (possibleFile.exists()) {
-                    val bmp = android.graphics.BitmapFactory.decodeFile(possibleFile.absolutePath)
-                    if (bmp != null) {
-                        imgActualizarView.setImageBitmap(bmp)
-                    } else {
-                        imageResId2 = ctx2.resources.getIdentifier(beat.imagenPath, "drawable", ctx2.packageName)
+        binding.txtGeneroActualizarActual.text = "Género: ${beat.genero ?: "No especificado"}"
+        binding.txtPrecioActualizarActual.text = "Precio: ${com.grupo8.fullsound.utils.FormatUtils.formatClp(beat.precio)}"
+
+        // Cargar imagen desde URL de Supabase usando Coil
+        val imageUrl = beat.imagenPath
+
+        if (!imageUrl.isNullOrBlank() && (imageUrl.startsWith("http://") || imageUrl.startsWith("https://"))) {
+            // Es una URL de Supabase, cargar con Coil
+            android.util.Log.d("BeatsFragment", "📸 Cargando imagen de actualizar desde Supabase: $imageUrl")
+            binding.imgBeatActualizar.load(imageUrl) {
+                crossfade(true)
+                placeholder(R.drawable.image)
+                error(R.drawable.image)
+                listener(
+                    onSuccess = { _, _ ->
+                        android.util.Log.d("BeatsFragment", "✅ Imagen cargada para actualizar")
+                    },
+                    onError = { _, result ->
+                        android.util.Log.e("BeatsFragment", "❌ Error cargando imagen: ${result.throwable.message}")
                     }
-                } else {
-                    imageResId2 = ctx2.resources.getIdentifier(beat.imagenPath, "drawable", ctx2.packageName)
-                }
+                )
             }
-        } catch (_: Exception) {
-            imageResId2 = 0
-        }
-        if (imageResId2 == 0 && imgActualizarView.drawable == null) {
-            val idx2 = ((beat.id % 5) + 5) % 5 + 1
-            val fallbackName2 = "img$idx2"
-            imageResId2 = ctx2.resources.getIdentifier(fallbackName2, "drawable", ctx2.packageName)
-        }
-        if (imageResId2 != 0 && imgActualizarView.drawable == null) {
-            imgActualizarView.setImageResource(imageResId2)
-        } else if (imgActualizarView.drawable == null) {
-            imgActualizarView.setImageResource(R.drawable.image)
+        } else {
+            // Fallback a placeholder
+            binding.imgBeatActualizar.setImageResource(R.drawable.image)
         }
 
         AnimationHelper.scaleUp(binding.cardBeatActualizarInfo)
@@ -453,6 +487,8 @@ class BeatsFragment : Fragment() {
         binding.editTituloActualizar.setText(beat.titulo)
         binding.editArtistaActualizar.setText(beat.artista)
         binding.editBpmActualizar.setText(beat.bpm.toString())
+        binding.editGeneroActualizar.setText(beat.genero ?: "", false)
+        binding.editPrecioActualizar.setText(beat.precio.toInt().toString())
         AnimationHelper.fadeIn(binding.layoutCamposActualizar)
     }
 
@@ -474,6 +510,8 @@ class BeatsFragment : Fragment() {
         val titulo = binding.editTituloActualizar.text.toString().trim()
         val artista = binding.editArtistaActualizar.text.toString().trim()
         val bpmText = binding.editBpmActualizar.text.toString().trim()
+        val genero = binding.editGeneroActualizar.text.toString().trim()
+        val precioText = binding.editPrecioActualizar.text.toString().trim()
 
         var isValid = true
 
@@ -504,6 +542,20 @@ class BeatsFragment : Fragment() {
             binding.inputBpmActualizar.error = null
         }
 
+        // Validar precio
+        val precio = if (precioText.isNotEmpty()) {
+            precioText.toDoubleOrNull()
+        } else {
+            beat.precio
+        }
+
+        if (precioText.isNotEmpty() && (precio == null || precio < 0)) {
+            binding.inputPrecioActualizar.error = "Ingresa un precio válido"
+            isValid = false
+        } else {
+            binding.inputPrecioActualizar.error = null
+        }
+
         if (!isValid) {
             return
         }
@@ -512,7 +564,9 @@ class BeatsFragment : Fragment() {
         val beatActualizado = beat.copy(
             titulo = titulo,
             artista = artista,
-            bpm = bpm
+            bpm = bpm,
+            genero = genero.ifEmpty { beat.genero },
+            precio = precio ?: beat.precio
         )
 
         android.util.Log.d("BeatsFragment", "Actualizando beat ID: ${beat.id} - $titulo")
@@ -630,6 +684,8 @@ class BeatsFragment : Fragment() {
         val titulo = binding.editTitulo.text.toString().trim()
         val artista = binding.editArtista.text.toString().trim()
         val bpmText = binding.editBpm.text.toString().trim()
+        val genero = binding.editGenero.text.toString().trim()
+        val precioText = binding.editPrecio.text.toString().trim()
 
         // Validar campos obligatorios
         var isValid = true
@@ -661,59 +717,115 @@ class BeatsFragment : Fragment() {
             binding.inputBpm.error = null
         }
 
+        // Validar precio
+        val precio = if (precioText.isNotEmpty()) {
+            precioText.toDoubleOrNull()
+        } else {
+            10000.0 // Precio por defecto
+        }
+
+        if (precioText.isNotEmpty() && (precio == null || precio < 0)) {
+            binding.inputPrecio.error = "Ingresa un precio válido"
+            isValid = false
+        } else {
+            binding.inputPrecio.error = null
+        }
+
         if (!isValid) {
             return
         }
 
-        try {
-            // Procesar imagen y audio si se seleccionaron (opcional por ahora)
-            var imagePath: String? = null
-            var audioPath: String? = null
+        // Mostrar indicador de progreso
+        binding.btnGuardarBeat.isEnabled = false
+        binding.btnGuardarBeat.text = "Subiendo archivos..."
 
-            if (selectedImageUri != null) {
-                imagePath = copyFileToInternalStorage(
-                    selectedImageUri!!,
-                    "imagen_${System.currentTimeMillis()}.jpg",
-                    "images"
+        // Usar coroutine para operaciones asíncronas
+        lifecycleScope.launch {
+            try {
+                // Ejecutar test de diagnóstico primero
+                android.util.Log.d("BeatsFragment", "Ejecutando test de Storage...")
+                val testResult = storageRepository.testStorageConnection()
+                android.util.Log.d("BeatsFragment", "Resultado del test:\n$testResult")
+
+                // Subir imagen a Supabase Storage si se seleccionó
+                var imageUrl: String? = null
+                if (selectedImageUri != null) {
+                    showMessage("📤 Subiendo imagen...")
+                    android.util.Log.d("BeatsFragment", "Iniciando subida de imagen...")
+                    imageUrl = storageRepository.uploadImage(
+                        uri = selectedImageUri!!,
+                        fileName = "beat_${titulo.replace(" ", "_")}_${System.currentTimeMillis()}.jpg"
+                    )
+
+                    if (imageUrl == null) {
+                        android.util.Log.e("BeatsFragment", "❌ Falló la subida de imagen")
+                        showMessage("❌ Error al subir imagen. Revisa los logs para más detalles.")
+                    } else {
+                        android.util.Log.d("BeatsFragment", "✅ Imagen subida: $imageUrl")
+                        showMessage("✅ Imagen subida exitosamente")
+                    }
+                } else {
+                    android.util.Log.d("BeatsFragment", "No se seleccionó imagen")
+                }
+
+                // Subir audio a Supabase Storage si se seleccionó
+                var audioUrl: String? = null
+                if (selectedAudioUri != null) {
+                    showMessage("📤 Subiendo audio...")
+                    android.util.Log.d("BeatsFragment", "Iniciando subida de audio...")
+                    audioUrl = storageRepository.uploadAudio(
+                        uri = selectedAudioUri!!,
+                        fileName = "beat_${titulo.replace(" ", "_")}_${System.currentTimeMillis()}.mp3"
+                    )
+
+                    if (audioUrl == null) {
+                        android.util.Log.e("BeatsFragment", "❌ Falló la subida de audio")
+                        showMessage("❌ Error al subir audio. Revisa los logs para más detalles.")
+                    } else {
+                        android.util.Log.d("BeatsFragment", "✅ Audio subido: $audioUrl")
+                        showMessage("✅ Audio subido exitosamente")
+                    }
+                } else {
+                    android.util.Log.d("BeatsFragment", "No se seleccionó audio")
+                }
+
+                // Crear el beat con las URLs de Supabase Storage
+                val nuevoBeat = com.grupo8.fullsound.model.Beat(
+                    id = 0, // Supabase generará el ID
+                    titulo = titulo,
+                    artista = artista,
+                    bpm = bpm,
+                    precio = precio ?: 10000.0,
+                    genero = genero.ifEmpty { null },
+                    imagenPath = imageUrl, // URL de Supabase Storage
+                    mp3Path = audioUrl,    // URL de Supabase Storage
+                    estado = "DISPONIBLE"
                 )
+
+                android.util.Log.d("BeatsFragment", "🎵 Creando beat: $titulo por $artista")
+                android.util.Log.d("BeatsFragment", "💰 Precio: ${precio ?: 10000.0} CLP")
+                android.util.Log.d("BeatsFragment", "🎸 Género: ${genero.ifEmpty { "No especificado" }}")
+                android.util.Log.d("BeatsFragment", "📸 Imagen URL: $imageUrl")
+                android.util.Log.d("BeatsFragment", "🎵 Audio URL: $audioUrl")
+
+                // Guardar en la base de datos (Supabase + caché local)
+                viewModel.insertBeat(nuevoBeat)
+
+                // Limpiar formulario y ocultarlo
+                hideFormCrear()
+                showMessage("✅ Beat creado exitosamente")
+
+                // Recargar lista de beats
+                viewModel.getAllBeats()
+
+            } catch (e: Exception) {
+                showMessage("❌ Error al guardar el beat: ${e.message}")
+                android.util.Log.e("BeatsFragment", "Error al guardar beat", e)
+            } finally {
+                // Restaurar botón
+                binding.btnGuardarBeat.isEnabled = true
+                binding.btnGuardarBeat.text = getString(R.string.guardar_beat)
             }
-
-            if (selectedAudioUri != null) {
-                audioPath = copyFileToInternalStorage(
-                    selectedAudioUri!!,
-                    "audio_${System.currentTimeMillis()}.mp3",
-                    "audio"
-                )
-            }
-
-            // Crear el beat (sin ID para que Supabase lo genere)
-            // Precio por defecto: 10000 CLP
-            val nuevoBeat = com.grupo8.fullsound.model.Beat(
-                id = 0, // Supabase generará el ID
-                titulo = titulo,
-                artista = artista,
-                bpm = bpm,
-                precio = 10000.0, // Precio por defecto en CLP
-                genero = null, // Se puede agregar después
-                imagenPath = imagePath,
-                mp3Path = audioPath,
-                estado = "DISPONIBLE"
-            )
-
-            android.util.Log.d("BeatsFragment", "🎵 Creando beat: $titulo por $artista")
-
-            // Guardar en la base de datos (Supabase + caché local)
-            viewModel.insertBeat(nuevoBeat)
-
-            // Limpiar formulario y ocultarlo
-            hideFormCrear()
-            showMessage("✅ Beat creado exitosamente")
-
-            // Recargar lista de beats
-            viewModel.getAllBeats()
-        } catch (e: Exception) {
-            showMessage("❌ Error al guardar el beat: ${e.message}")
-            android.util.Log.e("BeatsFragment", "Error al guardar beat", e)
         }
     }
 
@@ -742,14 +854,19 @@ class BeatsFragment : Fragment() {
         binding.editTitulo.text?.clear()
         binding.editArtista.text?.clear()
         binding.editBpm.text?.clear()
+        binding.editGenero.text?.clear()
+        binding.editPrecio.setText("10000")
 
         binding.inputTitulo.error = null
         binding.inputArtista.error = null
         binding.inputBpm.error = null
+        binding.inputGenero.error = null
+        binding.inputPrecio.error = null
 
         // Limpiar selección de archivos
         selectedImageUri = null
         selectedAudioUri = null
+
         binding.txtImagenSeleccionada.text = "No se ha seleccionado ninguna imagen"
         binding.txtAudioSeleccionado.text = "No se ha seleccionado ningún audio"
     }
