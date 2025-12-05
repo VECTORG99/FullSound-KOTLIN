@@ -1,18 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primary_color">#6200EE</color>
-    <color name="primary_dark">#3700B3</color>
-    <color name="primary_light">#BB86FC</color>
-    <color name="accent_color">#03DAC6</color>
+    <!-- Material 3 Color Scheme - Dark Theme con Orange -->
+    <color name="md_theme_primary">#FF9800</color>
+    <color name="md_theme_onPrimary">#000000</color>
+    <color name="md_theme_primaryContainer">#FF6F00</color>
+    <color name="md_theme_onPrimaryContainer">#FFFFFF</color>
+
+    <color name="md_theme_secondary">#FFA726</color>
+    <color name="md_theme_onSecondary">#000000</color>
+    <color name="md_theme_secondaryContainer">#E65100</color>
+    <color name="md_theme_onSecondaryContainer">#FFFFFF</color>
+
+    <color name="md_theme_tertiary">#FFB74D</color>
+    <color name="md_theme_onTertiary">#000000</color>
+
+    <color name="md_theme_error">#CF6679</color>
+    <color name="md_theme_onError">#000000</color>
+
+    <color name="md_theme_background">#000000</color>
+    <color name="md_theme_onBackground">#FFFFFF</color>
+
+    <color name="md_theme_surface">#121212</color>
+    <color name="md_theme_onSurface">#FFFFFF</color>
+    <color name="md_theme_surfaceVariant">#1E1E1E</color>
+    <color name="md_theme_onSurfaceVariant">#E0E0E0</color>
+
+    <color name="md_theme_outline">#424242</color>
+    <color name="md_theme_outlineVariant">#616161</color>
+
+    <!-- Standard colors for AppCompat -->
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <!-- Legacy colors -->
+    <color name="primary_color">#FF9800</color>
+    <color name="primary_dark">#E65100</color>
+    <color name="primary_light">#FFB74D</color>
+    <color name="accent_color">#FFA726</color>
 
     <!-- Colores de texto -->
-    <color name="text_primary">#212121</color>
-    <color name="text_secondary">#757575</color>
+    <color name="text_primary">#FFFFFF</color>
+    <color name="text_secondary">#B0B0B0</color>
 
     <!-- Colores de fondo -->
-    <color name="background">#FFFFFF</color>
-    <color name="surface">#FFFFFF</color>
+    <color name="background">#000000</color>
+    <color name="surface">#121212</color>
 
     <!-- Colores de error -->
-    <color name="error_color">#B00020</color>
+    <color name="error_color">#CF6679</color>
 </resources>

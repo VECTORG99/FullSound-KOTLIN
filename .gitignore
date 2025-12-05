@@ -1,5 +1,6 @@
 *.iml
 .gradle
+.idea/copilotDiffState.xml
 /local.properties
 /.idea/caches
 /.idea/libraries
@@ -19,3 +20,4 @@ INSTRUCCIONES_IA.md
 app/build/reports/
 app/build/test-results/
 *.log
+.env

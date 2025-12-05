@@ -1,11 +1,278 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#000000"
-    tools:context="com.grupo8.fullsound.ui.Carrito.CarritoFragment">
+    android:background="@color/md_theme_background"
+    android:orientation="vertical"
+    tools:context=".ui.carrito.CarritoFragment">
 
-    <!-- Layout vacío con fondo negro -->
+    <!-- Header -->
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <!-- Contenido Principal -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <!-- RecyclerView de Items del Carrito -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_carrito"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:clipToPadding="false"
+            android:padding="8dp"
+            app:layout_constraintBottom_toTopOf="@id/card_total"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:listitem="@layout/item_carrito" />
+
+        <!-- Mensaje de Carrito Vacío -->
+        <LinearLayout
+            android:id="@+id/layout_empty"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="32dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@id/card_total"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:alpha="0.5"
+                android:src="@drawable/ic_shopping_bag"
+                app:tint="?attr/colorOnSurfaceVariant" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/carrito_vacio"
+                android:textAppearance="?attr/textAppearanceTitleMedium"
+                android:textColor="?attr/colorOnSurfaceVariant" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/agrega_beats_carrito"
+                android:textAppearance="?attr/textAppearanceBodyMedium"
+                android:textColor="?attr/colorOnSurfaceVariant" />
+
+        </LinearLayout>
+
+        <!-- Card de Total y Checkout -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_total"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            app:cardBackgroundColor="?attr/colorSurfaceVariant"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="8dp"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <!-- Subtotal -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/subtotal"
+                        android:textAppearance="?attr/textAppearanceTitleMedium"
+                        android:textColor="?attr/colorOnSurface" />
+
+                    <TextView
+                        android:id="@+id/txt_subtotal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:textAppearance="?attr/textAppearanceTitleMedium"
+                        android:textColor="?attr/colorOnSurface"
+                        android:textAlignment="viewEnd"
+                        tools:text="$25.20" />
+
+                </LinearLayout>
+
+                <!-- IVA -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/iva"
+                        android:textAppearance="?attr/textAppearanceTitleMedium"
+                        android:textColor="?attr/colorOnSurface" />
+
+                    <TextView
+                        android:id="@+id/txt_iva"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:textAppearance="?attr/textAppearanceTitleMedium"
+                        android:textColor="?attr/colorOnSurface"
+                        android:textAlignment="viewEnd"
+                        tools:text="$4.77" />
+
+                </LinearLayout>
+
+                <!-- Separador -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginBottom="12dp"
+                    android:background="?attr/colorOutline" />
+
+                <!-- Total -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/total"
+                        android:textAppearance="?attr/textAppearanceTitleLarge"
+                        android:textColor="?attr/colorOnSurface"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/txt_total"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:textAppearance="?attr/textAppearanceHeadlineMedium"
+                        android:textColor="?attr/colorPrimary"
+                        android:textStyle="bold"
+                        android:textAlignment="viewEnd"
+                        tools:text="$29.97" />
+
+                </LinearLayout>
+
+                <!-- Botones de Acción -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:orientation="horizontal">
+
+                    <!-- Botón Vaciar Carrito -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_clear_carrito"
+                        style="@style/Widget.Material3.Button.OutlinedButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:layout_weight="1"
+                        android:text="@string/vaciar"
+                        app:icon="@android:drawable/ic_menu_delete"
+                        app:iconGravity="textStart" />
+
+                    <!-- Botón Comprar -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_checkout"
+                        style="@style/Widget.Material3.Button"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_weight="1"
+                        android:text="@string/comprar" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Bottom Navigation Bar con Material 3 -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/bottom_nav_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardBackgroundColor="?attr/colorSurfaceVariant"
+        app:cardCornerRadius="0dp"
+        app:cardElevation="8dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:paddingStart="16dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="16dp">
+
+            <!-- Botón Logout -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_logout"
+                style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:layout_marginEnd="16dp"
+                android:contentDescription="@string/logout"
+                app:icon="@drawable/ic_logout"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp"
+                app:iconSize="24dp"
+                app:iconTint="?attr/colorOnSecondaryContainer" />
+
+            <!-- Botón Beats Lista -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_nav_beats_lista"
+                style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:layout_marginEnd="16dp"
+                android:contentDescription="@string/beats_disponibles"
+                app:icon="@drawable/ic_album"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp"
+                app:iconSize="24dp"
+                app:iconTint="?attr/colorOnSecondaryContainer" />
+
+            <!-- Botón Carrito (activo) -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_nav_carrito"
+                style="@style/Widget.Material3.Button.IconButton.Filled"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:contentDescription="@string/carrito"
+                app:backgroundTint="?attr/colorPrimary"
+                app:icon="@drawable/ic_shopping_bag"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp"
+                app:iconSize="24dp"
+                app:iconTint="?attr/colorOnPrimary" />
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+</LinearLayout>

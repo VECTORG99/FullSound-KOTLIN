@@ -2,12 +2,12 @@ package com.grupo8.fullsound.ui.auth.login
 
 import android.animation.ArgbEvaluator
 import android.animation.ValueAnimator
-import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.graphics.toColorInt
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -16,10 +16,12 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.grupo8.fullsound.R
 import com.grupo8.fullsound.data.local.AppDatabase
-import com.grupo8.fullsound.data.repositories.UserRepository
+import com.grupo8.fullsound.repository.UserRepository
+import com.grupo8.fullsound.viewmodel.LoginViewModel
 import com.grupo8.fullsound.databinding.FragmentLoginBinding
 import com.grupo8.fullsound.utils.Resource
 import com.grupo8.fullsound.utils.UserSession
+import com.grupo8.fullsound.utils.AnimationHelper
 
 class LoginFragment : Fragment() {
 
@@ -44,21 +46,36 @@ class LoginFragment : Fragment() {
         startRgbTitleAnimation()
         setupObservers()
         setupListeners()
+        animateEntrance()
+    }
+
+    private fun animateEntrance() {
+        // Animar elementos en secuencia
+        val elementsToAnimate = listOf(
+            binding.txtTitulo,
+            binding.emailInput,
+            binding.passwordInput,
+            binding.loginButton,
+            binding.registerText
+        )
+        AnimationHelper.animateListSequentially(elementsToAnimate, 80, AnimationHelper.AnimationType.FADE)
     }
 
     private fun startRgbTitleAnimation() {
         val textView: TextView = binding.txtTitulo
+        // Animación RGB completa con todos los colores del arcoíris
         val colors = intArrayOf(
-            Color.RED,
-            Color.MAGENTA,
-            Color.BLUE,
-            Color.CYAN,
-            Color.GREEN,
-            Color.YELLOW,
-            Color.RED
+            "#FF0000".toColorInt(), // Rojo
+            "#FF7F00".toColorInt(), // Naranja
+            "#FFFF00".toColorInt(), // Amarillo
+            "#00FF00".toColorInt(), // Verde
+            "#0000FF".toColorInt(), // Azul
+            "#4B0082".toColorInt(), // Índigo
+            "#9400D3".toColorInt(), // Violeta
+            "#FF0000".toColorInt()  // Rojo (volver al inicio)
         )
         val animator = ValueAnimator.ofFloat(0f, (colors.size - 1).toFloat())
-        animator.duration = 4000L
+        animator.duration = 7000L
         animator.repeatCount = ValueAnimator.INFINITE
         animator.addUpdateListener { animation ->
             val position = animation.animatedValue as Float
@@ -135,6 +152,7 @@ class LoginFragment : Fragment() {
         })
 
         binding.loginButton.setOnClickListener {
+            AnimationHelper.animateClick(it)
             validateForm()
             if (viewModel.loginFormState.value?.isDataValid == true) {
                 val email = binding.emailEditText.text.toString()
@@ -144,6 +162,7 @@ class LoginFragment : Fragment() {
         }
 
         binding.registerText.setOnClickListener {
+            AnimationHelper.animateClick(it)
             findNavController().navigate(R.id.action_loginFragment_to_registerFragment)
         }
 
@@ -173,11 +192,11 @@ class LoginFragment : Fragment() {
     }
 }
 
-class LoginViewModelFactory(private val userRepository: UserRepository) : ViewModelProvider.Factory {
+class LoginViewModelFactory(private val userRepository: com.grupo8.fullsound.repository.UserRepository) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(LoginViewModel::class.java)) {
+        if (modelClass.isAssignableFrom(com.grupo8.fullsound.viewmodel.LoginViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return LoginViewModel(userRepository) as T
+            return com.grupo8.fullsound.viewmodel.LoginViewModel(userRepository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

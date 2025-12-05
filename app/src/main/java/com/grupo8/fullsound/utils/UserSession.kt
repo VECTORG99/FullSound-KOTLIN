@@ -26,34 +26,20 @@ class UserSession(context: Context) {
         }
     }
 
-    // Obtener ID del usuario logueado
-    fun getUserId(): Int {
-        return prefs.getInt(KEY_USER_ID, -1)
-    }
-
     // Obtener email del usuario logueado
-    fun getUserEmail(): String? {
-        return prefs.getString(KEY_EMAIL, null)
-    }
-
-    // Obtener username del usuario logueado
-    fun getUsername(): String? {
-        return prefs.getString(KEY_USERNAME, null)
-    }
+    fun getUserEmail(): String? = prefs.getString(KEY_EMAIL, null)
 
     // Verificar si hay sesión activa
-    fun isLoggedIn(): Boolean {
-        return prefs.getBoolean(KEY_IS_LOGGED_IN, false)
+    fun isLoggedIn(): Boolean = prefs.getBoolean(KEY_IS_LOGGED_IN, false)
+
+    // Indica si el usuario es admin según el dominio del email
+    fun isAdmin(): Boolean {
+        val email = getUserEmail()
+        return email?.endsWith("@admin.cl", ignoreCase = true) == true
     }
 
     // Cerrar sesión
     fun logout() {
         prefs.edit().clear().apply()
     }
-
-    // Limpiar sesión
-    fun clearSession() {
-        logout()
-    }
 }
-

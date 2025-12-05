@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -16,6 +17,35 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        testInstrumentationRunnerArguments["clearPackageData"] = "false"
+
+        vectorDrawables {
+            useSupportLibrary = true
+        }
+
+        // Leer variables del archivo .env
+        val envFile = rootProject.file(".env")
+        if (envFile.exists()) {
+            envFile.readLines().forEach { line ->
+                if (line.isNotBlank() && !line.startsWith("#") && line.contains("=")) {
+                    val (key, value) = line.split("=", limit = 2)
+                    buildConfigField("String", key.trim(), "\"${value.trim()}\"")
+                }
+            }
+        } else {
+            // Valores por defecto si no existe el archivo .env
+            buildConfigField("String", "SUPABASE_URL", "\"\"")
+            buildConfigField("String", "SUPABASE_ANON_KEY", "\"\"")
+        }
+    }
+
+    testOptions {
+        animationsDisabled = true
+        unitTests {
+            isIncludeAndroidResources = true
+            isReturnDefaultValues = true
+        }
     }
 
     buildTypes {
@@ -31,6 +61,7 @@ android {
     buildFeatures {
         viewBinding = true
         compose = true
+        buildConfig = true
     }
 
     composeOptions {
@@ -38,11 +69,11 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "11"
     }
 }
 
@@ -68,6 +99,23 @@ dependencies {
     // Coroutines
     implementation(libs.kotlinx.coroutines.android)
 
+    // Supabase
+    implementation(libs.supabase.postgrest.kt)
+    implementation(libs.supabase.realtime.kt)
+    implementation(libs.supabase.storage.kt)
+
+    // Ktor (requerido por Supabase)
+    implementation(libs.ktor.client.android)
+    implementation(libs.ktor.client.core)
+    implementation(libs.ktor.client.cio)
+    implementation(libs.ktor.utils)
+
+    // Serialization
+    implementation(libs.kotlinx.serialization.json)
+
+    // Image Loading (Coil para cargar imágenes desde URLs de Supabase)
+    implementation("io.coil-kt:coil:2.5.0")
+
     // Compose
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
@@ -76,7 +124,6 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     debugImplementation(libs.androidx.ui.tooling)
-    debugImplementation(libs.androidx.ui.test.manifest)
 
     // Testing
     testImplementation(libs.junit)
@@ -84,9 +131,21 @@ dependencies {
     testImplementation("org.mockito.kotlin:mockito-kotlin:5.1.0")
     testImplementation("androidx.arch.core:core-testing:2.2.0")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
+    testImplementation(libs.kotest.runner)
+    testImplementation(libs.kotest.assertions)
+    testImplementation(libs.mockk)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation("androidx.arch.core:core-testing:2.2.0")
+    testImplementation("org.robolectric:robolectric:4.11.1")
 
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation("androidx.fragment:fragment-testing:1.6.2")
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
+    debugImplementation(libs.androidx.ui.test.manifest)
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
 }

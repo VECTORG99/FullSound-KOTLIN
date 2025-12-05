@@ -7,6 +7,7 @@
     <string name="password">Contraseña</string>
     <string name="login">Iniciar Sesión</string>
     <string name="register_here">¿No tienes cuenta? Regístrate aquí</string>
+    <string name="login_here">¿Ya tienes cuenta? Inicia sesión aquí</string>
     <string name="olvide_contrasena">Olvide mi contraseña</string>
     <string name="iniciar_sesion">Iniciar Sesión</string>
     <string name="crear_cuenta">Crear Cuenta</string>
@@ -14,13 +15,94 @@
     <string name="email_or_username_hint">Email o Usuario</string>
     <string name="password_hint">Contraseña</string>
     <string name="titulo_fullsound">FullSound</string>
+    <string name="subtitulo_login">Bienvenido de vuelta</string>
+    <string name="subtitulo_register">Crea tu cuenta</string>
+    <string name="separador_o">O</string>
     <string name="usuario_hint">Usuario</string>
+    <string name="rut_hint">RUT</string>
 
     <!-- Beats CRUD -->
     <string name="crear_beat">Crear Beat</string>
+    <string name="titulo_beat_hint">Título del Beat</string>
+    <string name="artista_hint">Artista</string>
+    <string name="bpm_hint">BPM</string>
+    <string name="genero_hint">Género</string>
+    <string name="precio_hint">Precio (CLP)</string>
+    <string name="imagen_path_hint">Ruta de Imagen</string>
+    <string name="mp3_path_hint">Ruta de Audio</string>
+
+    <!-- Géneros musicales -->
+    <string name="seleccionar_genero">Seleccionar género</string>
+    <string-array name="generos_musicales">
+        <item>Trap</item>
+        <item>Hip Hop</item>
+        <item>Reggaeton</item>
+        <item>R&amp;B</item>
+        <item>Pop</item>
+        <item>Rock</item>
+        <item>Electronic</item>
+        <item>Lo-fi</item>
+        <item>Dancehall</item>
+        <item>Afrobeat</item>
+        <item>Drill</item>
+        <item>House</item>
+        <item>Techno</item>
+        <item>Dubstep</item>
+        <item>Ambient</item>
+        <item>Jazz</item>
+        <item>Funk</item>
+        <item>Soul</item>
+        <item>Otro</item>
+    </string-array>
+    <string name="cancelar">Cancelar</string>
+    <string name="guardar_beat">Guardar Beat</string>
+    <string name="imagen_beat">Imagen del Beat</string>
+    <string name="seleccionar_imagen">Seleccionar Imagen</string>
+    <string name="no_imagen_seleccionada">No se ha seleccionado ninguna imagen</string>
+    <string name="audio_beat">Audio del Beat</string>
+    <string name="seleccionar_audio">Seleccionar Audio</string>
+    <string name="no_audio_seleccionado">No se ha seleccionado ningún audio</string>
     <string name="leer_beats">Leer Beats</string>
     <string name="actualizar_beat">Actualizar Beat</string>
     <string name="eliminar_beat">Eliminar Beat</string>
+    <string name="gestiona_coleccion">Gestion de beats</string>
+    <string name="anadir_beat_desc">Añadir beat</string>
+    <string name="explorar_beats_desc">Explorar beats</string>
+    <string name="modificar_beat_desc">Modifica un beat</string>
+    <string name="eliminar_beat_desc">Elimina un beat</string>
+
+    <!-- Eliminar Beat -->
+    <string name="id_beat_hint">ID del Beat</string>
+    <string name="buscar_beat">Buscar Beat</string>
+    <string name="beat_a_eliminar">Beat a Eliminar</string>
+    <string name="eliminar">Eliminar</string>
+
+    <!-- Actualizar Beat -->
+    <string name="beat_encontrado">Beat Encontrado</string>
+    <string name="actualizar">Actualizar</string>
+
+    <!-- Item Beat -->
+    <string name="imagen_beat_desc">Imagen del beat</string>
+    <string name="titulo_beat_default">Título del Beat</string>
+    <string name="id_label">ID: </string>
+    <string name="id_default">1</string>
+    <string name="artista_label">Artista: </string>
+    <string name="artista_default">Nombre del Artista</string>
+    <string name="bpm_label">BPM: </string>
+    <string name="bpm_default">120</string>
+    <string name="genero_label">Género: </string>
+    <string name="genero_default">N/A</string>
+    <string name="imagen_label">Imagen:</string>
+    <string name="imagen_path_default">/path/to/image.jpg</string>
+    <string name="audio_label">Audio:</string>
+    <string name="audio_path_default">/path/to/audio.mp3</string>
+    <string name="play_pause">Reproducir / Pausar</string>
+    <string name="filtrar_por_genero">Filtrar por Género</string>
+    <string name="todos_los_generos">Todos los géneros</string>
+    <string name="precio_default">$0</string>
+    <string name="total_beats">Total de Beats: 0</string>
+    <string name="no_beats_disponibles">No hay beats disponibles</string>
+    <string name="volver">Volver</string>
 
     <!-- Register Fragment -->
     <string name="register">Registrarse</string>
@@ -38,4 +120,19 @@
     <string name="invalid_email">Correo electrónico inválido</string>
     <string name="invalid_password">La contraseña debe tener al menos 6 caracteres</string>
     <string name="passwords_dont_match">Las contraseñas no coinciden</string>
+
+    <!-- Carrito -->
+    <string name="carrito">Carrito</string>
+    <string name="carrito_compras">Carrito de Compras</string>
+    <string name="carrito_vacio">Tu carrito está vacío</string>
+    <string name="agrega_beats_carrito">Agrega beats para comenzar</string>
+    <string name="add_carrito">Agregar al Carrito</string>
+    <string name="comprar_ahora">Comprar Ahora</string>
+    <string name="subtotal">Subtotal:</string>
+    <string name="iva">IVA (19%):</string>
+    <string name="total">Total:</string>
+    <string name="vaciar">Vaciar</string>
+    <string name="comprar">Comprar</string>
+    <string name="cerrar_sesion">Cerrar Sesión</string>
+    <string name="beats_disponibles">Beats Disponibles</string>
 </resources>

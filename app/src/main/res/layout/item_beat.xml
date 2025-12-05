@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="16dp"
+    app:cardBackgroundColor="?attr/colorSurface"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="4dp"
+    app:strokeColor="?attr/colorOutline"
+    app:strokeWidth="1dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Imagen del Beat centrada -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_gravity="center"
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="2dp">
+
+            <ImageView
+                android:id="@+id/img_beat"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="@string/imagen_beat_desc"
+                android:scaleType="centerCrop"
+                android:src="@drawable/image" />
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Título del Beat -->
+        <TextView
+            android:id="@+id/txt_titulo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:maxLines="2"
+            android:text="@string/titulo_beat_default"
+            android:textAppearance="?attr/textAppearanceTitleLarge"
+            android:textColor="?attr/colorOnSurface"
+            android:textStyle="bold" />
+
+        <!-- ID del Beat (visible para admin) -->
+        <TextView
+            android:id="@+id/txt_id_visible"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:gravity="center"
+            android:text="ID: 0"
+            android:textAppearance="?attr/textAppearanceBodySmall"
+            android:textColor="?attr/colorPrimary"
+            android:textStyle="bold"
+            android:visibility="gone" />
+
+        <!-- ID oculto (para compatibilidad) -->
+        <TextView
+            android:id="@+id/txt_id"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="gone" />
+
+        <!-- Separador -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="12dp"
+            android:background="?attr/colorOutlineVariant" />
+
+        <!-- Información del Beat -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <!-- Artista -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/artista_label"
+                    android:textAppearance="?attr/textAppearanceBodyMedium"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/txt_artista"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/artista_default"
+                    android:textAppearance="?attr/textAppearanceBodyMedium"
+                    android:textColor="?attr/colorOnSurface" />
+
+            </LinearLayout>
+
+            <!-- Género -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/genero_label"
+                    android:textAppearance="?attr/textAppearanceBodyMedium"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/txt_genero"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/genero_default"
+                    android:textAppearance="?attr/textAppearanceBodyMedium"
+                    android:textColor="?attr/colorOnSurface" />
+
+            </LinearLayout>
+
+            <!-- BPM -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/bpm_label"
+                    android:textAppearance="?attr/textAppearanceBodyMedium"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/txt_bpm"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/bpm_default"
+                    android:textAppearance="?attr/textAppearanceBodyMedium"
+                    android:textColor="?attr/colorOnSurface" />
+
+            </LinearLayout>
+
+            <!-- Audio (oculto pero mantenido para compatibilidad) -->
+            <TextView
+                android:id="@+id/txt_audio_nombre"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:visibility="gone" />
+
+        </LinearLayout>
+
+        <!-- Precios (CLP y USD) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <!-- Precio en CLP -->
+            <TextView
+                android:id="@+id/txt_precio_clp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="$15.000 CLP"
+                android:textAppearance="?attr/textAppearanceTitleMedium"
+                android:textColor="?attr/colorOnSurface"
+                android:textStyle="bold" />
+
+            <!-- Precio en USD -->
+            <TextView
+                android:id="@+id/txt_precio_usd"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="$15.00 USD"
+                android:textAppearance="?attr/textAppearanceBodyMedium"
+                android:textColor="?attr/colorOnSurfaceVariant" />
+
+        </LinearLayout>
+
+        <!-- Botones de acción: Play a la izquierda y dos botones apilados a la derecha -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <!-- Botón Reproducir/Pausar -->
+            <ImageButton
+                android:id="@+id/btn_play"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginEnd="12dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/play_pause"
+                android:scaleType="center"
+                android:src="@android:drawable/ic_media_play" />
+
+            <!-- Contenedor vertical para botones (ocupa el espacio restante) -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_add_carrito"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginBottom="8dp"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:minHeight="48dp"
+                    android:singleLine="true"
+                    android:ellipsize="end"
+                    android:text="@string/add_carrito"
+                    app:icon="@android:drawable/ic_input_add"
+                    app:iconGravity="textStart"
+                    style="@style/Widget.Material3.Button.OutlinedButton" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_comprar"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:minHeight="48dp"
+                    android:singleLine="true"
+                    android:ellipsize="end"
+                    android:text="@string/comprar"
+                    app:icon="@android:drawable/ic_menu_send"
+                    app:iconGravity="textStart" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

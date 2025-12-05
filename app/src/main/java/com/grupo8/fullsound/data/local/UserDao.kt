@@ -1,7 +1,7 @@
 package com.grupo8.fullsound.data.local
 
 import androidx.room.*
-import com.grupo8.fullsound.data.models.User
+import com.grupo8.fullsound.model.User
 
 @Dao
 interface UserDao {
