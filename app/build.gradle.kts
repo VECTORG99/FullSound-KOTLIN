@@ -39,6 +39,18 @@ android {
             buildConfigField("String", "SUPABASE_ANON_KEY", "\"\"")
             buildConfigField("String", "FIXER_API_KEY", "\"default_key\"")
         }
+
+        // Leer BACKEND_BASE_URL desde local.properties
+        val localProperties = java.util.Properties()
+        val localPropertiesFile = rootProject.file("local.properties")
+        if (localPropertiesFile.exists()) {
+            localProperties.load(localPropertiesFile.inputStream())
+            val backendBaseUrl = localProperties.getProperty("BACKEND_BASE_URL", "http://10.0.2.2:8080/api/")
+            buildConfigField("String", "BACKEND_BASE_URL", "\"$backendBaseUrl\"")
+        } else {
+            // Valor por defecto para emulador Android
+            buildConfigField("String", "BACKEND_BASE_URL", "\"http://10.0.2.2:8080/api/\"")
+        }
     }
 
     testOptions {
@@ -96,6 +108,7 @@ dependencies {
     // Networking
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
 
     // Coroutines
     implementation(libs.kotlinx.coroutines.android)
