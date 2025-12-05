@@ -1,13 +1,6 @@
 *.iml
 .gradle
-.idea/copilotDiffState.xml
 /local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
 .DS_Store
 /build
 /captures
@@ -21,3 +14,12 @@ app/build/reports/
 app/build/test-results/
 *.log
 .env
+
+# IDE - JetBrains / Android Studio
+.idea/
+!.idea/codeStyles/
+!.idea/inspectionProfiles/
+!.idea/vcs.xml
+!.idea/compiler.xml
+!.idea/runConfigurations/
+
