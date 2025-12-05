@@ -37,6 +37,7 @@ android {
             // Valores por defecto si no existe el archivo .env
             buildConfigField("String", "SUPABASE_URL", "\"\"")
             buildConfigField("String", "SUPABASE_ANON_KEY", "\"\"")
+            buildConfigField("String", "FIXER_API_KEY", "\"default_key\"")
         }
     }
 

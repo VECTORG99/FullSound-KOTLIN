@@ -16,6 +16,7 @@ class UserTest : StringSpec({
             username = "testuser",
             password = "password123",
             name = "Test User",
+            rut = "12345678-9",
             role = "user",
             profileImage = null,
             createdAt = System.currentTimeMillis()
@@ -26,6 +27,7 @@ class UserTest : StringSpec({
         user.username shouldBe "testuser"
         user.password shouldBe "password123"
         user.name shouldBe "Test User"
+        user.rut shouldBe "12345678-9"
         user.role shouldBe "user"
     }
 
@@ -36,6 +38,7 @@ class UserTest : StringSpec({
             username = "testuser",
             password = "password123",
             name = "Test User",
+            rut = "12345678-9",
             createdAt = System.currentTimeMillis()
         )
 
@@ -49,6 +52,7 @@ class UserTest : StringSpec({
             username = "admin",
             password = "admin123",
             name = "Admin User",
+            rut = "87654321-0",
             role = "admin",
             createdAt = System.currentTimeMillis()
         )
@@ -65,6 +69,7 @@ class UserTest : StringSpec({
             username = "testuser",
             password = "password123",
             name = "Test User",
+            rut = "12345678-9",
             createdAt = timestamp
         )
 
@@ -74,6 +79,7 @@ class UserTest : StringSpec({
             username = "testuser",
             password = "password123",
             name = "Test User",
+            rut = "12345678-9",
             createdAt = timestamp
         )
 
@@ -83,6 +89,7 @@ class UserTest : StringSpec({
             username = "otheruser",
             password = "password123",
             name = "Other User",
+            rut = "87654321-0",
             createdAt = timestamp
         )
 
@@ -97,6 +104,7 @@ class UserTest : StringSpec({
             username = "testuser",
             password = "password123",
             name = "Test User",
+            rut = "12345678-9",
             createdAt = System.currentTimeMillis()
         )
 
@@ -125,12 +133,14 @@ class UserTest : StringSpec({
         val registerRequest = RegisterRequest(
             email = "test@test.com",
             password = "password123",
-            name = "Test User"
+            name = "Test User",
+            rut = "12345678-9"
         )
 
         registerRequest.email shouldBe "test@test.com"
         registerRequest.password shouldBe "password123"
         registerRequest.name shouldBe "Test User"
+        registerRequest.rut shouldBe "12345678-9"
     }
 })
 
