@@ -1,5 +1,3 @@
-import java.util.Properties
-
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -29,8 +27,7 @@ android {
         // Leer variables del archivo .env
         val envFile = rootProject.file(".env")
         if (envFile.exists()) {
-            val lines = envFile.readLines()
-            for (line in lines) {
+            envFile.readLines().forEach { line ->
                 if (line.isNotBlank() && !line.startsWith("#") && line.contains("=")) {
                     val (key, value) = line.split("=", limit = 2)
                     buildConfigField("String", key.trim(), "\"${value.trim()}\"")
@@ -44,7 +41,7 @@ android {
         }
 
         // Leer BACKEND_BASE_URL desde local.properties
-        val localProperties = Properties()
+        val localProperties = java.util.Properties()
         val localPropertiesFile = rootProject.file("local.properties")
         if (localPropertiesFile.exists()) {
             localProperties.load(localPropertiesFile.inputStream())
