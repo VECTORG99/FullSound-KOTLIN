@@ -113,9 +113,11 @@ class LoginFragment : Fragment() {
                     if (user != null) {
                         val userSession = UserSession(requireContext())
                         userSession.saveUserSession(
-                            userId = user.id.hashCode(),
+                            userId = user.id,
                             email = user.email,
-                            username = user.username
+                            username = user.username,
+                            name = user.name,
+                            rut = user.rut
                         )
                     }
 

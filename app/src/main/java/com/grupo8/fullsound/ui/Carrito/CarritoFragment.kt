@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -19,6 +20,7 @@ import com.grupo8.fullsound.databinding.FragmentCarritoBinding
 import com.grupo8.fullsound.ui.beats.CarritoViewModelFactory
 import com.grupo8.fullsound.utils.UserSession
 import com.grupo8.fullsound.utils.AnimationHelper
+import com.grupo8.fullsound.utils.PermissionHelper
 import kotlinx.coroutines.launch
 import com.grupo8.fullsound.utils.FormatUtils
 
@@ -34,6 +36,22 @@ class CarritoFragment : Fragment() {
     }
 
     private lateinit var carritoAdapter: CarritoAdapter
+
+    // Launcher para solicitar permisos
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        val allGranted = permissions.entries.all { it.value }
+        if (allGranted || !PermissionHelper.shouldRequestPermissions()) {
+            // Proceder con la descarga
+            proceedWithPurchase()
+        } else {
+            showMessage("Se necesitan permisos de almacenamiento para descargar la licencia")
+        }
+    }
+
+    // Variable para almacenar el total temporalmente
+    private var pendingPurchaseTotal: Double = 0.0
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -153,20 +171,133 @@ class CarritoFragment : Fragment() {
                     Total: ${FormatUtils.formatClp(total)}
                     
                     ¿Deseas proceder con la compra?
+                    Se descargará tu licencia automáticamente.
                 """.trimIndent()
 
                 AlertDialog.Builder(requireContext())
                     .setTitle("Confirmar compra")
                     .setMessage(mensaje)
                     .setPositiveButton("Comprar") { _, _ ->
-                        // Aquí iría la lógica de pago real
-                        showMessage("¡Compra realizada con éxito!")
-                        carritoViewModel.clearCarrito()
+                        pendingPurchaseTotal = total
+                        checkPermissionsAndProceed()
                     }
                     .setNegativeButton("Cancelar", null)
                     .show()
             } else {
                 showMessage("El carrito está vacío")
+            }
+        }
+    }
+
+    private fun checkPermissionsAndProceed() {
+        if (PermissionHelper.hasStoragePermission(requireContext())) {
+            // Ya tenemos permisos, proceder
+            proceedWithPurchase()
+        } else if (PermissionHelper.shouldRequestPermissions()) {
+            // Solicitar permisos
+            val permissions = PermissionHelper.getRequiredPermissions()
+            if (permissions.isNotEmpty()) {
+                requestPermissionLauncher.launch(permissions)
+            } else {
+                proceedWithPurchase()
+            }
+        } else {
+            // Android 10+, no se necesitan permisos
+            proceedWithPurchase()
+        }
+    }
+
+    private fun proceedWithPurchase() {
+        completePurchase(pendingPurchaseTotal)
+    }
+
+    private fun completePurchase(total: Double) {
+        lifecycleScope.launch {
+            try {
+                // Obtener items del carrito antes de limpiarlo
+                val items = carritoViewModel.carritoItems.value ?: emptyList()
+
+                if (items.isEmpty()) {
+                    showMessage("El carrito está vacío")
+                    return@launch
+                }
+
+                // Obtener información del usuario
+                val userSession = UserSession(requireContext())
+                val user = com.grupo8.fullsound.model.User(
+                    id = userSession.getUserId() ?: "",
+                    email = userSession.getUserEmail() ?: "",
+                    username = userSession.getUserUsername() ?: "",
+                    password = "",
+                    name = userSession.getUserName() ?: "Usuario",
+                    rut = userSession.getUserRut() ?: "N/A",
+                    createdAt = 0L
+                )
+
+                // Generar contenido de la licencia
+                val licenseContent = com.grupo8.fullsound.utils.LicenseGenerator.generateLicenseContent(
+                    items = items,
+                    user = user
+                )
+
+                // Descargar la licencia
+                val licenseSuccess = com.grupo8.fullsound.utils.LicenseDownloader.downloadLicense(
+                    context = requireContext(),
+                    licenseContent = licenseContent
+                )
+
+                // Descargar los beats en MP3
+                val database = AppDatabase.getInstance(requireContext())
+                val beatDao = database.beatDao()
+                var beatsDownloadedCount = 0
+
+                items.forEach { item ->
+                    val beat = beatDao.getBeatById(item.beatId)
+                    if (beat != null && !beat.mp3Path.isNullOrBlank()) {
+                        val downloadSuccess = com.grupo8.fullsound.utils.BeatDownloader.downloadBeat(
+                            context = requireContext(),
+                            mp3Url = beat.mp3Path,
+                            beatTitle = beat.titulo,
+                            artistName = beat.artista
+                        )
+                        if (downloadSuccess) {
+                            beatsDownloadedCount++
+                        }
+                    }
+                }
+
+                if (licenseSuccess) {
+                    // Limpiar el carrito
+                    carritoViewModel.clearCarrito()
+
+                    // Mostrar mensaje de éxito con información de descarga
+                    val message = buildString {
+                        append("Tu compra se ha completado exitosamente.\n\n")
+
+                        if (licenseSuccess) {
+                            append("📄 Licencia descargada en:\n")
+                            append("   Descargas/FullSound/\n\n")
+                        }
+
+                        if (beatsDownloadedCount > 0) {
+                            append("🎵 $beatsDownloadedCount beat(s) descargado(s) en:\n")
+                            append("   Música/FullSound/\n\n")
+                        }
+
+                        append("Conserva la licencia como prueba de tus derechos de uso.")
+                    }
+
+                    AlertDialog.Builder(requireContext())
+                        .setTitle("¡Compra exitosa!")
+                        .setMessage(message)
+                        .setPositiveButton("Aceptar", null)
+                        .show()
+                } else {
+                    showMessage("Compra completada, pero hubo un error al descargar la licencia")
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                showMessage("Error al procesar la compra: ${e.message}")
             }
         }
     }

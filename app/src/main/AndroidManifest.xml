@@ -5,6 +5,13 @@
     <!-- Permiso necesario para Retrofit/Coil -->
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <!-- Permisos para descargar licencias -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="28" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/favicon"
