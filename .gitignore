@@ -9,6 +9,10 @@
 local.properties
 .env
 
+# ⚠️ CUIDADO: Si pusiste credenciales en build.gradle.kts, NO lo subas a Git
+# Descomenta la siguiente línea si no quieres exponer tus credenciales:
+# app/build.gradle.kts
+
 # IDE - JetBrains / Android Studio
 .idea/
 !.idea/codeStyles/

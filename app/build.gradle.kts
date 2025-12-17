@@ -7,6 +7,7 @@ plugins {
 
 android {
     namespace = "com.grupo8.fullsound"
+
     compileSdk = 34
 
     defaultConfig {
@@ -24,21 +25,10 @@ android {
             useSupportLibrary = true
         }
 
-        // Leer variables del archivo .env
-        val envFile = rootProject.file(".env")
-        if (envFile.exists()) {
-            envFile.readLines().forEach { line ->
-                if (line.isNotBlank() && !line.startsWith("#") && line.contains("=")) {
-                    val (key, value) = line.split("=", limit = 2)
-                    buildConfigField("String", key.trim(), "\"${value.trim()}\"")
-                }
-            }
-        } else {
-            // Valores por defecto si no existe el archivo .env
-            buildConfigField("String", "SUPABASE_URL", "\"\"")
-            buildConfigField("String", "SUPABASE_ANON_KEY", "\"\"")
-            buildConfigField("String", "FIXER_API_KEY", "\"default_key\"")
-        }
+        // Configuración de Supabase y APIs
+        buildConfigField("String", "SUPABASE_URL", "\"https://kivpcepyhfpqjfoycwel.supabase.co\"")
+        buildConfigField("String", "SUPABASE_ANON_KEY", "\"sb_publishable_GfdMZIoq0CBBWXn2nubIwg_i2e618sJ\"")
+        buildConfigField("String", "FIXER_API_KEY", "\"e1d6395f837454243f450a282f1b4da4\"")
     }
 
     testOptions {

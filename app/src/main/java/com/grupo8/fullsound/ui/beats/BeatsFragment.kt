@@ -80,12 +80,16 @@ class BeatsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        android.util.Log.d("BeatsFragment", "BEATS FRAGMENT INICIADO")
+
         // Inicializar repositorio de Supabase Storage
         storageRepository = SupabaseStorageRepository(requireContext())
 
         // Determinar si el usuario es admin
         val userSession = UserSession(requireContext())
         val isAdmin = userSession.isAdmin()
+
+        android.util.Log.d("BeatsFragment", "Usuario es admin: $isAdmin")
 
         // Inicializar adapter con showId según el rol
         beatsAdapter = BeatsAdapter(
@@ -97,6 +101,8 @@ class BeatsFragment : Fragment() {
             },
             showId = isAdmin
         )
+
+        android.util.Log.d("BeatsFragment", "Adaptador configurado. Cargando beats...")
 
         // Configurar el botón de retroceso para cerrar la app
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
@@ -379,12 +385,12 @@ class BeatsFragment : Fragment() {
         }
 
         beatToDelete?.let { beat ->
-            android.util.Log.d("BeatsFragment", "🗑 Eliminando beat ID: ${beat.id} - ${beat.titulo}")
+            android.util.Log.d("BeatsFragment", "Eliminando beat ID: ${beat.id} - ${beat.titulo}")
 
             // Eliminar el beat (Supabase + caché local)
             viewModel.deleteBeat(beat)
             hideFormEliminar()
-            showMessage(" Beat eliminado exitosamente")
+            showMessage("Beat eliminado exitosamente")
 
             // Recargar lista de beats
             viewModel.getAllBeats()
@@ -462,17 +468,17 @@ class BeatsFragment : Fragment() {
 
         if (!imageUrl.isNullOrBlank() && (imageUrl.startsWith("http://") || imageUrl.startsWith("https://"))) {
             // Es una URL de Supabase, cargar con Coil
-            android.util.Log.d("BeatsFragment", "📸 Cargando imagen de actualizar desde Supabase: $imageUrl")
+            android.util.Log.d("BeatsFragment", "Cargando imagen de actualizar desde Supabase: $imageUrl")
             binding.imgBeatActualizar.load(imageUrl) {
                 crossfade(true)
                 placeholder(R.drawable.image)
                 error(R.drawable.image)
                 listener(
                     onSuccess = { _, _ ->
-                        android.util.Log.d("BeatsFragment", "✅ Imagen cargada para actualizar")
+                        android.util.Log.d("BeatsFragment", "Imagen cargada para actualizar")
                     },
                     onError = { _, result ->
-                        android.util.Log.e("BeatsFragment", "❌ Error cargando imagen: ${result.throwable.message}")
+                        android.util.Log.e("BeatsFragment", "Error cargando imagen: ${result.throwable.message}")
                     }
                 )
             }
@@ -750,7 +756,7 @@ class BeatsFragment : Fragment() {
                 // Subir imagen a Supabase Storage si se seleccionó
                 var imageUrl: String? = null
                 if (selectedImageUri != null) {
-                    showMessage("📤 Subiendo imagen...")
+                    showMessage("Subiendo imagen...")
                     android.util.Log.d("BeatsFragment", "Iniciando subida de imagen...")
                     imageUrl = storageRepository.uploadImage(
                         uri = selectedImageUri!!,
@@ -758,11 +764,11 @@ class BeatsFragment : Fragment() {
                     )
 
                     if (imageUrl == null) {
-                        android.util.Log.e("BeatsFragment", "❌ Falló la subida de imagen")
-                        showMessage("❌ Error al subir imagen. Revisa los logs para más detalles.")
+                        android.util.Log.e("BeatsFragment", "Falló la subida de imagen")
+                        showMessage("Error al subir imagen. Revisa los logs para más detalles.")
                     } else {
-                        android.util.Log.d("BeatsFragment", "✅ Imagen subida: $imageUrl")
-                        showMessage("✅ Imagen subida exitosamente")
+                        android.util.Log.d("BeatsFragment", "Imagen subida: $imageUrl")
+                        showMessage("Imagen subida exitosamente")
                     }
                 } else {
                     android.util.Log.d("BeatsFragment", "No se seleccionó imagen")
@@ -771,7 +777,7 @@ class BeatsFragment : Fragment() {
                 // Subir audio a Supabase Storage si se seleccionó
                 var audioUrl: String? = null
                 if (selectedAudioUri != null) {
-                    showMessage("📤 Subiendo audio...")
+                    showMessage("Subiendo audio...")
                     android.util.Log.d("BeatsFragment", "Iniciando subida de audio...")
                     audioUrl = storageRepository.uploadAudio(
                         uri = selectedAudioUri!!,
@@ -779,11 +785,11 @@ class BeatsFragment : Fragment() {
                     )
 
                     if (audioUrl == null) {
-                        android.util.Log.e("BeatsFragment", "❌ Falló la subida de audio")
-                        showMessage("❌ Error al subir audio. Revisa los logs para más detalles.")
+                        android.util.Log.e("BeatsFragment", "Falló la subida de audio")
+                        showMessage("Error al subir audio. Revisa los logs para más detalles.")
                     } else {
-                        android.util.Log.d("BeatsFragment", "✅ Audio subido: $audioUrl")
-                        showMessage("✅ Audio subido exitosamente")
+                        android.util.Log.d("BeatsFragment", "Audio subido: $audioUrl")
+                        showMessage("Audio subida exitosamente")
                     }
                 } else {
                     android.util.Log.d("BeatsFragment", "No se seleccionó audio")
@@ -802,24 +808,24 @@ class BeatsFragment : Fragment() {
                     estado = "DISPONIBLE"
                 )
 
-                android.util.Log.d("BeatsFragment", "🎵 Creando beat: $titulo por $artista")
-                android.util.Log.d("BeatsFragment", "💰 Precio: ${precio ?: 10000.0} CLP")
-                android.util.Log.d("BeatsFragment", "🎸 Género: ${genero.ifEmpty { "No especificado" }}")
-                android.util.Log.d("BeatsFragment", "📸 Imagen URL: $imageUrl")
-                android.util.Log.d("BeatsFragment", "🎵 Audio URL: $audioUrl")
+                android.util.Log.d("BeatsFragment", "Creando beat: $titulo por $artista")
+                android.util.Log.d("BeatsFragment", "Precio: ${precio ?: 10000.0} CLP")
+                android.util.Log.d("BeatsFragment", "Género: ${genero.ifEmpty { "No especificado" }}")
+                android.util.Log.d("BeatsFragment", "Imagen URL: $imageUrl")
+                android.util.Log.d("BeatsFragment", "Audio URL: $audioUrl")
 
                 // Guardar en la base de datos (Supabase + caché local)
                 viewModel.insertBeat(nuevoBeat)
 
                 // Limpiar formulario y ocultarlo
                 hideFormCrear()
-                showMessage("✅ Beat creado exitosamente")
+                showMessage("Beat creado exitosamente")
 
                 // Recargar lista de beats
                 viewModel.getAllBeats()
 
             } catch (e: Exception) {
-                showMessage("❌ Error al guardar el beat: ${e.message}")
+                showMessage("Error al guardar el beat: ${e.message}")
                 android.util.Log.e("BeatsFragment", "Error al guardar beat", e)
             } finally {
                 // Restaurar botón
@@ -881,14 +887,30 @@ class BeatsFragment : Fragment() {
     }
 
     private fun setupObservers() {
+        android.util.Log.d("BeatsFragment", "Configurando observadores de ViewModel...")
+
         // Observar lista de beats
         viewModel.beatsResult.observe(viewLifecycleOwner) { result ->
+            android.util.Log.d("BeatsFragment", "Resultado de beats recibido: ${result.javaClass.simpleName}")
+
             when (result) {
                 is Resource.Loading -> {
+                    android.util.Log.d("BeatsFragment", "Cargando beats...")
                     // Mostrar cargando
                 }
                 is Resource.Success -> {
                     val beats = result.data ?: emptyList()
+                    android.util.Log.d("BeatsFragment", "Beats cargados exitosamente: ${beats.size}")
+
+                    if (beats.isNotEmpty()) {
+                        android.util.Log.d("BeatsFragment", "Lista de beats:")
+                        beats.forEachIndexed { index, beat ->
+                            android.util.Log.d("BeatsFragment", "   ${index + 1}. ${beat.titulo} - ${beat.artista} (\$${beat.precio})")
+                        }
+                    } else {
+                        android.util.Log.w("BeatsFragment", "La lista de beats está vacía")
+                    }
+
                     // Actualizar el total de beats en el header
                     val userSession = UserSession(requireContext())
                     val isAdmin = userSession.isAdmin()
@@ -901,18 +923,22 @@ class BeatsFragment : Fragment() {
                     binding.txtTotalBeats.text = "Total de Beats: ${beats.size}"
 
                     // Actualizar el adaptador con los beats
+                    android.util.Log.d("BeatsFragment", "Actualizando adaptador con ${beats.size} beats...")
                     beatsAdapter.submitList(beats)
 
                     // Mostrar/ocultar mensaje de "no hay beats"
                     if (beats.isEmpty()) {
+                        android.util.Log.d("BeatsFragment", "Mostrando mensaje 'no hay beats'")
                         binding.recyclerBeats.visibility = View.GONE
                         binding.txtNoBeats.visibility = View.VISIBLE
                     } else {
+                        android.util.Log.d("BeatsFragment", "Mostrando RecyclerView con beats")
                         binding.recyclerBeats.visibility = View.VISIBLE
                         binding.txtNoBeats.visibility = View.GONE
                     }
                 }
                 is Resource.Error -> {
+                    android.util.Log.e("BeatsFragment", "❌ Error al cargar beats: ${result.message}")
                     // Mostrar error
                     showMessage(result.message ?: "Error al cargar beats")
                     binding.recyclerBeats.visibility = View.GONE

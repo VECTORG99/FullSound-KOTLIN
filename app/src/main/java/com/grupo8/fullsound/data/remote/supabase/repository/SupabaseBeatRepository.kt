@@ -138,18 +138,21 @@ class SupabaseBeatRepository {
      */
     suspend fun getAllBeats(): List<Beat> {
         return try {
-            Log.d(TAG, "📡 Solicitando beats desde Supabase (tabla: beat)...")
-            Log.d(TAG, "🔗 Cliente Supabase inicializado: ${SupabaseClient.client}")
+            Log.d(TAG, "========== OBTENIENDO BEATS DESDE SUPABASE ==========")
+            Log.d(TAG, "Tabla: beat")
+            Log.d(TAG, "Cliente Supabase: ${SupabaseClient.client}")
+            Log.d(TAG, "API Key configurada: ${com.grupo8.fullsound.BuildConfig.SUPABASE_ANON_KEY.take(30)}...")
+            Log.d(TAG, "URL: ${com.grupo8.fullsound.BuildConfig.SUPABASE_URL}")
 
             val result = SupabaseClient.client
                 .from("beat")
                 .select()
                 .decodeList<BeatSupabaseDto>()
 
-            Log.d(TAG, "✅ Supabase retornó ${result.size} beats")
+            Log.d(TAG, "Supabase retorno ${result.size} beats")
 
             if (result.isEmpty()) {
-                Log.w(TAG, "⚠️ La consulta no retornó beats. Verifica que la tabla 'beat' tenga datos.")
+                Log.w(TAG, "La consulta no retorno beats. Verifica que la tabla 'beat' tenga datos.")
             }
 
             result.map { dto ->
@@ -160,7 +163,7 @@ class SupabaseBeatRepository {
                 }
             }
         } catch (e: Exception) {
-            Log.e(TAG, "❌ Error al obtener beats desde Supabase")
+            Log.e(TAG, "Error al obtener beats desde Supabase")
             Log.e(TAG, "   Tipo: ${e.javaClass.simpleName}")
             Log.e(TAG, "   Mensaje: ${e.message}")
             Log.e(TAG, "   Causa: ${e.cause?.message}")

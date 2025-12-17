@@ -170,10 +170,14 @@ class SupabaseUserRepository {
     suspend fun getUserByEmailOrUsername(emailOrUsername: String, password: String): User? =
         withContext(Dispatchers.IO) {
         try {
-            Log.d(TAG, "📡 Intentando login con: $emailOrUsername")
+            Log.d(TAG, "========== INTENTO DE LOGIN ==========")
+            Log.d(TAG, "📡 Datos del intento:")
+            Log.d(TAG, "   Email/Username: $emailOrUsername")
+            Log.d(TAG, "   Password length: ${password.length} caracteres")
             Log.d(TAG, "   Buscando en tabla 'usuario' de Supabase...")
 
-            val response = supabase
+            // Primero, intentar obtener el usuario sin verificar contraseña para debug
+            val userWithoutPassword = supabase
                 .from("usuario")
                 .select {
                     filter {
@@ -181,25 +185,47 @@ class SupabaseUserRepository {
                             eq("correo", emailOrUsername)
                             eq("nombre_usuario", emailOrUsername)
                         }
-                        eq("contraseña", password)
                     }
                 }
                 .decodeSingleOrNull<UserSupabaseDto>()
 
-            response?.toModel().also {
-                if (it != null) {
-                    Log.d(TAG, "✅ Login exitoso:")
-                    Log.d(TAG, "   - Usuario: ${it.username}")
-                    Log.d(TAG, "   - Email: ${it.email}")
-                    Log.d(TAG, "   - Rol: ${it.role}")
-                    Log.d(TAG, "   - ID: ${it.id}")
+            if (userWithoutPassword != null) {
+                Log.d(TAG, "✅ Usuario encontrado en BD:")
+                Log.d(TAG, "   - ID: ${userWithoutPassword.idUsuario}")
+                Log.d(TAG, "   - Username: ${userWithoutPassword.nombreUsuario}")
+                Log.d(TAG, "   - Email: ${userWithoutPassword.correo}")
+                Log.d(TAG, "   - Rol ID: ${userWithoutPassword.idRol}")
+                Log.d(TAG, "   - Activo: ${userWithoutPassword.activo}")
+                Log.d(TAG, "   - Password en BD length: ${userWithoutPassword.contrasena.length}")
+
+                // Verificar contraseña
+                if (userWithoutPassword.contrasena == password) {
+                    Log.d(TAG, "✅ Contraseña correcta - Login exitoso")
+                    val user = userWithoutPassword.toModel()
+                    Log.d(TAG, "   Rol asignado: ${user.role}")
+                    Log.d(TAG, "======================================")
+                    return@withContext user
                 } else {
-                    Log.w(TAG, "⚠️ Credenciales incorrectas o usuario no encontrado")
+                    Log.w(TAG, "❌ Contraseña incorrecta")
+                    Log.w(TAG, "   Password ingresado: '$password'")
+                    Log.w(TAG, "   Password en BD: '${userWithoutPassword.contrasena}'")
+                    Log.w(TAG, "   ¿Coinciden? ${userWithoutPassword.contrasena == password}")
+                    Log.w(TAG, "======================================")
+                    return@withContext null
                 }
+            } else {
+                Log.w(TAG, "❌ Usuario NO encontrado en BD")
+                Log.w(TAG, "   Buscado por: $emailOrUsername")
+                Log.w(TAG, "   Verifica que el usuario existe en Supabase")
+                Log.w(TAG, "======================================")
+                return@withContext null
             }
         } catch (e: Exception) {
-            Log.e(TAG, "❌ Error en login: ${e.message}", e)
+            Log.e(TAG, "❌ ERROR en login: ${e.message}", e)
             Log.e(TAG, "   Tipo de error: ${e.javaClass.simpleName}")
+            Log.e(TAG, "   Stack trace:")
+            e.printStackTrace()
+            Log.e(TAG, "======================================")
             null
         }
     }

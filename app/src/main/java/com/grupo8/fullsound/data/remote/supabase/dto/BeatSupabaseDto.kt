@@ -36,6 +36,9 @@ data class BeatSupabaseDto(
     @SerialName("genero")
     val genero: String? = null,
 
+    @SerialName("emocion")
+    val emocion: String? = null,
+
     @SerialName("etiquetas")
     val etiquetas: String? = null,
 

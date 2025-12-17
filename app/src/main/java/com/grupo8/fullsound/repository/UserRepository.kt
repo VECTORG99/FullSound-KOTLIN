@@ -74,7 +74,7 @@ class UserRepository(
                 // Verificar en Supabase primero si el email o username ya existen
                 var emailExists = false
                 var usernameExists = false
-                
+
                 try {
                     android.util.Log.d("UserRepository", "Verificando si email existe en Supabase...")
                     val supabaseEmailUser = supabaseRepo.getUserByEmail(email)
