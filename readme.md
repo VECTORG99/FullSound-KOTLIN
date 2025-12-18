@@ -1,23 +1,10 @@
-# Proyecto FullSound
-Este proyecto es una tienda de Beats donde puedes comprar y vender beats.
+![Kotlin](https://img.shields.io/badge/kotlin-%237F52FF.svg?style=for-the-badge&logo=kotlin&logoColor=white)
+![Android](https://img.shields.io/badge/Android-3DDC84?style=for-the-badge&logo=android&logoColor=white)
+![License](https://img.shields.io/badge/license-MIT-blue.svg?style=for-the-badge)
 
-## Rutas principales del proyecto
+# FullSound
 
-| Componente         | Ruta principal                                                                 |
-|--------------------|-------------------------------------------------------------------------------|
-| MainActivity       | app/src/main/java/com/grupo8/fullsound/MainActivity.kt                        |
-| Login              | app/src/main/java/com/grupo8/fullsound/ui/auth/login/LoginFragment.kt         |
-| Registro           | app/src/main/java/com/grupo8/fullsound/ui/auth/register/RegisterFragment.kt   |
-| Beats (CRUD)       | app/src/main/java/com/grupo8/fullsound/ui/beats/BeatsFragment.kt              |
-| Lista de Beats     | app/src/main/java/com/grupo8/fullsound/ui/beats/BeatsListaFragment.kt         |
-| Carrito            | app/src/main/java/com/grupo8/fullsound/ui/Carrito/CarritoFragment.kt          |
-| ViewModels         | app/src/main/java/com/grupo8/fullsound/viewmodel/                             |
-| Repositorios       | app/src/main/java/com/grupo8/fullsound/repository/                            |
-| Modelos            | app/src/main/java/com/grupo8/fullsound/model/                                 |
-| Base de datos      | app/src/main/java/com/grupo8/fullsound/data/local/                            |
-| Layouts XML        | app/src/main/res/layout/                                                      |
-| Navegación         | app/src/main/res/navigation/nav_graph.xml                                     |
-| Documentación      | Documentacion/                                                                |
+FullSound es una aplicación Android desarrollada en Kotlin que funciona como una tienda de beats musicales. Permite a los usuarios comprar y vender instrumentales, gestionar un carrito de compras y administrar su perfil.
 
 ## Arquitectura
 - MVVM (Model-View-ViewModel)
@@ -27,7 +14,33 @@ Este proyecto es una tienda de Beats donde puedes comprar y vender beats.
 - Material Design 3
 - Retrofit + OkHttp (API Fixer para conversión de monedas)
 
-## Compilación
+- Sistema de autenticación de usuarios (Login y Registro).
+- Gestión completa de Beats (Crear, Leer, Actualizar, Eliminar).
+- Carrito de compras funcional.
+- Base de datos en la nube mediante Supabase.
+- Interfaz de usuario moderna basada en Material Design 3.
+- Navegación fluida utilizando Navigation Component.
+
+## Arquitectura y Tecnologías
+
+El proyecto sigue el patrón de arquitectura MVVM (Model-View-ViewModel) para asegurar una separación clara de responsabilidades y facilitar el mantenimiento.
+
+- **Lenguaje**: Kotlin
+- **Arquitectura**: MVVM
+- **Base de Datos**: Supabase
+- **UI**: XML con ViewBinding y componentes de Jetpack Compose
+- **Navegación**: Navigation Component
+
+## Estructura del Proyecto
+
+- **app/src/main/java/com/grupo8/fullsound/ui**: Contiene los fragmentos y actividades de la interfaz de usuario.
+- **app/src/main/java/com/grupo8/fullsound/viewmodel**: Contiene la lógica de negocio y gestión de estado.
+- **app/src/main/java/com/grupo8/fullsound/data**: Capa de datos, incluyendo la integración con Supabase.
+- **app/src/main/java/com/grupo8/fullsound/model**: Definiciones de las entidades de datos.
+
+## Instalación y Compilación
+
+Para compilar y ejecutar el proyecto, utilice el siguiente comando en la terminal:
 
 ```bash
 # Compilar la aplicación
@@ -108,8 +121,3 @@ FIXER_API_KEY=your_fixer_api_key
 ### Buckets de Storage
 - `beats-images`: Imágenes de beats
 - `beats-audio`: Archivos de audio de beats
-
-# Documentación
-
-- En carpeta [Documentacion](/Documentacion)
-
